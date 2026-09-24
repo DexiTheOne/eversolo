@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import datetime as dt
+from urllib.parse import urlsplit
 
 from homeassistant.components.media_player import (
     MediaPlayerDeviceClass,
@@ -156,80 +157,29 @@ class EversoloMediaPlayer(EversoloEntity, MediaPlayerEntity):
 
         return list(sources.values())
 
+    def _playing_field(self, local_key: str, external_key: str):
+        """Read metadata from both device and external player payloads."""
+        state = self.coordinator.data.get("music_control_state") or {}
+        local = state.get("playingMusic") or {}
+        external = (state.get("everSoloPlayInfo") or {}).get("everSoloPlayAudioInfo") or {}
+        if state.get("playType") == 5:
+            return local.get(local_key) or external.get(external_key)
+        return external.get(external_key) or local.get(local_key)
+
     @property
     def media_title(self):
         """Title of current playing media."""
-        music_control_state = self.coordinator.data.get(
-            "music_control_state", None)
-
-        if music_control_state is None:
-            return None
-
-        play_type = music_control_state.get("playType", None)
-
-        # Bluetooth or Spotify Connect
-        if play_type == 4 or play_type == 6:
-            return (
-                music_control_state.get("everSoloPlayInfo", {})
-                .get("everSoloPlayAudioInfo", {})
-                .get("songName", None)
-            )
-
-        # Internal Player
-        if play_type == 5:
-            return music_control_state.get("playingMusic", {}).get("title", None)
-
-        return None
+        return self._playing_field("title", "songName")
 
     @property
     def media_artist(self):
         """Artist of current playing media."""
-        music_control_state = self.coordinator.data.get(
-            "music_control_state", None)
-
-        if music_control_state is None:
-            return None
-
-        play_type = music_control_state.get("playType", None)
-
-        # Bluetooth or Spotify Connect
-        if play_type == 4 or play_type == 6:
-            return (
-                music_control_state.get("everSoloPlayInfo", {})
-                .get("everSoloPlayAudioInfo", {})
-                .get("artistName", None)
-            )
-
-        # Internal Player
-        if play_type == 5:
-            return music_control_state.get("playingMusic", {}).get("artist", None)
-
-        return None
+        return self._playing_field("artist", "artistName")
 
     @property
     def media_album_name(self):
         """Album of current playing media."""
-        music_control_state = self.coordinator.data.get(
-            "music_control_state", None)
-
-        if music_control_state is None:
-            return None
-
-        play_type = music_control_state.get("playType", None)
-
-        # Bluetooth or Spotify Connect
-        if play_type == 4 or play_type == 6:
-            return (
-                music_control_state.get("everSoloPlayInfo", {})
-                .get("everSoloPlayAudioInfo", {})
-                .get("albumName", None)
-            )
-
-        # Internal Player
-        if play_type == 5:
-            return music_control_state.get("playingMusic", {}).get("album", None)
-
-        return None
+        return self._playing_field("album", "albumName")
 
     @property
     def media_image_url(self):
@@ -240,35 +190,23 @@ class EversoloMediaPlayer(EversoloEntity, MediaPlayerEntity):
         if music_control_state is None:
             return None
 
-        play_type = music_control_state.get("playType", None)
-
-        # Bluetooth or Spotify Connect
-        if play_type == 6:
-            album_url = music_control_state.get("everSoloPlayInfo", {}).get(
-                "icon", None
-            )
-
-            if album_url is None or album_url == "":
-                return None
-
-            if not album_url.startswith("http"):
-                album_url = self.coordinator.client.create_image_url_by_path(
-                    album_url)
-
-            return album_url
-
-        # Internal Player
-        if play_type == 5:
-            album_art = music_control_state.get(
-                "playingMusic", {}).get("albumArt", None)
-
-            if album_art:
-                return album_art
-
-            song_id = music_control_state.get(
-                "playingMusic", {}).get("id", None)
-            if song_id is not None:
-                return self.coordinator.client.create_image_url_by_song_id(song_id)
+        playing = music_control_state.get("playingMusic") or {}
+        play_info = music_control_state.get("everSoloPlayInfo") or {}
+        audio_info = play_info.get("everSoloPlayAudioInfo") or {}
+        if music_control_state.get("playType") == 5:
+            candidates = (playing.get("albumArt"), playing.get("albumArtBig"),
+                          audio_info.get("albumUrl"), play_info.get("icon"))
+        else:
+            candidates = (play_info.get("icon"), audio_info.get("albumUrl"),
+                          playing.get("albumArt"), playing.get("albumArtBig"))
+        for image in candidates:
+            if isinstance(image, str) and image:
+                if urlsplit(image).scheme in ("http", "https"):
+                    return image
+                if image.startswith("/"):
+                    return self.coordinator.client.create_image_url_by_path(image)
+        if music_control_state.get("playType") == 5 and playing.get("id"):
+            return self.coordinator.client.create_image_url_by_song_id(playing["id"])
 
         return None
 

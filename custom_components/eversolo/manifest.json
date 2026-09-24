@@ -5,11 +5,11 @@
     "@hchris1"
   ],
   "config_flow": true,
-  "documentation": "https://github.com/hchris1/Eversolo",
+  "documentation": "https://github.com/DexiTheOne/eversolo",
   "iot_class": "local_polling",
-  "issue_tracker": "https://github.com/hchris1/Eversolo/issues",
+  "issue_tracker": "https://github.com/DexiTheOne/eversolo/issues",
   "requirements": [
     "wakeonlan"
   ],
-  "version": "0.9.1"
+  "version": "0.9.2"
 }
