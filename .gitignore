@@ -19,3 +19,6 @@ config/*
 
 # Virtual environment for dev
 .venv/
+
+# Local Codex MCP connection (contains a bearer-equivalent URL)
+.codex/config.toml
