@@ -77,7 +77,7 @@ class EversoloMediaPlayer(EversoloEntity, MediaPlayerEntity):
             self._state = MediaPlayerState.IDLE
         elif state == 3:
             self._state = MediaPlayerState.PLAYING
-            self._attr_media_position_updated_at = dt.datetime.now()
+            self._attr_media_position_updated_at = dt.datetime.now(dt.timezone.utc)
         elif state == 4:
             self._state = MediaPlayerState.PAUSED
         else:
@@ -237,7 +237,7 @@ class EversoloMediaPlayer(EversoloEntity, MediaPlayerEntity):
 
         position = music_control_state.get("position", None)
 
-        if position is None or position == 0:
+        if position is None:
             return None
 
         return position / 1000
