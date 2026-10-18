@@ -10,12 +10,14 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from .api import EversoloApiClient
 from .const import DOMAIN, LOGGER, NAME
 from .coordinator import EversoloDataUpdateCoordinator
+from .eq import EversoloEQCoordinator
 
 PLATFORMS: list[Platform] = [
     Platform.BUTTON,
     Platform.LIGHT,
     Platform.MEDIA_PLAYER,
     Platform.SELECT,
+    Platform.SWITCH,
 ]
 
 
@@ -68,6 +70,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     except ConfigEntryNotReady:
         LOGGER.info(
             "Eversolo device is offline, integration set up will continue")
+
+    coordinator.eq_coordinator = EversoloEQCoordinator(hass, coordinator)
+    # EQ failure must not prevent playback controls from loading. Platform
+    # discovery listeners keep polling alive even when startup is offline.
+    await coordinator.eq_coordinator.async_refresh()
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     entry.async_on_unload(entry.add_update_listener(async_reload_entry))

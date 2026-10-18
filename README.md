@@ -20,20 +20,30 @@ It provides the following entities:
 | Platform      | Name                         | Description                                                                   |
 |---------------|------------------------------|-------------------------------------------------------------------------------|
 | Button        | Cycle Screen Mode            | Goes to next screen mode (menu, song info, VU meter with info, VU meter only) |
-| Button        | Cycle Screen Mode (Spectrum) | Same as Cycle Screen Mode with spectrum instead of VU                         |
-| Button        | Power Off                    | Turns off device                                                              |
-| Button        | Power On                     | Turns on device via Wake-on-LAN                                               |
 | Button        | Reboot                       | Reboots device                                                                |
-| Button        | Toggle Screen On/Off         | Turns display on/off                                                          |
-| Button        | Turn Screen Off              | Turns display off                                                             |
-| Button        | Turn Screen On               | Turns display on                                                              |
-| Light         | Display                      | Controls display brightness                                                   |
+| Light         | Display                      | Controls display on/off and brightness                                                   |
 | Light         | Knob                         | Controls knob brightness                                                      |
-| Media Player  | Eversolo                     | Media controls                                                                |
+| Media Player  | Eversolo                     | Media and device power controls                                                                |
 | Select        | Knob Color                   | Selects knob light color (only on supported devices)                          |
 | Select        | Output Mode                  | Selects between available outputs                                             |
 | Select        | Spectrum Style               | Selects between the 4 available Spectrum styles                               |
 | Select        | VU Style                     | Selects between the 4 available VU styles                                     |
+
+### Output EQ controls
+
+Each output discovered from the player has an **EQ Profile** select and an **EQ Enabled** switch, grouped under **Configuration** on the native device page. Selecting a profile preserves that output's enabled/disabled state; switching EQ off preserves its profile assignment. These controls do not edit saved profiles. Duplicate profile names are distinguished by their device IDs.
+
+Output assignments are polled every 5 seconds. The shared profile catalog is fetched at startup, after reconnection, every 60 seconds, and when a newly observed assignment has an unknown ID. Commands fetch fresh companion state and verify readback. All requests use the integration's configured host and port.
+
+EQ polling caches, profile IDs, names, and scheduling timestamps stay in memory; no polling data is saved to configuration entries or files. Unchanged polls do not publish EQ entity updates. Recorder can record actual changes to entity state/options or availability, but no poll counters, timestamps, or full EQ settings are exposed. Home Assistant still persists its normal entity registry when entities are first discovered. Profile creation/editing is outside this feature.
+
+### Replacing duplicate buttons
+
+Power On, Power Off, Toggle Screen On/Off, Turn Screen On, and Turn Screen Off buttons have been removed. Use `media_player.turn_on` / `media_player.turn_off` for device power (turn-on requires Wake-on-LAN support), and `light.turn_on` / `light.turn_off` / `light.toggle` on the Display light for the screen.
+
+Cycle Screen Mode (Spectrum) has also been removed. Use the Spectrum Style selector to choose a spectrum style; the regular Cycle Screen Mode button remains available.
+
+Before updating, change any automations, scripts, or dashboard cards that reference those buttons to use the corresponding actions above. The media player and Display light keep their existing entity IDs. Old button registry entries may remain unavailable after updating and can be deleted once their references have been replaced.
 
 > [!IMPORTANT]
 > This integration is only tested on the **Eversolo DMP-A6**. Tests and contributions to verify and support more Eversolo devices are welcome!

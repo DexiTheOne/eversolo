@@ -4,6 +4,7 @@ from __future__ import annotations
 import aiohttp
 import async_timeout
 import socket
+from urllib.parse import urlencode
 
 from .const import LOGGER
 
@@ -20,6 +21,14 @@ class EversoloApiClientAuthenticationError(EversoloApiClientError):
     """Exception to indicate an authentication error."""
 
 
+def _eq_id(value):
+    """Reject malformed device IDs as ordinary API failures."""
+    try:
+        return int(value)
+    except (TypeError, ValueError) as err:
+        raise EversoloApiClientError("Invalid EQ identifier") from err
+
+
 class EversoloApiClient:
     """Eversolo API Client."""
 
@@ -34,6 +43,68 @@ class EversoloApiClient:
         self._port = port
         self._session = session
         self._has_knob_color: bool | None = None
+
+    async def _async_eq_request(self, endpoint, **params):
+        """Validate both HTTP and device status for EQ operations."""
+        result = await self._api_wrapper(
+            method="get",
+            url=f"http://{self._host}:{self._port}/ZidooMusicControl/v2/{endpoint}?{urlencode(params)}",
+        )
+        if not isinstance(result, dict) or str(result.get("status")) != "200":
+            raise EversoloApiClientError(f"EQ request {endpoint} was rejected")
+        return result
+
+    async def async_get_eq_profiles(self):
+        """Enumerate profile IDs and exact names, discarding full EQ settings."""
+        profiles = {}
+        offset = 0
+        while True:
+            result = await self._async_eq_request(
+                "getDSPConfigList", offset=offset, limit=60, isDSP=0)
+            page = result.get("dspConfig")
+            if not isinstance(page, list):
+                raise EversoloApiClientError("Invalid EQ profile list")
+            if not page:
+                return profiles
+            added = 0
+            for item in page:
+                if not isinstance(item, dict) or "id" not in item or not isinstance(item.get("name"), str):
+                    raise EversoloApiClientError("Invalid EQ profile")
+                key = _eq_id(item["id"])
+                if key not in profiles:
+                    added += 1
+                profiles[key] = item["name"]
+            if not added:
+                raise EversoloApiClientError("EQ profile pagination did not advance")
+            if len(page) < 60:
+                return profiles
+            offset += len(page)
+
+    async def async_get_eq_outputs(self):
+        """Discover output identity, selected profile, and enable state."""
+        result = await self._async_eq_request("getDSPSourceInList", isDSP=0)
+        entries = result.get("eqSourceList")
+        if not isinstance(entries, list):
+            raise EversoloApiClientError("Invalid EQ output list")
+        outputs = {}
+        for item in entries:
+            if not isinstance(item, dict) or not all(
+                key in item for key in ("id", "name", "sourceType", "eqId", "enable")
+            ) or item["enable"] not in (True, False, 0, 1) or not all(
+                isinstance(item[key], str) for key in ("name", "sourceType")
+            ):
+                raise EversoloApiClientError("Invalid EQ output")
+            outputs[_eq_id(item["id"])] = {
+                "name": item["name"], "sourceType": item["sourceType"],
+                "eqId": _eq_id(item["eqId"]), "enable": bool(item["enable"]),
+            }
+        return outputs
+
+    async def async_set_eq_output(self, output_id, source_type, profile_id, enabled):
+        """Set assignment and output bypass together; never edit the profile."""
+        await self._async_eq_request(
+            "setDSPSource", id=output_id, sourceType=source_type,
+            enable=int(enabled), eqId=profile_id, isDSP=0)
 
     async def async_get_data(self, previous_data: dict | None = None):
         """Get data from the API."""

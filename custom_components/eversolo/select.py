@@ -6,10 +6,12 @@ from dataclasses import dataclass
 from typing import Any, Generic, TypeVar
 
 from homeassistant.components.select import SelectEntity, SelectEntityDescription
+from homeassistant.exceptions import HomeAssistantError
 
 from .const import DOMAIN, LOGGER
 from .coordinator import EversoloDataUpdateCoordinator
 from .entity import EversoloEntity
+from .eq import EversoloEQEntity, async_discover_outputs, profile_labels
 
 _EversoloDataUpdateCoordinatorT = TypeVar(
     "_EversoloDataUpdateCoordinatorT", bound=EversoloDataUpdateCoordinator
@@ -101,6 +103,8 @@ async def async_setup_entry(hass, entry, async_add_devices):
     """Set up the Select platform."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
 
+    async_discover_outputs(hass, entry, async_add_devices, EversoloEQSelect)
+
     descriptions = list(ENTITY_DESCRIPTIONS)
     if "knob_color_state" in coordinator.data:
         descriptions.append(KNOB_COLOR_DESCRIPTION)
@@ -175,3 +179,39 @@ class EversoloSelect(EversoloEntity, SelectEntity):
 
         await self.entity_description.select_option(self.coordinator, index, tag)
         self._attr_current_option = option
+
+
+class EversoloEQSelect(EversoloEQEntity, SelectEntity):
+    """Select a stored EQ profile for one output without changing bypass."""
+
+    _attr_icon = "mdi:equalizer"
+
+    def __init__(self, coordinator, output_id):
+        """Initialize the output profile selector."""
+        super().__init__(coordinator, output_id, "profile")
+
+    @property
+    def labels(self):
+        """Map immutable profile IDs to unique user-facing labels."""
+        return profile_labels(self.coordinator.data["profiles"])
+
+    @property
+    def options(self):
+        """Return the shared catalog's names."""
+        return list(self.labels.values())
+
+    @property
+    def current_option(self):
+        """Resolve the device assignment by ID, never list position."""
+        return self.labels.get(self.output.get("eqId"))
+
+    def _state_snapshot(self):
+        """Include only this entity's exposed state and attributes."""
+        return (self.available, self.current_option, tuple(self.options))
+
+    async def async_select_option(self, option):
+        """Apply the ID represented by this option and retain enable state."""
+        profile_id = next((key for key, label in self.labels.items() if label == option), None)
+        if profile_id is None:
+            raise HomeAssistantError("EQ profile selection is no longer available")
+        await self.coordinator.async_set_output(self.output_id, profile_id=profile_id)
