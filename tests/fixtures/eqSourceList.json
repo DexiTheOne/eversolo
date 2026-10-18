@@ -1,0 +1,37 @@
+{
+  "status": "200",
+  "eqSourceList": [
+    {
+      "id": 1,
+      "eqId": 5,
+      "name": "XLR/RCA",
+      "enable": true,
+      "sourceType": "XLRRCAOUT",
+      "configName": "V1 Desk Calibration "
+    },
+    {
+      "id": 2,
+      "eqId": 1,
+      "name": "HDMI",
+      "enable": false,
+      "sourceType": "HDMIOUT",
+      "configName": "V5 Couch Calibration "
+    },
+    {
+      "id": 3,
+      "eqId": 1,
+      "name": "OPT/COAX",
+      "enable": false,
+      "sourceType": "SPDIFOUT",
+      "configName": "V5 Couch Calibration "
+    },
+    {
+      "id": 4,
+      "eqId": 1,
+      "name": "USB DAC",
+      "enable": false,
+      "sourceType": "USBOUT",
+      "configName": "V5 Couch Calibration "
+    }
+  ]
+}
