@@ -77,7 +77,7 @@ class EversoloMediaPlayer(EversoloEntity, MediaPlayerEntity):
             self._state = MediaPlayerState.IDLE
         elif state == 3:
             self._state = MediaPlayerState.PLAYING
-            self._attr_media_position_updated_at = dt.datetime.now(dt.timezone.utc)
+            self._attr_media_position_updated_at = dt.datetime.now(dt.UTC)
         elif state == 4:
             self._state = MediaPlayerState.PAUSED
         else:
