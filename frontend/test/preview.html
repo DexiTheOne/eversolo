@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>Eversolo PEQ · fixture preview</title>
+<style>html,body{margin:0;background:#050505;height:100%}body{display:flex;flex-direction:column}.demo{background:#252522;color:#cfcdc6;font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:10px;text-align:center}eversolo-peq-panel{flex:1;min-height:0}</style></head>
+<body><div class="demo">OFFLINE PREVIEW · Captured fixture data · Changes affect this browser session only</div><eversolo-peq-panel></eversolo-peq-panel>
+<script type="module">
+// Load the latest local build on every preview visit.
+await import(`/custom_components/eversolo/frontend/eversolo-peq.js?preview=${Date.now()}`);
+const baseline = await (await fetch('/tests/fixtures/dsp-correction-profile.json')).json();
+const capturedFir = await (await fetch('/tests/fixtures/fir-curves.json')).json();
+const keys=['audioTunningEQList','audioTunningEQListRight','balance','enableEQ','enableEQRight','settingType','loudness','peqFirList','peqFirListRight','eqGeqGainBeans','eqGeqGainBeansRight','enableGeq','enableGeqRight','enablePeqLeftFir','enablePeqRightFir','enableLeftFir','enableRightFir'];
+const settings=Object.fromEntries(keys.filter(key=>key in baseline).map(key=>[key,baseline[key]]));
+settings.enableEQ=true;settings.enableEQRight=true;
+settings.loudness=1;settings.loudnessRight=1;settings.balance=-2;
+settings.audioTunningEQList.forEach((b,i)=>{b.volume=-60;b.gain=[0,1.5,1,-1.5,-2,0,1,.5,-1,0][i];});
+settings.audioTunningEQListRight.forEach((b,i)=>{b.volume=-40;b.gain=[1,2,.5,-2,-1,0,1.5,1,-2,-1][i];});
+const processing={firEnabled:{left:true,right:true},hasFir:true,hasLoudness:true};
+const profiles = new Map([[1,{id:1,name:'Couch calibration',settings,processing:structuredClone(processing),revision:'1'}],[5,{id:5,name:'Desk calibration',settings:structuredClone(settings),processing:structuredClone(processing),revision:'1'}]]);
+const outputs=['XLR / RCA','HDMI','Optical / Coax','USB DAC'].map((name,i)=>({id:i+1,name,eqId:1,enable:i===0}));
+let next=10; window.requests=[];
+const panel=document.querySelector('eversolo-peq-panel');
+panel.panel={config:{entry_id:'fixture-device',title:'Eversolo DMP-A6'}};
+panel.hass={async callWS(msg){
+  if(msg.type==='config/entity_registry/list') return [{entity_id:'media_player.eversolo',config_entry_id:'fixture-device',name:'Eversolo DMP-A6'}];
+  if(msg.type==='get_states') return [{entity_id:'media_player.eversolo',attributes:{friendly_name:window.previewEntityName || 'Eversolo DMP-A6'}}];
+  window.requests.push(structuredClone(msg));
+  const {operation,payload:p}=msg;
+  const profile=profiles.get(p.profile_id);
+  if(operation==='files') {
+    const folder=(name,url)=>({name,url,fileType:0});
+    const wav=(name,url,size)=>({name,url,fileType:1,size});
+    const base='flash:///EverSoloMusic';
+    const tree={
+      '/':[folder('Storage','flash://')],
+      'flash://':[folder('EverSoloMusic',base),folder('Download','flash:///Download'),folder('Music','flash:///Music')],
+      [base]:[folder('FIR Filters',base+'/FIR Filters'),folder('Measurements',base+'/Measurements')],
+      [base+'/FIR Filters']:[folder('Living Room',base+'/FIR Filters/Living Room'),folder('Desk',base+'/FIR Filters/Desk'),wav('Left Filter.wav',base+'/FIR Filters/Left Filter.wav',524332),wav('Right Filter.wav',base+'/FIR Filters/Right Filter.wav',524332),{name:'Notes.txt',url:base+'/FIR Filters/Notes.txt',fileType:2,size:240}],
+      [base+'/FIR Filters/Living Room']:[wav('Living Room Left.wav',base+'/FIR Filters/Living Room/Living Room Left.wav',1048620),wav('Living Room Right.wav',base+'/FIR Filters/Living Room/Living Room Right.wav',1048620)],
+      [base+'/FIR Filters/Desk']:[wav('Desk Left.wav',base+'/FIR Filters/Desk/Desk Left.wav',262188),wav('Desk Right.wav',base+'/FIR Filters/Desk/Desk Right.wav',262188)],
+    };
+    const list=structuredClone(tree[p.url]??[]);
+    const sort=p.sort??0;const compare=sort<2?(a,b)=>a.name.localeCompare(b.name):sort<4?(a,b)=>(a.size??0)-(b.size??0):sort<6?(a,b)=>a.name.localeCompare(b.name):(a,b)=>a.fileType-b.fileType;
+    list.sort((a,b)=>(sort%2?-1:1)*compare(a,b));
+    return {list:list.slice(p.start??0,(p.start??0)+1000),total:list.length};
+  }
+  if(operation==='snapshot')return structuredClone({profiles:[...profiles.values()].map(({id,name})=>({id,name})),outputs});
+  if(operation==='read'){if(!profile)throw Error('Profile was deleted');return structuredClone(profile);}
+  if(operation==='curves'){if(!profile)throw Error('Profile was deleted');return {profile_id:profile.id,revision:profile.revision,...Object.fromEntries(['left','right'].map(channel=>[channel,{points:structuredClone(capturedFir[channel].fir),loaded:true,coordinate:'log10_hz'}]))};}
+  if(operation==='create'){const id=next++;const created={id,name:p.name,revision:'1',settings:structuredClone(settings),processing:structuredClone(processing)};profiles.set(id,created);return structuredClone(created);}
+  if(operation==='output'){const out=outputs.find(o=>o.id===p.output_id);if(p.profile_id!==undefined)out.eqId=p.profile_id;if(p.enabled!==undefined)out.enable=p.enabled;return {};}
+  if(p.revision!==profile.revision)throw Error('Profile changed on device');
+  if(operation==='save_as'){const id=next++;const created={...structuredClone(profile),id,name:p.name,revision:'1',settings:structuredClone(p.settings)};profiles.set(id,created);return structuredClone(created);}
+  if(operation==='import_fir') profile.processing.hasFir=true;
+  if(operation==='save')profile.settings=structuredClone(p.settings);
+  if(operation==='rename')profile.name=p.name;
+  if(operation==='delete'){if(outputs.some(o=>o.eqId===p.profile_id))throw Error('Assign another profile before deletion');profiles.delete(p.profile_id);return {deleted:p.profile_id};}
+  profile.revision=String(Number(profile.revision)+1);return structuredClone(profile);
+}};
+</script></body></html>

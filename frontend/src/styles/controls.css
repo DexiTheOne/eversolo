@@ -1,0 +1,213 @@
+/* Shared control idioms for panel surfaces. One place for the recipes that
+   were copy-pasted (and drifting) across panel <style> blocks; components
+   keep only their layout and semantic-state styles.
+
+   .chip — small mono action button.
+     Tone via modifier: .accent / .warn / .danger set --tone and switch to the
+     tinted recipe. .md is the larger tier (modal / device actions).
+     .on — selected state for chip groups (wins over :disabled dimming, since
+     the selected chip is disabled to make the group radio-like).
+     .armed — two-step confirm emphasis; combine with a tone class.
+     .hi — outlined variant (transparent fill, --border-hi edge) shared by
+     the small "outline button" recipes (BandsPanel copy/paste/reset/exit,
+     PreampPanel reset) that predate .chip.
+
+   .microlbl — control row label (KV stays the canon for label+value pairs).
+   .hint — faint mono helper/idle text; padding stays component-local.
+   .dimmed — semantic marker (no opacity) for feature-off panel bodies; the
+     body's labels/readouts stay full-contrast, the controls disabled by the
+     feature-off state carry the one dim layer themselves (U-P3 policy B).
+   .kvgrid — the 2-col label/value grid shared by DevicePanel/SystemTab/
+     OverviewTab; panels with a different padding/gap keep a local variant.
+   .icon-toggle — small square icon button (topbar bypass / mini mute);
+     width is the only per-caller variance, set via a local override.
+   .proc-grid — the label/control/unit grid shared by the processing panels
+     (Crossfeed/Loudness/Leveller/Psybass/Upmix); .rule is a full-width
+     divider row, .span2 lets a control skip the label column, .section a
+     full-width group heading (Upmix/Subharm).
+   .cs-pill — status pill in the control-surface slot headers (NEW / OK /
+     INACTIVE ...); tone via .new / .ok / .warn / .run / .off. */
+
+.chip {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 3px 10px;
+  border-radius: var(--radius-s);
+  background: var(--wash);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  cursor: pointer;
+}
+.chip:hover:not(:disabled) { color: var(--text); border-color: var(--border-hi); }
+/* Single dim layer (U-P3 policy B): the panel/row this sits in stays
+   full-contrast; this is the one opacity dim on the control itself. */
+.chip:disabled { opacity: var(--dim-disabled); cursor: default; }
+
+.chip.md {
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  padding: 6px 12px;
+  border-radius: 4px;
+}
+
+/* Icon-only chip: a single glyph header action (e.g. the ↺ reset-to-defaults). */
+.chip.icon {
+  font-size: 12px;
+  line-height: 1;
+  padding: 2px 7px;
+  letter-spacing: 0;
+}
+
+.chip.hi {
+  background: transparent;
+  border-color: var(--border-hi);
+  padding: 3px 8px;
+  font-weight: 400;
+}
+.chip.hi:hover:not(:disabled) {
+  background: var(--wash-strong);
+}
+
+.chip.accent { --tone: var(--accent); }
+.chip.warn   { --tone: var(--warn); }
+.chip.danger { --tone: var(--err); }
+.chip.accent, .chip.warn, .chip.danger {
+  background: color-mix(in oklab, var(--tone) 10%, transparent);
+  border-color: color-mix(in oklab, var(--tone) 50%, var(--border));
+  color: var(--tone);
+}
+.chip.accent:hover:not(:disabled),
+.chip.warn:hover:not(:disabled),
+.chip.danger:hover:not(:disabled) {
+  color: var(--tone);
+  background: color-mix(in oklab, var(--tone) 16%, transparent);
+  border-color: var(--tone);
+}
+
+.chip.on {
+  --tone: var(--accent);
+  background: color-mix(in oklab, var(--tone) 14%, transparent);
+  border-color: color-mix(in oklab, var(--tone) 50%, var(--border));
+  color: var(--tone);
+  opacity: 1;
+}
+
+.chip.armed {
+  background: color-mix(in oklab, var(--tone) 26%, transparent);
+  border-color: var(--tone);
+}
+
+.microlbl {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+
+.hint {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  line-height: 1.4;
+  color: var(--text-faint);
+  margin: 0;
+}
+
+/* Semantic marker only (U-P3 policy B) -- no opacity here. Feature-off panel
+   bodies keep full-contrast labels/readouts; the controls disabled by the
+   feature-off state carry the single dim layer (var(--dim-disabled))
+   themselves via their own :disabled rule. */
+.dimmed { }
+
+.kvgrid { padding: 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.icon-toggle {
+  height: 22px;
+  padding: 0;
+  border-radius: 4px;
+  background: var(--wash);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.icon-toggle:hover:not(:disabled) { color: var(--text); border-color: var(--border-hi); }
+.icon-toggle:disabled { cursor: default; opacity: 0.5; }
+.icon-toggle.on {
+  background: color-mix(in oklab, var(--err) 15%, transparent);
+  border-color: color-mix(in oklab, var(--err) 45%, transparent);
+  color: var(--err);
+}
+
+/* .staged — small accent dot marking a control holding a pending (unapplied)
+   staged-apply value (see state/staging.svelte.ts). Apply directly to a chip/
+   toggle/segmented-option; wrap a control with no class prop of its own
+   (PinPicker, SegmentedSelect) in a `.stage-wrap` span instead so the dot has
+   something to anchor to. */
+.staged { position: relative; }
+.staged::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 4px color-mix(in oklab, var(--accent) 70%, transparent);
+}
+.stage-wrap { display: inline-block; }
+
+.proc-grid {
+  padding: 14px;
+  display: grid;
+  grid-template-columns: 90px 1fr 64px;
+  align-items: center;
+  gap: 12px;
+}
+.proc-grid > .rule {
+  grid-column: 1 / -1;
+  height: 1px;
+  background: var(--border);
+  margin: 2px 0;
+}
+.proc-grid > .span2 { grid-column: 2 / span 2; }
+.proc-grid > .section {
+  grid-column: 1 / -1;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--text-faint);
+}
+
+/* Section sub-header inside a panel body (border-separated). */
+.subhdr {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--text-faint);
+  padding: 8px 14px 0;
+  border-top: 1px solid var(--wash);
+  margin-top: 6px;
+}
+
+.cs-pill {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  border: 1px solid var(--border-hi);
+}
+.cs-pill.new, .cs-pill.run { color: var(--accent); border-color: color-mix(in oklab, var(--accent) 50%, transparent); }
+.cs-pill.ok   { color: var(--ok);   border-color: color-mix(in oklab, var(--ok) 50%, transparent); }
+.cs-pill.warn { color: var(--warn); border-color: color-mix(in oklab, var(--warn) 50%, transparent); }
+.cs-pill.off  { color: var(--text-faint); border-color: var(--border); }

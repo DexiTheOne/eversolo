@@ -4,7 +4,7 @@ from __future__ import annotations
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import ATTRIBUTION, CONF_FIRMWARE, CONF_MODEL, DOMAIN, NAME
+from .const import ATTRIBUTION, CONF_FIRMWARE, CONF_MODEL, DOMAIN, NAME, panel_path
 from .coordinator import EversoloDataUpdateCoordinator
 
 
@@ -24,4 +24,5 @@ class EversoloEntity(CoordinatorEntity):
             model=coordinator.config_entry.data.get(CONF_MODEL),
             sw_version=coordinator.config_entry.data.get(CONF_FIRMWARE),
             manufacturer=NAME,
+            configuration_url=f"homeassistant://{panel_path(coordinator.config_entry.entry_id)}",
         )

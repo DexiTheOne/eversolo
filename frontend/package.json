@@ -1,0 +1,18 @@
+{
+  "name": "eversolo-peq-panel",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "test": "node --test test/*.test.mjs"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "7.0.0",
+    "svelte": "5.55.4",
+    "svelte-check": "4.4.6",
+    "typescript": "6.0.2",
+    "vite": "8.0.10"
+  }
+}

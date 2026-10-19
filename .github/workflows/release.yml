@@ -17,11 +17,15 @@ jobs:
       - name: "Checkout the repository"
         uses: "actions/checkout@v6.0.2"
 
-      - name: "Adjust version number"
-        shell: "bash"
+      - name: "Verify release version"
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |
-          yq -i -o json '.version="${{ github.event.release.tag_name }}"' \
-            "${{ github.workspace }}/custom_components/eversolo/manifest.json"
+          python - <<'PYTHON'
+          import json, os
+          version = json.load(open("custom_components/eversolo/manifest.json"))["version"]
+          assert version == os.environ["RELEASE_TAG"].removeprefix("v"), "Release tag must match manifest version"
+          PYTHON
 
       - name: "ZIP the integration directory"
         shell: "bash"

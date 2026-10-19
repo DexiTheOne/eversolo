@@ -1,0 +1,64 @@
+/* Eversolo-inspired neutral surfaces and native system typography. */
+:host {
+  display: block; height: 100%; overflow: auto; color-scheme: dark;
+  --bg: #050505; --bg-glow: var(--bg);
+  --panel: #1a1a19; --panel-hi: #292927; --panel-solid: #20201e;
+  --text: #f1f0ed; --text-dim: #cbc9c4; --text-faint: #a6a49f;
+  --border: #30302d; --border-hi: #4b4b46;
+  --wash-faint: #1f1f1d; --wash: #262624; --wash-strong: #333330;
+  --accent: #70bdce; --ok: #e3e2de; --warn: #d2bfa0; --err: #d8948b;
+  --number-positive: var(--text); --number-negative: var(--text);
+  --dim-disabled: .5; --pad: 20px;
+  --radius-s: 7px; --radius-m: 12px; --radius: 18px;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: var(--font-sans);
+  font-family: var(--font-sans); font-size: 17px; line-height: 1.5;
+  background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased;
+}
+button, input, select { font-family: inherit; }
+button { color: var(--text); }
+button, select, input { -webkit-tap-highlight-color: transparent; }
+input[type="checkbox"] { width: 20px; height: 20px; accent-color: #d9d8d3; flex-shrink: 0; }
+input[type="range"] { appearance: none; -webkit-appearance: none; display: block; height: 44px; margin: 0; padding: 0; background: transparent; cursor: pointer; }
+input[type="range"]::-webkit-slider-runnable-track { height: 6px; border-radius: 4px; background: #4a4a46; }
+input[type="range"]::-webkit-slider-thumb { appearance: none; -webkit-appearance: none; width: 8px; height: 24px; margin-top: -9px; background: #eeeeea; border: 0; border-radius: 3px; }
+input[type="range"]::-moz-range-track { height: 6px; border-radius: 4px; background: #4a4a46; }
+input[type="range"]::-moz-range-thumb { width: 8px; height: 24px; background: #eeeeea; border: 0; border-radius: 3px; }
+input[type="range"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+.chip {
+  font-family: var(--font-sans); font-size: 15px; font-weight: 500; line-height: 1.3; letter-spacing: 0;
+  min-height: 40px; padding: 9px 14px; border-radius: 9px;
+  background: var(--wash); border: 1px solid var(--border-hi); color: var(--text); cursor: pointer;
+}
+.chip:hover:not(:disabled) { background: var(--wash-strong); }
+.chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.chip:disabled { opacity: var(--dim-disabled); cursor: default; }
+.chip.md { font-size: 15px; min-height: 44px; padding: 11px 16px; }
+.chip.hi { background: transparent; }
+.chip.accent { color: #f5f4f0; background: #3d4548; border-color: #687275; }
+.chip.accent:hover:not(:disabled) { background: #4b5558; }
+.chip.danger { color: #e0aaa2; border-color: #71514b; background: transparent; }
+.chip.warn { color: var(--warn); }
+.chip.on { color: var(--accent); border-color: var(--accent); }
+.microlbl { font: 500 15px/1.5 var(--font-sans); color: var(--text-dim); }
+.hint { font: 14px/1.6 var(--font-sans); color: var(--text-faint); margin: 0; }
+.ch-left, .ch-right { --ch-glow: #dddad3; }
+
+/* Shared large switches for all on/off controls. */
+.toggle-label { display: inline-flex; align-items: center; gap: 12px; min-height: 44px; font: 16px var(--font-sans); color: var(--text-dim); }
+input.switch[type=checkbox] { appearance: none; flex: 0 0 54px; width: 54px; height: 30px; min-height: 30px; padding: 3px; margin: 7px 0; border: 1px solid var(--border-hi); border-radius: 18px; background: #494945; cursor: pointer; position: relative; vertical-align: middle; }
+input.switch[type=checkbox]::after { content: ''; display: block; width: 22px; height: 22px; border-radius: 50%; background: #eee; transition: transform .15s; }
+input.switch[type=checkbox]:checked { background: #8baba6; }
+input.switch[type=checkbox]:checked::after { transform: translateX(24px); }
+input.switch[type=checkbox]:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+input.switch[type=checkbox]:disabled { opacity: .5; cursor: default; }
+
+/* Keep every dropdown chevron inset from the control edge. */
+select {
+  appearance: none !important; -webkit-appearance: none !important;
+  padding-right: 34px !important;
+  background-image: linear-gradient(45deg, transparent 50%, var(--text-faint) 50%), linear-gradient(135deg, var(--text-faint) 50%, transparent 50%) !important;
+  background-position: calc(100% - 17px) center, calc(100% - 13px) center !important;
+  background-size: 4px 4px, 4px 4px !important;
+  background-repeat: no-repeat !important;
+}

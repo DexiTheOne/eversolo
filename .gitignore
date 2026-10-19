@@ -20,5 +20,13 @@ config/*
 # Virtual environment for dev
 .venv/
 
+# Frontend dependencies (compiled panel is shipped with the integration)
+frontend/node_modules/
+.playwright-mcp/
+
 # Local Codex MCP connection (contains a bearer-equivalent URL)
 .codex/config.toml
+
+# Local reference handoffs
+EverSolo-*-Handoff*/
+EverSolo-*-Handoff*.zip

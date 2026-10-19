@@ -4,6 +4,8 @@ from __future__ import annotations
 import aiohttp
 import async_timeout
 import socket
+import json
+import math
 from urllib.parse import urlencode
 
 from .const import LOGGER
@@ -105,6 +107,73 @@ class EversoloApiClient:
         await self._async_eq_request(
             "setDSPSource", id=output_id, sourceType=source_type,
             enable=int(enabled), eqId=profile_id, isDSP=0)
+
+    async def async_get_eq_profile(self, profile_id):
+        """Read a complete profile, including fields this integration cannot edit."""
+        result = await self._async_eq_request("getDSPConfig", id=profile_id)
+        profile = result.get("dspConfig")
+        if (not isinstance(profile, dict) or _eq_id(profile.get("id")) != profile_id
+                or not isinstance(profile.get("name"), str)):
+            raise EversoloApiClientError("Invalid EQ profile response")
+        return profile
+
+    async def async_get_eq_fir_curve(self, profile_id, channel):
+        """Read device-rendered FIR magnitude points without fetching or importing files."""
+        result = await self._async_eq_request("getDSPFirXY", id=profile_id, type=channel)
+        points = result.get("fir")
+        if result.get("type") != channel or not isinstance(points, list) or any(
+            not isinstance(point, dict) or any(
+                type(point.get(key)) not in (int, float) or not math.isfinite(point[key])
+                for key in ("x", "y")) for point in points
+        ):
+            raise EversoloApiClientError("Invalid FIR curve response")
+        # The app receives this sentinel before any FIR file has been imported.
+        empty = not points or points == [{"x": 0, "y": 0}, {"x": 5, "y": 0}]
+        return {"points": [] if empty else [{"x": item["x"], "y": item["y"]} for item in points],
+                "loaded": not empty, "coordinate": "log10_hz"}
+
+    async def async_get_fir_files(self, url="/", sort=0, start=0):
+        """Browse returned internal-storage URLs, encoding each value once."""
+        if (not isinstance(url, str) or (url != "/" and not url.startswith("flash://"))
+                or type(sort) is not int or sort not in range(8)
+                or type(start) is not int or start < 0):
+            raise EversoloApiClientError("Invalid internal file location")
+        result = await self._api_wrapper(method="get", url=(
+            f"http://{self._host}:{self._port}/ZidooFileControl/v2/getFiles?"
+            + urlencode({"url": url, "sort": sort, "startIndex": start, "requestCount": 1000})))
+        data = result.get("data") if isinstance(result, dict) else None
+        if (not isinstance(result, dict) or str(result.get("code")) != "0" or not isinstance(data, dict)
+                or not isinstance(data.get("list"), list)):
+            raise EversoloApiClientError("Internal file listing failed")
+        return data
+
+    async def async_import_eq_fir(self, profile_id, channel, path):
+        """Import an existing internal WAV; the ACK does not confirm filename readback."""
+        if (not isinstance(path, str) or not path.startswith("flash://")
+                or not path.lower().endswith(".wav")):
+            raise EversoloApiClientError("Select an internal WAV file")
+        await self._async_eq_request("importDSPFir", id=profile_id, type=channel, path=path)
+
+    async def async_create_eq_profile(self, name):
+        """Create once and consume the device-assigned identifier."""
+        result = await self._async_eq_request("addDSPConfig", name=name, isDSP=0)
+        profile = result.get("dspConfig")
+        if not isinstance(profile, dict) or "id" not in profile:
+            raise EversoloApiClientError("Creation outcome uncertain; refresh before trying again")
+        return await self.async_get_eq_profile(_eq_id(profile["id"]))
+
+    async def async_save_eq_profile(self, profile):
+        """Send the entire fresh, merged object with a single URL encoding."""
+        await self._async_eq_request(
+            "saveDSPConfig", dspConfig=json.dumps(profile, separators=(",", ":"), allow_nan=False))
+
+    async def async_rename_eq_profile(self, profile_id, name):
+        """Rename a profile without editing its DSP configuration."""
+        await self._async_eq_request("renameDSPConfig", id=profile_id, name=name, isDSP=0)
+
+    async def async_delete_eq_profile(self, profile_id):
+        """Delete once; callers must guard identity and verify absence."""
+        await self._async_eq_request("deleteDSPConfig", id=profile_id, isDSP=0)
 
     async def async_get_data(self, previous_data: dict | None = None):
         """Get data from the API."""

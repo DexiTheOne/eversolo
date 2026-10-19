@@ -1,0 +1,591 @@
+{
+  "attackTime": 1,
+  "attackTimeRight": 1,
+  "audioThresholdRatios": [
+    {
+      "ratio": 1,
+      "threshold": 0
+    },
+    {
+      "ratio": 1,
+      "threshold": 0
+    },
+    {
+      "ratio": 1,
+      "threshold": 0
+    },
+    {
+      "ratio": 1,
+      "threshold": 0
+    },
+    {
+      "ratio": 1,
+      "threshold": 0
+    }
+  ],
+  "audioThresholdRatiosRight": [
+    {
+      "ratio": 1,
+      "threshold": 0
+    },
+    {
+      "ratio": 1,
+      "threshold": 0
+    },
+    {
+      "ratio": 1,
+      "threshold": 0
+    },
+    {
+      "ratio": 1,
+      "threshold": 0
+    },
+    {
+      "ratio": 1,
+      "threshold": 0
+    }
+  ],
+  "audioTunningEQList": [
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 62.9,
+      "gain": 11.9,
+      "q": 19.97,
+      "type": 6,
+      "volume": -81
+    },
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 125,
+      "gain": 0,
+      "q": 1,
+      "type": 6,
+      "volume": -81
+    },
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 250,
+      "gain": 0,
+      "q": 1,
+      "type": 6,
+      "volume": -81
+    },
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 500,
+      "gain": 0,
+      "q": 1,
+      "type": 6,
+      "volume": -81
+    },
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 1000,
+      "gain": 0,
+      "q": 1,
+      "type": 6,
+      "volume": -81
+    },
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 2000,
+      "gain": 0,
+      "q": 1,
+      "type": 6,
+      "volume": -81
+    },
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 4000,
+      "gain": 0,
+      "q": 1,
+      "type": 6,
+      "volume": -81
+    },
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 8000,
+      "gain": 0,
+      "q": 1,
+      "type": 6,
+      "volume": -81
+    },
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 16000,
+      "gain": 0,
+      "q": 1,
+      "type": 6,
+      "volume": -81
+    },
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 20000,
+      "gain": -15,
+      "q": 0.1,
+      "type": 9,
+      "volume": -81
+    }
+  ],
+  "audioTunningEQListRight": [
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 31.5,
+      "gain": -6.4,
+      "q": 73.69,
+      "type": 6,
+      "volume": -185
+    },
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 63,
+      "gain": 0,
+      "q": 1,
+      "type": 6,
+      "volume": -185
+    },
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 125,
+      "gain": 0,
+      "q": 1,
+      "type": 6,
+      "volume": -185
+    },
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 250,
+      "gain": 0,
+      "q": 1,
+      "type": 6,
+      "volume": -185
+    },
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 500,
+      "gain": 0,
+      "q": 1,
+      "type": 6,
+      "volume": -185
+    },
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 1000,
+      "gain": 0,
+      "q": 1,
+      "type": 6,
+      "volume": -185
+    },
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 2000,
+      "gain": 0,
+      "q": 1,
+      "type": 6,
+      "volume": -185
+    },
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 4000,
+      "gain": 0,
+      "q": 1,
+      "type": 6,
+      "volume": -185
+    },
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 8000,
+      "gain": 0,
+      "q": 1,
+      "type": 6,
+      "volume": -185
+    },
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 16000,
+      "gain": 0,
+      "q": 1,
+      "type": 6,
+      "volume": -185
+    }
+  ],
+  "balance": -0.7,
+  "biasGain": 0,
+  "biasGainRight": 0,
+  "createTime": 1792348885650,
+  "enableCompress": false,
+  "enableCompressRight": false,
+  "enableEQ": true,
+  "enableEQRight": true,
+  "enableFir": false,
+  "enableGeq": true,
+  "enableGeqRight": true,
+  "enableHpf": false,
+  "enableHpfRight": false,
+  "enableLHPF": false,
+  "enableLHPFRight": false,
+  "enableLeftFir": true,
+  "enableLoudness": false,
+  "enableLoudnessRight": false,
+  "enableLpf": false,
+  "enableLpfRight": false,
+  "enablePeqFir": false,
+  "enablePeqLeftFir": false,
+  "enablePeqRightFir": false,
+  "enableRightFir": true,
+  "eqGeqGainBeans": [
+    {
+      "freq": 25,
+      "gain": 11.8
+    },
+    {
+      "freq": 40,
+      "gain": 8.2
+    },
+    {
+      "freq": 63,
+      "gain": 7.9
+    },
+    {
+      "freq": 100,
+      "gain": 9.3
+    },
+    {
+      "freq": 160,
+      "gain": 8.4
+    },
+    {
+      "freq": 250,
+      "gain": 11.6
+    },
+    {
+      "freq": 400,
+      "gain": 8.6
+    },
+    {
+      "freq": 630,
+      "gain": 7.3
+    },
+    {
+      "freq": 1000,
+      "gain": 7.6
+    },
+    {
+      "freq": 1600,
+      "gain": 8.9
+    },
+    {
+      "freq": 2500,
+      "gain": 8.4
+    },
+    {
+      "freq": 4000,
+      "gain": 7.4
+    },
+    {
+      "freq": 6300,
+      "gain": 9.6
+    },
+    {
+      "freq": 10000,
+      "gain": 9.3
+    },
+    {
+      "freq": 16000,
+      "gain": 12.3
+    }
+  ],
+  "eqGeqGainBeansRight": [
+    {
+      "freq": 25,
+      "gain": -10.6
+    },
+    {
+      "freq": 40,
+      "gain": -7.5
+    },
+    {
+      "freq": 63,
+      "gain": -5.8
+    },
+    {
+      "freq": 100,
+      "gain": -7.1
+    },
+    {
+      "freq": 160,
+      "gain": -5.5
+    },
+    {
+      "freq": 250,
+      "gain": -8.8
+    },
+    {
+      "freq": 400,
+      "gain": -6.6
+    },
+    {
+      "freq": 630,
+      "gain": -6
+    },
+    {
+      "freq": 1000,
+      "gain": -6.8
+    },
+    {
+      "freq": 1600,
+      "gain": -8.5
+    },
+    {
+      "freq": 2500,
+      "gain": -7.5
+    },
+    {
+      "freq": 4000,
+      "gain": -7.4
+    },
+    {
+      "freq": 6300,
+      "gain": -8.9
+    },
+    {
+      "freq": 10000,
+      "gain": -6.3
+    },
+    {
+      "freq": 16000,
+      "gain": -9.4
+    }
+  ],
+  "eqPresetType": 0,
+  "eqPresetTypeRight": 0,
+  "eqType": 0,
+  "highFrequency": 100,
+  "highFrequencyRight": 100,
+  "id": 9,
+  "isDSP": false,
+  "isHasDrcNew": true,
+  "isHasFir": true,
+  "isHasLoudness": true,
+  "isOEMSTARK": false,
+  "leftDelay": 300,
+  "loudness": 1,
+  "loudnessRight": 0,
+  "lowFrequency": 5000,
+  "lowFrequencyRight": 5000,
+  "name": "test filter ",
+  "order": 0,
+  "orderRight": 0,
+  "peqFirList": [
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 31.5,
+      "gain": 7.1,
+      "q": 28.32,
+      "type": 6,
+      "volume": -87
+    },
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 63,
+      "gain": 0,
+      "q": 1,
+      "type": 6,
+      "volume": -87
+    },
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 125,
+      "gain": 6.6,
+      "q": 37.47,
+      "type": 6,
+      "volume": -87
+    },
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 250,
+      "gain": 0,
+      "q": 1,
+      "type": 6,
+      "volume": -87
+    },
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 500,
+      "gain": 0,
+      "q": 1,
+      "type": 6,
+      "volume": -87
+    },
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 1000,
+      "gain": 0,
+      "q": 1,
+      "type": 6,
+      "volume": -87
+    },
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 2000,
+      "gain": 0,
+      "q": 1,
+      "type": 6,
+      "volume": -87
+    },
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 4000,
+      "gain": 0,
+      "q": 1,
+      "type": 6,
+      "volume": -87
+    },
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 8000,
+      "gain": 0,
+      "q": 1,
+      "type": 6,
+      "volume": -87
+    },
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 16000,
+      "gain": 0,
+      "q": 1,
+      "type": 6,
+      "volume": -87
+    }
+  ],
+  "peqFirListRight": [
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 31.5,
+      "gain": 0,
+      "q": 1,
+      "type": 6,
+      "volume": 21
+    },
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 63,
+      "gain": 0,
+      "q": 1,
+      "type": 6,
+      "volume": 21
+    },
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 125,
+      "gain": 0,
+      "q": 1,
+      "type": 6,
+      "volume": 21
+    },
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 250,
+      "gain": 7,
+      "q": 1,
+      "type": 6,
+      "volume": 21
+    },
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 500,
+      "gain": 0,
+      "q": 1,
+      "type": 6,
+      "volume": 21
+    },
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 1000,
+      "gain": 9,
+      "q": 20.87,
+      "type": 6,
+      "volume": 21
+    },
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 2000,
+      "gain": 0,
+      "q": 1,
+      "type": 6,
+      "volume": 21
+    },
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 4000,
+      "gain": 0,
+      "q": 1,
+      "type": 6,
+      "volume": 21
+    },
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 8000,
+      "gain": 0,
+      "q": 1,
+      "type": 6,
+      "volume": 21
+    },
+    {
+      "bw": 0,
+      "bypass": false,
+      "fc": 16000,
+      "gain": 0,
+      "q": 1,
+      "type": 6,
+      "volume": 21
+    }
+  ],
+  "peqPresetType": 0,
+  "peqPresetTypeRight": 0,
+  "releaseTime": 1,
+  "releaseTimeRight": 1,
+  "rightDelay": 300,
+  "settingType": 0,
+  "type": 1,
+  "unit": 0
+}
