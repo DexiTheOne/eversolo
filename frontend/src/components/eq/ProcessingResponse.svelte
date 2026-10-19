@@ -208,8 +208,6 @@
   .preview-channel { width: 140px; min-width: 140px; flex: 0 0 140px; white-space: nowrap; }
   .mode-cycle { width: 80px; min-width: 80px; flex: 0 0 80px; }
   .stages { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding: 6px 14px 0; }.stage { position: relative; display: grid; grid-template-rows: 20px 20px 18px; align-content: start; height: 72px; text-align: left; cursor: pointer; color: var(--text); font: inherit; min-width: 150px; max-width: 150px; flex: 0 0 150px; padding: 6px 10px; border: 1px solid var(--stage-color); background: color-mix(in srgb, var(--stage-color) 12%, var(--panel-solid)); border-radius: 10px; }
-  .stage[data-stage="fir"] svg { height: 30px; }
-  .stage[data-stage="fir"] { grid-template-rows: 20px 30px 8px; }
   .reference-stage { cursor: default; grid-template-rows: 20px 40px; }
   .stage:not(.reference-stage):hover { background: color-mix(in srgb, var(--stage-color) 22%, var(--panel-solid)); }
   .stage.selected { background: color-mix(in srgb, var(--stage-color) 42%, var(--panel-solid)); box-shadow: inset 0 0 0 2px var(--stage-color), 0 0 0 1px var(--stage-color); }

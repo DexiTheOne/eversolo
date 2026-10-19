@@ -398,7 +398,7 @@
 
 <div class="shell">
   <header class="topbar">
-    <div class="brand" class:centered={toolbarWrapped}><h1>{entityName || panel.config.title}</h1></div>
+    <div class="brand" class:centered={toolbarWrapped}><h1>{entityName}</h1></div>
   </header>
 
   <div class="toolbar" bind:this={profileToolbar} class:wrapped={toolbarWrapped}>
