@@ -43,8 +43,8 @@
   <button
     class="byp"
     class:on={bypassed}
-    title={bypassed ? 'Enable band' : 'Disable band'}
-    aria-label={bypassed ? 'Enable band' : 'Disable band'}
+    title={bypassed ? 'Enable Band' : 'Disable Band'}
+    aria-label={bypassed ? 'Enable Band' : 'Disable Band'}
     aria-pressed={!bypassed}
     onclick={() => onPatch({ bypass: !bypassed })}
     disabled={off}
@@ -105,9 +105,7 @@
      row's structure and the FLAT type stay full-contrast; the freq/Q/gain
      ValueFields below are disabled in that state and carry the single dim
      layer alone. */
-  /* Deliberately kept: bypass is a user toggle whose controls stay ENABLED
-     (not disabled), so this dim is the one and only layer for that state --
-     a real, single-layer visual distinction, not a stack. Do not touch. */
+
   .row.bypassed { opacity: 0.45; }
   .num { color: var(--band-color); font-weight: 600; font-size: 17px; font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; letter-spacing: 0; }
   .byp {

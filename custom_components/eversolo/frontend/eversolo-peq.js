@@ -133,63 +133,63 @@ function Me(e) {
 }
 //#endregion
 //#region node_modules/svelte/src/internal/flags/index.js
-var Ne = !1, Pe = !1, N = null;
-function Fe(e) {
-	N = e;
+var N = !1, Ne = !1, P = null;
+function Pe(e) {
+	P = e;
 }
-function Ie(e, t = !1, n) {
-	N = {
-		p: N,
+function Fe(e, t = !1, n) {
+	P = {
+		p: P,
 		i: !1,
 		c: null,
 		e: null,
 		s: e,
 		x: null,
 		r: G,
-		l: Pe && !t ? {
+		l: Ne && !t ? {
 			s: null,
 			u: null,
 			$: []
 		} : null
 	};
 }
-function Le(e) {
-	var t = N, n = t.e;
+function Ie(e) {
+	var t = P, n = t.e;
 	if (n !== null) {
 		t.e = null;
 		for (var r of n) mn(r);
 	}
-	return e !== void 0 && (t.x = e), t.i = !0, N = t.p, e ?? {};
+	return e !== void 0 && (t.x = e), t.i = !0, P = t.p, e ?? {};
 }
-function Re() {
-	return !Pe || N !== null && N.l === null;
+function Le() {
+	return !Ne || P !== null && P.l === null;
 }
 //#endregion
 //#region node_modules/svelte/src/internal/client/dom/task.js
-var ze = [];
-function Be() {
-	var e = ze;
-	ze = [], f(e);
+var Re = [];
+function ze() {
+	var e = Re;
+	Re = [], f(e);
 }
-function Ve(e) {
-	if (ze.length === 0 && !tt) {
-		var t = ze;
+function Be(e) {
+	if (Re.length === 0 && !tt) {
+		var t = Re;
 		queueMicrotask(() => {
-			t === ze && Be();
+			t === Re && ze();
 		});
 	}
-	ze.push(e);
+	Re.push(e);
 }
-function He() {
-	for (; ze.length > 0;) Be();
+function Ve() {
+	for (; Re.length > 0;) ze();
 }
-function Ue(e) {
+function He(e) {
 	var t = G;
 	if (t === null) return W.f |= re, e;
 	if (!(t.f & 32768) && !(t.f & 4)) throw e;
-	P(e, t);
+	Ue(e, t);
 }
-function P(e, t) {
+function Ue(e, t) {
 	for (; t !== null;) {
 		if (t.f & 128) {
 			if (!(t.f & 32768)) throw e;
@@ -314,14 +314,14 @@ var Ze = /* @__PURE__ */ new Set(), I = null, Qe = null, $e = null, et = null, t
 			let e = o ??= this;
 			e.#o.push(...this.#o.filter((t) => !e.#o.includes(t)));
 		}
-		o !== null && (Ze.add(o), o.#g()), Ne && !Ze.has(this) && this.#y();
+		o !== null && (Ze.add(o), o.#g()), N && !Ze.has(this) && this.#y();
 	}
 	#_(e, t, n) {
 		e.f ^= h;
 		for (var r = e.first; r !== null;) {
 			var i = r.f, a = (i & 96) != 0;
 			if (!(a && i & 1024 || i & 8192 || this.#u.has(r)) && r.fn !== null) {
-				a ? r.f ^= h : i & 4 ? t.push(r) : Ne && i & 16777224 ? n.push(r) : Xn(r) && (i & 16 && this.#l.add(r), tr(r));
+				a ? r.f ^= h : i & 4 ? t.push(r) : N && i & 16777224 ? n.push(r) : Xn(r) && (i & 16 && this.#l.add(r), tr(r));
 				var o = r.first;
 				if (o !== null) {
 					r = o;
@@ -410,7 +410,7 @@ var Ze = /* @__PURE__ */ new Set(), I = null, Qe = null, $e = null, et = null, t
 			let e = this.#i.get(t) ?? 0;
 			e === 1 ? this.#i.delete(t) : this.#i.set(t, e - 1);
 		}
-		this.#f || n || (this.#f = !0, Ve(() => {
+		this.#f || n || (this.#f = !0, Be(() => {
 			this.#f = !1, this.flush();
 		}));
 	}
@@ -438,14 +438,14 @@ var Ze = /* @__PURE__ */ new Set(), I = null, Qe = null, $e = null, et = null, t
 	static ensure() {
 		if (I === null) {
 			let t = I = new e();
-			nt || (Ze.add(I), tt || Ve(() => {
+			nt || (Ze.add(I), tt || Be(() => {
 				I === t && t.flush();
 			}));
 		}
 		return I;
 	}
 	apply() {
-		if (!Ne || !this.is_fork && Ze.size === 1) {
+		if (!N || !this.is_fork && Ze.size === 1) {
 			$e = null;
 			return;
 		}
@@ -466,7 +466,7 @@ var Ze = /* @__PURE__ */ new Set(), I = null, Qe = null, $e = null, et = null, t
 		for (var t = e; t.parent !== null;) {
 			t = t.parent;
 			var n = t.f;
-			if (rt !== null && t === G && (Ne || (W === null || !(W.f & 2)) && !Je)) return;
+			if (rt !== null && t === G && (N || (W === null || !(W.f & 2)) && !Je)) return;
 			if (n & 96) {
 				if (!(n & 1024)) return;
 				t.f ^= h;
@@ -481,7 +481,7 @@ function ct(e) {
 	try {
 		var n;
 		for (e && (I !== null && !I.is_fork && I.flush(), n = e());;) {
-			if (He(), I === null) return n;
+			if (Ve(), I === null) return n;
 			I.flush();
 		}
 	} finally {
@@ -492,7 +492,7 @@ function lt() {
 	try {
 		pe();
 	} catch (e) {
-		P(e, et);
+		Ue(e, et);
 	}
 }
 var ut = null;
@@ -552,7 +552,7 @@ function _t(e) {
 	let t = 0, n = It(0), r;
 	return () => {
 		dn() && (K(n), vn(() => (t === 0 && (r = ar(() => e(() => Bt(n)))), t += 1, () => {
-			Ve(() => {
+			Be(() => {
 				--t, t === 0 && (r?.(), r = void 0, Bt(n));
 			});
 		})));
@@ -617,7 +617,7 @@ var bt = class {
 	}
 	#v() {
 		let e = this.#n.pending;
-		e && (this.is_pending = !0, this.#o = bn(() => e(this.#e)), Ve(() => {
+		e && (this.is_pending = !0, this.#o = bn(() => e(this.#e)), Be(() => {
 			var e = this.#c = document.createDocumentFragment(), t = Xt();
 			e.append(t), this.#a = this.#x(() => bn(() => this.#r(t))), this.#u === 0 && (this.#e.before(e), this.#c = null, Dn(this.#o, () => {
 				this.#o = null;
@@ -651,14 +651,14 @@ var bt = class {
 		return !!this.#n.pending;
 	}
 	#x(e) {
-		var t = G, n = W, r = N;
-		Rn(this.#i), Ln(this.#i), Fe(this.#i.ctx);
+		var t = G, n = W, r = P;
+		Rn(this.#i), Ln(this.#i), Pe(this.#i.ctx);
 		try {
 			return st.ensure(), e();
 		} catch (e) {
-			return Ue(e), null;
+			return He(e), null;
 		} finally {
-			Rn(t), Ln(n), Fe(r);
+			Rn(t), Ln(n), Pe(r);
 		}
 	}
 	#S(e, t) {
@@ -671,7 +671,7 @@ var bt = class {
 		}), this.#c &&= (this.#e.before(this.#c), null));
 	}
 	update_pending_count(e, t) {
-		this.#S(e, t), this.#l += e, !(!this.#m || this.#d) && (this.#d = !0, Ve(() => {
+		this.#S(e, t), this.#l += e, !(!this.#m || this.#d) && (this.#d = !0, Be(() => {
 			this.#d = !1, this.#m && Rt(this.#m, this.#l);
 		}));
 	}
@@ -703,7 +703,7 @@ var bt = class {
 			try {
 				i = !0, t?.(e, a), i = !1;
 			} catch (e) {
-				P(e, this.#i && this.#i.parent);
+				Ue(e, this.#i && this.#i.parent);
 			}
 			n && (this.#s = this.#x(() => {
 				try {
@@ -712,26 +712,26 @@ var bt = class {
 						t.b = this, t.f |= 128, n(this.#e, () => e, () => a);
 					});
 				} catch (e) {
-					return P(e, this.#i.parent), null;
+					return Ue(e, this.#i.parent), null;
 				}
 			}));
 		};
-		Ve(() => {
+		Be(() => {
 			var t;
 			try {
 				t = this.transform_error(e);
 			} catch (e) {
-				P(e, this.#i && this.#i.parent);
+				Ue(e, this.#i && this.#i.parent);
 				return;
 			}
-			typeof t == "object" && t && typeof t.then == "function" ? t.then(o, (e) => P(e, this.#i && this.#i.parent)) : o(t);
+			typeof t == "object" && t && typeof t.then == "function" ? t.then(o, (e) => Ue(e, this.#i && this.#i.parent)) : o(t);
 		});
 	}
 };
 //#endregion
 //#region node_modules/svelte/src/internal/client/reactivity/async.js
 function xt(e, t, n, r) {
-	let i = Re() ? Tt : Dt;
+	let i = Le() ? Tt : Dt;
 	var a = e.filter((e) => !e.settled);
 	if (n.length === 0 && a.length === 0) {
 		r(t.map(i));
@@ -743,7 +743,7 @@ function xt(e, t, n, r) {
 		try {
 			r(e);
 		} catch (e) {
-			o.f & 16384 || P(e, o);
+			o.f & 16384 || Ue(e, o);
 		}
 		Ct();
 	}
@@ -753,20 +753,20 @@ function xt(e, t, n, r) {
 	}
 	var u = wt();
 	function d() {
-		Promise.all(n.map((e) => /* @__PURE__ */ Et(e))).then((e) => l([...t.map(i), ...e])).catch((e) => P(e, o)).finally(() => u());
+		Promise.all(n.map((e) => /* @__PURE__ */ Et(e))).then((e) => l([...t.map(i), ...e])).catch((e) => Ue(e, o)).finally(() => u());
 	}
 	c ? c.then(() => {
 		s(), d(), Ct();
 	}) : d();
 }
 function St() {
-	var e = G, t = W, n = N, r = I;
+	var e = G, t = W, n = P, r = I;
 	return function(i = !0) {
-		Rn(e), Ln(t), Fe(n), i && !(e.f & 16384) && (r?.activate(), r?.apply());
+		Rn(e), Ln(t), Pe(n), i && !(e.f & 16384) && (r?.activate(), r?.apply());
 	};
 }
 function Ct(e = !0) {
-	Rn(null), Ln(null), Fe(null), e && I?.deactivate();
+	Rn(null), Ln(null), Pe(null), e && I?.deactivate();
 }
 function wt() {
 	var e = G, t = e.b, n = I, r = t.is_rendered();
@@ -778,7 +778,7 @@ function wt() {
 function Tt(e) {
 	var t = 2 | g;
 	return G !== null && (G.f |= C), {
-		ctx: N,
+		ctx: P,
 		deps: null,
 		effects: null,
 		equals: Ae,
@@ -844,7 +844,7 @@ function Et(e, t, n) {
 /* @__NO_SIDE_EFFECTS__ */
 function L(e) {
 	let t = /* @__PURE__ */ Tt(e);
-	return Ne || Bn(t), t;
+	return N || Bn(t), t;
 }
 /* @__NO_SIDE_EFFECTS__ */
 function Dt(e) {
@@ -904,10 +904,10 @@ function R(e, t) {
 /* @__NO_SIDE_EFFECTS__ */
 function Lt(e, t = !1, n = !0) {
 	let r = It(e);
-	return t || (r.equals = Me), Pe && n && N !== null && N.l !== null && (N.l.s ??= []).push(r), r;
+	return t || (r.equals = Me), Ne && n && P !== null && P.l !== null && (P.l.s ??= []).push(r), r;
 }
 function z(e, t, r = !1) {
-	return W !== null && (!In || W.f & 131072) && Re() && W.f & 4325394 && (zn === null || !n.call(zn, e)) && _e(), Rt(e, r ? Ht(t) : t, it);
+	return W !== null && (!In || W.f & 131072) && Le() && W.f & 4325394 && (zn === null || !n.call(zn, e)) && _e(), Rt(e, r ? Ht(t) : t, it);
 }
 function Rt(e, t, n = null) {
 	if (!e.equals(t)) {
@@ -917,7 +917,7 @@ function Rt(e, t, n = null) {
 			let t = e;
 			e.f & 2048 && kt(t), $e === null && Ge(t);
 		}
-		e.wv = Yn(), Vt(e, g, n), Re() && G !== null && G.f & 1024 && !(G.f & 96) && (Un === null ? Wn([e]) : Un.push(e)), !r.is_fork && Nt.size > 0 && !Ft && zt();
+		e.wv = Yn(), Vt(e, g, n), Le() && G !== null && G.f & 1024 && !(G.f & 96) && (Un === null ? Wn([e]) : Un.push(e)), !r.is_fork && Nt.size > 0 && !Ft && zt();
 	}
 	return t;
 }
@@ -931,7 +931,7 @@ function Bt(e) {
 }
 function Vt(e, t, n) {
 	var r = e.reactions;
-	if (r !== null) for (var i = Re(), a = r.length, o = 0; o < a; o++) {
+	if (r !== null) for (var i = Le(), a = r.length, o = 0; o < a; o++) {
 		var s = r[o], c = s.f;
 		if (!(!i && s === G)) {
 			var l = (c & g) === 0;
@@ -1110,7 +1110,7 @@ function $t(e) {
 	e.textContent = "";
 }
 function en() {
-	return !Ne || ut !== null ? !1 : (G.f & b) !== 0;
+	return !N || ut !== null ? !1 : (G.f & b) !== 0;
 }
 function tn(e, t, n) {
 	let r = n ? { is: n } : void 0;
@@ -1162,7 +1162,7 @@ function un(e, t) {
 	var n = G;
 	n !== null && n.f & 8192 && (e |= v);
 	var r = {
-		ctx: N,
+		ctx: P,
 		deps: null,
 		nodes: null,
 		f: e | g | 512,
@@ -1205,7 +1205,7 @@ function pn(e) {
 	cn("$effect");
 	var t = G.f;
 	if (!W && t & 32 && !(t & 32768)) {
-		var n = N;
+		var n = P;
 		(n.e ??= []).push(e);
 	} else return mn(e);
 }
@@ -1351,7 +1351,7 @@ function Rn(e) {
 }
 var zn = null;
 function Bn(e) {
-	W !== null && (!Ne || W.f & 2) && (zn === null ? zn = [e] : zn.push(e));
+	W !== null && (!N || W.f & 2) && (zn === null ? zn = [e] : zn.push(e));
 }
 var Vn = null, Hn = 0, Un = null;
 function Wn(e) {
@@ -1378,14 +1378,14 @@ function Xn(e) {
 }
 function Zn(e, t, r = !0) {
 	var i = e.reactions;
-	if (i !== null && !(!Ne && zn !== null && n.call(zn, e))) for (var a = 0; a < i.length; a++) {
+	if (i !== null && !(!N && zn !== null && n.call(zn, e))) for (var a = 0; a < i.length; a++) {
 		var o = i[a];
 		o.f & 2 ? Zn(o, t, !1) : t === o && (r ? F(o, g) : o.f & 1024 && F(o, _), mt(o));
 	}
 }
 function Qn(e) {
-	var t = Vn, n = Hn, r = Un, i = W, a = zn, o = N, s = In, c = qn, l = e.f;
-	Vn = null, Hn = 0, Un = null, W = l & 96 ? null : e, zn = null, Fe(e.ctx), In = !1, qn = ++Kn, e.ac !== null && (on(() => {
+	var t = Vn, n = Hn, r = Un, i = W, a = zn, o = P, s = In, c = qn, l = e.f;
+	Vn = null, Hn = 0, Un = null, W = l & 96 ? null : e, zn = null, Pe(e.ctx), In = !1, qn = ++Kn, e.ac !== null && (on(() => {
 		e.ac.abort(E);
 	}), e.ac = null);
 	try {
@@ -1399,7 +1399,7 @@ function Qn(e) {
 			else e.deps = f = Vn;
 			if (dn() && e.f & 512) for (m = Hn; m < f.length; m++) (f[m].reactions ??= []).push(e);
 		} else !p && f !== null && Hn < f.length && (er(e, Hn), f.length = Hn);
-		if (Re() && Un !== null && !In && f !== null && !(e.f & 6146)) for (m = 0; m < Un.length; m++) Zn(Un[m], e);
+		if (Le() && Un !== null && !In && f !== null && !(e.f & 6146)) for (m = 0; m < Un.length; m++) Zn(Un[m], e);
 		if (i !== null && i !== e) {
 			if (Kn++, i.deps !== null) for (let e = 0; e < n; e += 1) i.deps[e].rv = Kn;
 			if (t !== null) for (let e of t) e.rv = Kn;
@@ -1407,9 +1407,9 @@ function Qn(e) {
 		}
 		return e.f & 8388608 && (e.f ^= re), d;
 	} catch (e) {
-		return Ue(e);
+		return He(e);
 	} finally {
-		e.f ^= te, Vn = t, Hn = n, Un = r, W = i, zn = a, Fe(o), In = s, qn = c;
+		e.f ^= te, Vn = t, Hn = n, Un = r, W = i, zn = a, Pe(o), In = s, qn = c;
 	}
 }
 function $n(e, r) {
@@ -1446,7 +1446,7 @@ function tr(e) {
 	}
 }
 async function nr() {
-	if (Ne) return new Promise((e) => {
+	if (N) return new Promise((e) => {
 		requestAnimationFrame(() => e()), setTimeout(() => e());
 	});
 	await Promise.resolve(), ct();
@@ -1505,7 +1505,7 @@ function dr(e, t, n, r = {}) {
 	function i(e) {
 		if (r.capture || hr.call(t, e), !e.cancelBubble) return on(() => n?.call(this, e));
 	}
-	return e.startsWith("pointer") || e.startsWith("touch") || e === "wheel" ? Ve(() => {
+	return e.startsWith("pointer") || e.startsWith("touch") || e === "wheel" ? Be(() => {
 		t.addEventListener(e, i, r);
 	}) : t.addEventListener(e, i, r), i;
 }
@@ -1663,10 +1663,10 @@ function Er(e, { target: t, anchor: n, props: i = {}, events: a, context: o, int
 	var l = void 0, u = hn(() => {
 		var s = n ?? t.appendChild(Xt());
 		yt(s, { pending: () => {} }, (t) => {
-			Ie({});
-			var n = N;
+			Fe({});
+			var n = P;
 			if (o && (n.c = o), a && (i.$$events = a), A && yr(t, null), l = e(t, i) || {}, A && (G.nodes.end = j, j === null || j.nodeType !== 8 || j.data !== "]")) throw Se(), ye;
-			Le();
+			Ie();
 		}, c);
 		var u = /* @__PURE__ */ new Set(), d = (e) => {
 			for (var n = 0; n < e.length; n++) {
@@ -1789,7 +1789,7 @@ function Z(e, t, n = !1) {
 var Ar = Symbol("NaN");
 function jr(e, t, n) {
 	A && Ee();
-	var r = new kr(e), i = !Re();
+	var r = new kr(e), i = !Le();
 	yn(() => {
 		var e = t();
 		e !== e && (e = Ar), i && typeof e == "object" && e && (e = {}), r.ensure(e, n);
@@ -1930,7 +1930,7 @@ function Lr(e, t, n, i, a) {
 			Nr(e, w, te);
 		}
 	}
-	o && Ve(() => {
+	o && Be(() => {
 		if (f !== void 0) for (_ of f) _.nodes?.a?.apply();
 	});
 }
@@ -2100,7 +2100,7 @@ function $r(e, t, n = t) {
 	}), gn(() => {
 		var a = t();
 		if (e === document.activeElement) {
-			var o = Ne ? Qe : I;
+			var o = N ? Qe : I;
 			if (r.has(o)) return;
 		}
 		if (Zr(e, a, i), i && a === void 0) {
@@ -2130,7 +2130,7 @@ function ai(e) {
 				}
 			}
 		};
-		e.__on_r = n, Ve(n), an();
+		e.__on_r = n, Be(n), an();
 	}
 }
 function oi(e, t) {
@@ -2178,7 +2178,7 @@ function di(e, t, n = t) {
 	}), (A && e.defaultValue !== e.value || ar(t) == null && e.value) && (n(fi(e) ? pi(e.value) : e.value), I !== null && r.add(I)), vn(() => {
 		var n = t();
 		if (e === document.activeElement) {
-			var i = Ne ? Qe : I;
+			var i = N ? Qe : I;
 			if (r.has(i)) return;
 		}
 		fi(e) && n === pi(e.value) || e.type === "date" && !n && !e.value || n !== e.value && (e.value = n ?? "");
@@ -2225,7 +2225,7 @@ function gi(e, t) {
 	return e === t || e?.[ie] === t;
 }
 function _i(e = {}, t, n, r) {
-	var i = N.r, a = G;
+	var i = P.r, a = G;
 	return gn(() => {
 		var o, s;
 		return vn(() => {
@@ -2247,7 +2247,7 @@ function _i(e = {}, t, n, r) {
 //#endregion
 //#region node_modules/svelte/src/internal/client/reactivity/props.js
 function vi(e, t, n, r) {
-	var i = !Pe || (n & 2) != 0, o = (n & 8) != 0, s = (n & 16) != 0, c = r, l = !0, u = () => (l && (l = !1, c = s ? ar(r) : r), c);
+	var i = !Ne || (n & 2) != 0, o = (n & 8) != 0, s = (n & 16) != 0, c = r, l = !0, u = () => (l && (l = !1, c = s ? ar(r) : r), c);
 	let d;
 	if (o) {
 		var f = ie in e || ae in e;
@@ -2281,7 +2281,7 @@ function vi(e, t, n, r) {
 	});
 }
 function yi(e) {
-	N === null && se("onMount"), Pe && N.l !== null ? bi(N).m.push(e) : pn(() => {
+	P === null && se("onMount"), Ne && P.l !== null ? bi(P).m.push(e) : pn(() => {
 		let t = ar(e);
 		if (typeof t == "function") return t;
 	});
@@ -2341,14 +2341,14 @@ var Ti = /* @__PURE__ */ J("<button type=\"button\" class=\"chip hi bank-cycle s
 	code: ".bank-cycle.svelte-10mv487 {min-width:70px;}"
 };
 function Di(e, t) {
-	Ie(t, !0), Hr(e, Ei);
+	Fe(t, !0), Hr(e, Ei);
 	let n = vi(t, "label", 3, "EQ bank"), r = vi(t, "mono", 3, !1);
 	var i = Ti(), a = B(i, !0);
 	M(i), U(() => {
 		$(i, "aria-label", `${n()}: ${r() ? "Mono" : t.value === 0 ? "Left" : "Right"}`), $(i, "aria-disabled", r()), X(a, r() ? "Mono" : t.value === 0 ? "Left" : "Right");
 	}), q("click", i, () => {
 		r() || t.onChange(+(t.value === 0));
-	}), Y(e, i), Le();
+	}), Y(e, i), Ie();
 }
 pr(["click"]);
 //#endregion
@@ -2448,7 +2448,7 @@ var Ki = /* @__PURE__ */ J("<input type=\"text\" inputmode=\"decimal\" spellchec
 	code: ".vf.svelte-1o0ixzo {position:relative;display:flex;align-items:center;box-sizing:border-box;width:100%;border:none;border-radius:0;background:transparent;box-shadow:inset 0 -1px 0 0 color-mix(in oklab, var(--text) 14%, transparent);color:var(--text);font-family:var(--font-sans);cursor:pointer;user-select:none;transition:background 80ms, box-shadow 80ms;outline:none;}.vf.svelte-1o0ixzo:focus-visible {box-shadow:inset 0 -1px 0 0 var(--accent),\n      0 0 0 2px color-mix(in oklab, var(--accent) 35%, transparent);}.vf[data-size=\"sm\"].svelte-1o0ixzo {height:40px;padding:0 8px;font-size:17px;}.vf[data-size=\"md\"].svelte-1o0ixzo {height:44px;padding:0 10px;font-size:20px;}.vf[data-align=\"center\"].svelte-1o0ixzo {justify-content:center;}.vf[data-align=\"right\"].svelte-1o0ixzo  {justify-content:flex-end;}.vf.hover.svelte-1o0ixzo:not(.editing):not(.disabled) {background:var(--wash);box-shadow:inset 0 -1px 0 0 color-mix(in oklab, var(--text) 32%, transparent),\n      0 -2px 6px -2px color-mix(in oklab, var(--text) 18%, transparent) inset;}.vf.editing.svelte-1o0ixzo {background:color-mix(in oklab, var(--accent) 6%, transparent);box-shadow:inset 0 -1px 0 0 var(--accent),\n      0 0 0 1px var(--accent);cursor:text;}.vf.editing.invalid.svelte-1o0ixzo {background:color-mix(in oklab, var(--err) 10%, transparent);box-shadow:inset 0 -1px 0 0 var(--err),\n      0 0 0 1px var(--err);}.vf.editing.invalid.svelte-1o0ixzo input:where(.svelte-1o0ixzo) {color:var(--err);}.vf.disabled.svelte-1o0ixzo {cursor:default;\n    /* Single dim layer (U-P3 policy B): the container this sits in stays\n       full-contrast; this is the one opacity dim on the control itself. */opacity:var(--dim-disabled);}.display.svelte-1o0ixzo {display:inline-flex;align-items:baseline;gap:3px;white-space:nowrap;}.num.svelte-1o0ixzo {color:var(--toneColor);font-variant-numeric:tabular-nums;font-weight:500;}.vf.svelte-1o0ixzo .unit:where(.svelte-1o0ixzo) {color:var(--text-faint);font-size:14px;}.vf[data-size=\"sm\"].svelte-1o0ixzo .unit:where(.svelte-1o0ixzo) {font-size:14px;}input.svelte-1o0ixzo {position:absolute;inset:0;width:100%;height:100%;background:transparent;border:none;outline:none;color:var(--text);font-family:inherit;font-size:inherit;text-align:inherit;padding:0 8px;box-sizing:border-box;font-variant-numeric:tabular-nums;}.vf[data-size=\"sm\"].svelte-1o0ixzo input:where(.svelte-1o0ixzo) {padding:0 6px;}.vf[data-align=\"center\"].svelte-1o0ixzo input:where(.svelte-1o0ixzo) {text-align:center;}.vf[data-align=\"right\"].svelte-1o0ixzo  input:where(.svelte-1o0ixzo) {text-align:right;}"
 };
 function Zi(e, t) {
-	Ie(t, !0), Hr(e, Xi);
+	Fe(t, !0), Hr(e, Xi);
 	let n = vi(t, "align", 3, "right"), r = vi(t, "size", 3, "md"), i = vi(t, "disabled", 3, !1), a = vi(t, "clamp", 3, !0), o = /* @__PURE__ */ L(() => t.precision ?? Vi(t.kind)), s = /* @__PURE__ */ L(() => t.step ?? 10 ** -K(o)), c = /* @__PURE__ */ L(() => t.unit ?? Hi(t.kind)), l = /* @__PURE__ */ L(() => t.floorLabel !== void 0 && t.value <= t.min), u = /* @__PURE__ */ L(() => t.ceilLabel !== void 0 && t.value >= t.max), d = /* @__PURE__ */ L(() => K(l) ? t.floorLabel : K(u) ? t.ceilLabel : Ui(t.kind, t.value, K(o))), f = /* @__PURE__ */ L(() => i() ? "var(--text-faint)" : t.tone === "signed" && t.value > 0 ? "var(--number-positive)" : t.tone === "signed" && t.value < 0 ? "var(--number-negative)" : "var(--text)"), p = /* @__PURE__ */ R(!1), m = /* @__PURE__ */ R(""), h = /* @__PURE__ */ R(!1), g = /* @__PURE__ */ R(!1), _ = /* @__PURE__ */ R(null), v = 0, y = !1;
 	async function b() {
 		i() || K(p) || (v = t.value, z(m, t.value.toFixed(K(o)), !0), z(p, !0), z(g, !1), await nr(), K(_)?.focus(), K(_)?.select());
@@ -2505,7 +2505,7 @@ function Zi(e, t) {
 		}), $(T, "data-align", n()), $(T, "data-size", r()), $(T, "tabindex", i() ? -1 : 0), $(T, "aria-disabled", i()), te = Xr(T, "", te, { "--toneColor": K(f) });
 	}), q("click", T, b), fr("mouseenter", T, () => z(h, !0)), fr("mouseleave", T, () => z(h, !1)), q("keydown", T, (e) => {
 		!K(p) && (e.key === "Enter" || e.key === " ") && (e.preventDefault(), b());
-	}), Y(e, T), Le();
+	}), Y(e, T), Ie();
 }
 pr([
 	"click",
@@ -2519,7 +2519,7 @@ var Qi = /* @__PURE__ */ J("<option class=\"svelte-8pr11s\"> </option>"), $i = /
 	code: ".bts.svelte-8pr11s {width:125px;max-width:100%;justify-self:start;background:transparent;color:var(--text);border:1px solid transparent;border-radius:var(--radius-s);padding:2px 4px;font-family:var(--font-sans);font-size:15px;min-height:32px;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg, transparent 50%, var(--text-faint) 50%),\n      linear-gradient(135deg, var(--text-faint) 50%, transparent 50%);background-position:calc(100% - 8px) center,\n      calc(100% - 4px) center;background-size:4px 4px, 4px 4px;background-repeat:no-repeat;padding-right:16px;}.bts.svelte-8pr11s:hover {background-color:var(--wash-strong);}.bts.svelte-8pr11s:focus {outline:none;}.bts.svelte-8pr11s:focus-visible {border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in oklab, var(--accent) 35%, transparent);}.bts.off.svelte-8pr11s {color:var(--text-faint);}.bts.svelte-8pr11s option:where(.svelte-8pr11s) {background:var(--panel-solid);color:var(--text);}"
 };
 function na(e, t) {
-	Ie(t, !0), Hr(e, ta);
+	Fe(t, !0), Hr(e, ta);
 	let n = {
 		0: "Off",
 		1: "Peaking",
@@ -2565,17 +2565,17 @@ function na(e, t) {
 	var d;
 	Qr(o), U(() => {
 		s = Jr(o, 1, "bts svelte-8pr11s", null, s, { off: K(i) }), d !== (d = t.value) && (o.value = (o.__value = t.value) ?? "", Zr(o, t.value));
-	}), q("change", o, (e) => t.onChange(Number(e.currentTarget.value))), Y(e, o), Le();
+	}), q("change", o, (e) => t.onChange(Number(e.currentTarget.value))), Y(e, o), Ie();
 }
 pr(["change"]);
 //#endregion
 //#region src/components/eq/BandRow.svelte
 var ra = "var(--band-columns, 28px 56px minmax(0, 1fr) 104px 80px 104px)", ia = /* @__PURE__ */ J("<div role=\"button\" tabindex=\"0\"><div class=\"num svelte-dle8ao\"> </div> <button><svg width=\"48\" height=\"26\" viewBox=\"0 0 48 26\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path></path></svg></button> <!> <!> <!> <!></div>"), aa = {
 	hash: "svelte-dle8ao",
-	code: ".row.svelte-dle8ao .vf[data-size=\"md\"] {height:32px;font-size:18px;}.row.svelte-dle8ao:hover {background:var(--wash);cursor:pointer;}.row.selected.svelte-dle8ao {background:var(--wash-strong);box-shadow:inset 3px 0 var(--band-color);}.row.svelte-dle8ao {display:grid;\n    /* grid-template-columns set inline (BAND_ROW_COLS). */gap:8px;padding:0 14px;align-items:center;border-top:1px solid var(--wash);font-family:var(--font-sans);font-size:17px;}\n  /* U-P3 policy B: no whole-row dim when the band is off (type = Flat). The\n     row's structure and the FLAT type stay full-contrast; the freq/Q/gain\n     ValueFields below are disabled in that state and carry the single dim\n     layer alone. */\n  /* Deliberately kept: bypass is a user toggle whose controls stay ENABLED\n     (not disabled), so this dim is the one and only layer for that state --\n     a real, single-layer visual distinction, not a stack. Do not touch. */.row.bypassed.svelte-dle8ao {opacity:0.45;}.num.svelte-dle8ao {color:var(--band-color);font-weight:600;font-size:17px;font-variant-numeric:tabular-nums;font-feature-settings:\"tnum\";letter-spacing:0;}.byp.svelte-dle8ao {display:inline-flex;align-items:center;justify-content:center;width:100%;height:32px;padding:0;border-radius:var(--radius-s);background:transparent;border:1px solid transparent;color:var(--text-dim);cursor:pointer;}.byp.svelte-dle8ao:hover:not(:disabled) {color:var(--text);background:var(--wash);}.byp.svelte-dle8ao:disabled {opacity:var(--dim-disabled);cursor:default;}.byp.on.svelte-dle8ao {color:var(--warn);}"
+	code: ".row.svelte-dle8ao .vf[data-size=\"md\"] {height:32px;font-size:18px;}.row.svelte-dle8ao:hover {background:var(--wash);cursor:pointer;}.row.selected.svelte-dle8ao {background:var(--wash-strong);box-shadow:inset 3px 0 var(--band-color);}.row.svelte-dle8ao {display:grid;\n    /* grid-template-columns set inline (BAND_ROW_COLS). */gap:8px;padding:0 14px;align-items:center;border-top:1px solid var(--wash);font-family:var(--font-sans);font-size:17px;}\n  /* U-P3 policy B: no whole-row dim when the band is off (type = Flat). The\n     row's structure and the FLAT type stay full-contrast; the freq/Q/gain\n     ValueFields below are disabled in that state and carry the single dim\n     layer alone. */.row.bypassed.svelte-dle8ao {opacity:0.45;}.num.svelte-dle8ao {color:var(--band-color);font-weight:600;font-size:17px;font-variant-numeric:tabular-nums;font-feature-settings:\"tnum\";letter-spacing:0;}.byp.svelte-dle8ao {display:inline-flex;align-items:center;justify-content:center;width:100%;height:32px;padding:0;border-radius:var(--radius-s);background:transparent;border:1px solid transparent;color:var(--text-dim);cursor:pointer;}.byp.svelte-dle8ao:hover:not(:disabled) {color:var(--text);background:var(--wash);}.byp.svelte-dle8ao:disabled {opacity:var(--dim-disabled);cursor:default;}.byp.on.svelte-dle8ao {color:var(--warn);}"
 };
 function oa(e, t) {
-	Ie(t, !0), Hr(e, aa);
+	Fe(t, !0), Hr(e, aa);
 	let n = /* @__PURE__ */ L(() => t.band.type === Mi.Flat), r = /* @__PURE__ */ L(() => t.band.bypass), i = /* @__PURE__ */ L(() => ({
 		[Mi.Peaking]: t.band.gain < 0 ? "M3 12 C14 12 15 21 24 21 S34 12 45 12" : "M3 18 C14 18 15 3 24 3 S34 18 45 18",
 		1002: "M3 5 H20 C29 5 30 19 45 21",
@@ -2681,7 +2681,7 @@ function oa(e, t) {
 		o = Jr(a, 1, "row svelte-dle8ao", null, o, {
 			selected: t.selected,
 			bypassed: K(r)
-		}), $(a, "aria-label", `Select band ${t.index + 1}`), $(a, "aria-pressed", t.selected), s = Xr(a, "", s, e), X(l, c), d = Jr(u, 1, "byp svelte-dle8ao", null, d, { on: K(r) }), $(u, "title", K(r) ? "Enable band" : "Disable band"), $(u, "aria-label", K(r) ? "Enable band" : "Disable band"), $(u, "aria-pressed", !K(r)), u.disabled = K(n), $(p, "d", K(i));
+		}), $(a, "aria-label", `Select band ${t.index + 1}`), $(a, "aria-pressed", t.selected), s = Xr(a, "", s, e), X(l, c), d = Jr(u, 1, "byp svelte-dle8ao", null, d, { on: K(r) }), $(u, "title", K(r) ? "Enable Band" : "Disable Band"), $(u, "aria-label", K(r) ? "Enable Band" : "Disable Band"), $(u, "aria-pressed", !K(r)), u.disabled = K(n), $(p, "d", K(i));
 	}, [() => ({
 		"--band-color": ji(t.index),
 		"grid-template-columns": ra
@@ -2691,7 +2691,7 @@ function oa(e, t) {
 		t.onSelect?.apply(this, e);
 	}), q("focusin", a, function(...e) {
 		t.onSelect?.apply(this, e);
-	}), q("click", u, () => t.onPatch({ bypass: !K(r) })), Y(e, a), Le();
+	}), q("click", u, () => t.onPatch({ bypass: !K(r) })), Y(e, a), Ie();
 }
 pr([
 	"keydown",
@@ -2708,7 +2708,7 @@ var sa = (e, t = d) => {
 	code: ".band-table.svelte-161tldd {min-width:0;}\n  @media (max-width: 600px) {.band-table.svelte-161tldd {--band-columns: 20px 44px minmax(68px, 1fr) minmax(62px, .85fr) minmax(38px, .5fr) minmax(70px, .85fr);}.band-table.svelte-161tldd .row, .head.svelte-161tldd {gap:4px;padding-left:8px;padding-right:8px;}.band-table.svelte-161tldd .row .vf[data-size=\"md\"] {padding-left:2px;padding-right:2px;font-size:14px;}.band-table.svelte-161tldd .row .vf .unit {font-size:11px;}.band-table.svelte-161tldd .row .num {font-size:13px;}.band-table.svelte-161tldd .bts {font-size:13px;padding-left:2px;padding-right:20px !important;background-position:calc(100% - 11px) center, calc(100% - 7px) center !important;}.head.svelte-161tldd {font-size:11px;}\n  }.link.svelte-161tldd {display:inline-flex;align-items:center;gap:5px;}.head.svelte-161tldd {display:grid;\n    /* grid-template-columns set inline (BAND_ROW_COLS), matching BandRow. */gap:8px;padding:6px 14px;font-family:var(--font-sans);font-size:14px;color:var(--text-faint);letter-spacing:0;border-bottom:1px solid var(--border);}\n  /* Match ValueField's internal 8px horizontal padding so the numeric\n     labels sit directly above their right-aligned values. */.head.svelte-161tldd .r:where(.svelte-161tldd) {text-align:right;padding-right:8px;}"
 };
 function _a(e, t) {
-	Ie(t, !0), Hr(e, ga);
+	Fe(t, !0), Hr(e, ga);
 	let n = vi(t, "mono", 3, !1), r = vi(t, "stageLabel", 3, "PEQ"), i = /* @__PURE__ */ L(() => t.link.locked ? `Unlink from ${t.link.peerLabel}` : `Link with ${t.link.peerLabel}: edits mirror to them, copying this channel's EQ first`), a = /* @__PURE__ */ L(() => `${t.bands.length} Band ${r()}${t.link.locked ? ` · ${t.link.selectedShort}+${t.link.peerLabel}` : ""}`);
 	var o = ha();
 	wi(B(o), {
@@ -2801,7 +2801,7 @@ function _a(e, t) {
 			right: !0,
 			default: !0
 		}
-	}), M(o), Y(e, o), Le();
+	}), M(o), Y(e, o), Ie();
 }
 pr(["change", "click"]);
 var va = 20, ya = Ni, ba = (() => {
@@ -2819,7 +2819,7 @@ var Sa = /* @__PURE__ */ xr("<linearGradient x1=\"0\" x2=\"0\" y1=\"0\" y2=\"1\"
 	code: ".bode-wrap.svelte-mggv3i {width:100%;}.bode.pannable.svelte-mggv3i {cursor:grab;}.bode.dragging.svelte-mggv3i {cursor:grabbing;}.bode.svelte-mggv3i {display:block;touch-action:none;user-select:none;}"
 };
 function Fa(e, t) {
-	Ie(t, !0), Hr(e, Pa);
+	Fe(t, !0), Hr(e, Pa);
 	let n = vi(t, "markers", 19, () => []), r = vi(t, "yRange", 19, () => [Ri[0], Ri[1]]), i = vi(t, "height", 3, 220), a = vi(t, "crosshair", 3, !0), o = vi(t, "zeroColor", 3, "#9e3d37"), s = /* @__PURE__ */ R(720), c = /* @__PURE__ */ L(() => Math.max(140, K(s))), l = /* @__PURE__ */ L(() => K(c) - 20), u = /* @__PURE__ */ L(() => r()[0]), d = /* @__PURE__ */ L(() => r()[1]), f = /* @__PURE__ */ L(() => K(l) - 42), p = /* @__PURE__ */ L(() => i() - 28), m = /* @__PURE__ */ L(() => {
 		let e = Array(201);
 		for (let t = 0; t < 201; t++) e[t] = 42 + t / 200 * K(f);
@@ -3071,7 +3071,7 @@ function Fa(e, t) {
 			pannable: !!t.onRangeChange,
 			dragging: !!K(se)
 		}), $(ve, "viewBox", `0 0 ${K(c)} ${i()}`), $(ve, "height", i()), $(be, "id", ae), $(xe, "width", K(f)), $(xe, "height", K(p)), $(j, "clip-path", `url(#${ae})`);
-	}), q("pointerdown", ve, ce), q("pointermove", ve, le), q("pointerup", ve, ue), fr("pointercancel", ve, ue), fr("lostpointercapture", ve, () => z(se, null)), fr("pointerleave", ve, fe), hi(_e, "clientWidth", (e) => z(s, e)), Y(e, _e), Le();
+	}), q("pointerdown", ve, ce), q("pointermove", ve, le), q("pointerup", ve, ue), fr("pointercancel", ve, ue), fr("lostpointercapture", ve, () => z(se, null)), fr("pointerleave", ve, fe), hi(_e, "clientWidth", (e) => z(s, e)), Y(e, _e), Ie();
 }
 pr([
 	"pointerdown",
@@ -3085,7 +3085,7 @@ var Ia = /* @__PURE__ */ xr("<path class=\"svelte-nn8tlv\"></path>"), La = /* @_
 	code: ".mini.svelte-nn8tlv {display:block;width:100%;height:40px;}.zero-reference.svelte-nn8tlv {stroke:#92928d;stroke-width:1;vector-effect:non-scaling-stroke;}.mini.svelte-nn8tlv path:where(.svelte-nn8tlv) {fill:none;stroke-width:1.4;vector-effect:non-scaling-stroke;}.reference-plot.svelte-nn8tlv {width:100%;}"
 };
 function Ba(e, t) {
-	Ie(t, !0), Hr(e, za);
+	Fe(t, !0), Hr(e, za);
 	let n = vi(t, "compact", 3, !1), r = [
 		[
 			22,
@@ -3182,7 +3182,7 @@ function Ba(e, t) {
 	};
 	Z(l, (e) => {
 		n() ? e(u) : e(d, -1);
-	}), Y(e, c), Le();
+	}), Y(e, c), Ie();
 }
 //#endregion
 //#region src/components/eq/PreampPanel.svelte
@@ -3191,7 +3191,7 @@ var Va = /* @__PURE__ */ J("<button class=\"chip hi\">Reset</button>"), Ha = /* 
 	code: ".row.svelte-15ajtes {display:flex;align-items:center;gap:14px;padding:8px 22px;}.row.svelte-15ajtes > span:where(.svelte-15ajtes) {width:40px;font-size:14px;color:var(--text-dim);}.row.svelte-15ajtes > input:where(.svelte-15ajtes) {flex:1;min-width:0;}.value.svelte-15ajtes {width:112px;}input[type=range].svelte-15ajtes {appearance:none;background:transparent;height:30px;cursor:pointer;}input[type=range].svelte-15ajtes::-webkit-slider-runnable-track {height:6px;background:#4a4a46;border-radius:4px;}input[type=range].svelte-15ajtes::-webkit-slider-thumb {appearance:none;width:8px;height:24px;margin-top:-9px;background:#eeeeea;border-radius:3px;}input[type=range].svelte-15ajtes::-moz-range-track {height:6px;background:#4a4a46;border-radius:4px;}input[type=range].svelte-15ajtes::-moz-range-thumb {width:8px;height:24px;background:#eeeeea;border:0;border-radius:3px;}.balance-control.svelte-15ajtes {padding:4px 22px 14px;}.balance-value.svelte-15ajtes {display:grid;grid-template-columns:1fr 120px 1fr;align-items:center;gap:12px;}.balance-value.svelte-15ajtes > span:where(.svelte-15ajtes):last-child {text-align:right;}.balance-control.svelte-15ajtes input:where(.svelte-15ajtes) {width:100%;}"
 };
 function Ka(e, t) {
-	Ie(t, !0), Hr(e, Ga), wi(e, {
+	Fe(t, !0), Hr(e, Ga), wi(e, {
 		code: "EQ.03",
 		title: "Preamp & Balance",
 		right: (e) => {
@@ -3259,7 +3259,7 @@ function Ka(e, t) {
 			right: !0,
 			default: !0
 		}
-	}), Le();
+	}), Ie();
 }
 pr(["click", "input"]);
 //#endregion
@@ -3278,11 +3278,26 @@ function Xa(e, t, n, r, i) {
 			a2: (1 - s / e) / t
 		};
 	}
+	let c = (e, t, n, r, i, a) => ({
+		b0: e / r,
+		b1: t / r,
+		b2: n / r,
+		a1: i / r,
+		a2: a / r
+	});
+	if (e === 1002) return c((1 - o) / 2, 1 - o, (1 - o) / 2, 1 + s, -2 * o, 1 - s);
+	if (e === 1003) return c((1 + o) / 2, -1 - o, (1 + o) / 2, 1 + s, -2 * o, 1 - s);
+	if (e === 1004) return c(s, 0, -s, 1 + s, -2 * o, 1 - s);
+	if (e === 1005) return c(1, -2 * o, 1, 1 + s, -2 * o, 1 - s);
+	if (e === 1007 || e === 1008) {
+		let t = 10 ** (r / 40), n = 2 * Math.sqrt(t) * s;
+		return e === 1007 ? c(t * (t + 1 - (t - 1) * o + n), 2 * t * (t - 1 - (t + 1) * o), t * (t + 1 - (t - 1) * o - n), t + 1 + (t - 1) * o + n, -2 * (t - 1 + (t + 1) * o), t + 1 + (t - 1) * o - n) : c(t * (t + 1 + (t - 1) * o + n), -2 * t * (t - 1 + (t + 1) * o), t * (t + 1 + (t - 1) * o - n), t + 1 - (t - 1) * o + n, 2 * (t - 1 - (t + 1) * o), t + 1 - (t - 1) * o - n);
+	}
 	return null;
 }
 function Za(e, t) {
 	let n = Math.cos(t), r = Math.sin(t), i = Math.cos(2 * t), a = Math.sin(2 * t), o = e.b0 + e.b1 * n + e.b2 * i, s = -(e.b1 * r + e.b2 * a), c = 1 + e.a1 * n + e.a2 * i, l = -(e.a1 * r + e.a2 * a), u = o * o + s * s, d = c * c + l * l;
-	return 10 / Ya * Math.log(u / d);
+	return 10 / Ya * Math.log(Math.max(1e-24, u) / Math.max(1e-24, d));
 }
 function Qa(e, t) {
 	let n = [];
@@ -3314,7 +3329,16 @@ function so(e) {
 		type: e.type === 6 ? Mi.Peaking : 1e3 + e.type
 	};
 }
-function co(e, t) {
+var co = (e, t, n = 0) => ({
+	...e,
+	gain: t ? n : 0
+}), lo = (e) => ({
+	...e,
+	gain: 0,
+	q: 1,
+	type: 6
+});
+function uo(e, t) {
 	let n = { ...e };
 	if (t.frequency !== void 0 && (n.fc = t.frequency), t.gain !== void 0 && (n.gain = t.gain), t.q !== void 0 && (n.q = t.q), t.bypass !== void 0 && (n.bypass = t.bypass), t.type !== void 0) {
 		let e = t.type === Mi.Peaking ? 6 : t.type - 1e3;
@@ -3323,7 +3347,7 @@ function co(e, t) {
 	}
 	return n;
 }
-function lo(e, t) {
+function fo(e, t) {
 	return e.settingType !== 0 || t === 0 ? e : {
 		...e,
 		audioTunningEQListRight: e.audioTunningEQList,
@@ -3334,7 +3358,7 @@ function lo(e, t) {
 		enablePeqRightFir: e.enablePeqLeftFir
 	};
 }
-function uo(e) {
+function po(e) {
 	if (!e?.loaded || e.error || e.coordinate !== "log10_hz") return null;
 	let t = e.points.filter((e) => Number.isFinite(e.x) && Number.isFinite(e.y)).sort((e, t) => e.x - t.x);
 	return t.length < 2 || t[0].x === t.at(-1).x ? null : ba.map((e) => {
@@ -3345,7 +3369,7 @@ function uo(e) {
 		return i.y + (a.y - i.y) * ((n - i.x) / (a.x - i.x));
 	});
 }
-function fo(e) {
+function mo(e) {
 	if (!e?.length) return null;
 	let t = [...e].sort((e, t) => e.freq - t.freq);
 	return ba.map((e) => {
@@ -3355,12 +3379,12 @@ function fo(e) {
 		return r.gain + (i.gain - r.gain) * o;
 	});
 }
-function po(e, t, n, r) {
-	e = lo(e, t);
+function ho(e, t, n, r) {
+	e = fo(e, t);
 	let i = [], a = ao(e, t), o = e[to(t)] !== !1 && a.length > 0;
 	if (a.length) {
 		let n = oo(e, t);
-		n !== 0 && i.push({
+		i.push({
 			id: "preamp",
 			label: "Preamp",
 			color: ki.preamp,
@@ -3369,7 +3393,7 @@ function po(e, t, n, r) {
 		});
 	}
 	let s = e.balance ?? 0;
-	if (s !== 0) {
+	if (e.balance !== void 0) {
 		let e = t === 1 ? Math.min(0, s) : -Math.max(0, s);
 		i.push({
 			id: "balance",
@@ -3380,7 +3404,7 @@ function po(e, t, n, r) {
 		});
 	}
 	if (o) {
-		let e = a.every((e) => e.bypass || e.type === 6 || e.type === 9);
+		let e = a.every((e) => e.bypass || e.type >= 2 && e.type <= 9);
 		i.push({
 			id: "peq",
 			label: "PEQ",
@@ -3396,14 +3420,11 @@ function po(e, t, n, r) {
 			label: "Graphic EQ",
 			color: ki.peq,
 			detail: `${n?.length ?? 0} bands`,
-			points: fo(n)
+			points: mo(n)
 		});
 	}
 	if (e[t === 0 ? "enablePeqLeftFir" : "enablePeqRightFir"]) {
-		let n = e[t === 0 ? "peqFirList" : "peqFirListRight"] ?? [], r = fo(n.map((e) => ({
-			freq: e.fc,
-			gain: e.bypass || e.type === 9 ? 0 : e.gain
-		}))), a = (n[0]?.volume ?? 0) / 10;
+		let n = e[t === 0 ? "peqFirList" : "peqFirListRight"] ?? [], r = $a(n.map(so), 0), a = (n[0]?.volume ?? 0) / 10;
 		i.push({
 			id: "correction",
 			label: "Correction PEQ",
@@ -3417,7 +3438,7 @@ function po(e, t, n, r) {
 		label: "FIR",
 		color: ki.fir,
 		detail: r?.loaded ? "Device response · read only" : "Device curve unavailable",
-		points: uo(r)
+		points: po(r)
 	}), e[no(t)] === 1 && i.push({
 		id: "loudness",
 		label: "Loudness",
@@ -3437,7 +3458,7 @@ function po(e, t, n, r) {
 	];
 	return i.sort((e, t) => c.indexOf(e.id) - c.indexOf(t.id));
 }
-function mo(e) {
+function go(e) {
 	let t = Array(201).fill(0), n = [];
 	for (let r of e) {
 		if (!r.points || r.illustrative) {
@@ -3453,12 +3474,12 @@ function mo(e) {
 }
 //#endregion
 //#region src/components/eq/ProcessingResponse.svelte
-var ho = /* @__PURE__ */ J("<span class=\"response-controls svelte-1k65run\"><button type=\"button\" class=\"chip hi preview-channel svelte-1k65run\"> </button><button type=\"button\" class=\"chip hi mode-cycle svelte-1k65run\"> </button></span>"), go = /* @__PURE__ */ J("<input class=\"mini-slider svelte-1k65run\" aria-label=\"Preview Balance\" type=\"range\" min=\"-6\" max=\"6\" step=\"0.1\" disabled=\"\"/> <p class=\"svelte-1k65run\"> </p>", 1), _o = /* @__PURE__ */ J("<input class=\"mini-slider svelte-1k65run\" type=\"range\" disabled=\"\"/>"), vo = /* @__PURE__ */ J("<div class=\"preamp-sliders svelte-1k65run\"></div> <p class=\"svelte-1k65run\"> </p>", 1), yo = /* @__PURE__ */ J("<div role=\"button\" tabindex=\"0\"><div class=\"stage-name svelte-1k65run\"><span class=\"dot svelte-1k65run\"></span> </div> <!></div>"), bo = /* @__PURE__ */ J("<div class=\"stage reference-stage svelte-1k65run\"><div class=\"stage-name svelte-1k65run\"><span class=\"dot svelte-1k65run\"></span>Loudness</div> <!></div>"), xo = /* @__PURE__ */ xr("<path class=\"svelte-1k65run\"></path>"), So = /* @__PURE__ */ xr("<path class=\"svelte-1k65run\"></path>"), Co = /* @__PURE__ */ xr("<svg viewBox=\"0 0 100 48\" preserveAspectRatio=\"none\" role=\"img\" class=\"svelte-1k65run\"><line class=\"zero-reference svelte-1k65run\" x1=\"4\" x2=\"96\" y1=\"24\" y2=\"24\"></line><!></svg>"), wo = /* @__PURE__ */ J("<div class=\"unavailable svelte-1k65run\">Curve Unavailable</div>"), To = /* @__PURE__ */ J("<button type=\"button\"><div class=\"stage-name svelte-1k65run\"><span class=\"dot svelte-1k65run\"></span> </div> <!></button>"), Eo = /* @__PURE__ */ J("<p class=\"flat svelte-1k65run\">No enabled processing contributions · flat response</p>"), Do = /* @__PURE__ */ J("<option hidden=\"\" disabled=\"\">Custom</option>"), Oo = /* @__PURE__ */ J("<div class=\"plot-key svelte-1k65run\" aria-label=\"Response Line Key\"><span class=\"svelte-1k65run\"><svg width=\"26\" height=\"12\" viewBox=\"0 0 26 12\" aria-hidden=\"true\" class=\"svelte-1k65run\"><line x1=\"1\" x2=\"25\" y1=\"6\" y2=\"6\" stroke=\"currentColor\" stroke-width=\"2\"></line></svg>Left Channel</span> <span class=\"svelte-1k65run\"><svg width=\"26\" height=\"12\" viewBox=\"0 0 26 12\" aria-hidden=\"true\" class=\"svelte-1k65run\"><line x1=\"1\" x2=\"25\" y1=\"6\" y2=\"6\" stroke=\"currentColor\" stroke-width=\"2\" stroke-dasharray=\"5 4\"></line></svg>Right Channel</span></div>"), ko = /* @__PURE__ */ J("<div class=\"stages svelte-1k65run\" aria-label=\"Enabled processing stages\"></div> <div class=\"plot-controls svelte-1k65run\"><label class=\"svelte-1k65run\">Vertical Scale <select aria-label=\"Response vertical scale\" class=\"svelte-1k65run\"><option>Auto</option><option>±6 dB</option><option>±12 dB</option><option>±24 dB</option><option>±20 dB</option><!><option>±48 dB</option></select></label><button class=\"chip svelte-1k65run\" aria-label=\"Reset graph scale\">Reset</button></div> <div class=\"plot svelte-1k65run\"><!> <!></div>", 1), Ao = {
+var _o = /* @__PURE__ */ J("<span class=\"response-controls svelte-1k65run\"><button type=\"button\" class=\"chip hi preview-channel svelte-1k65run\"> </button><button type=\"button\" class=\"chip hi mode-cycle svelte-1k65run\"> </button></span>"), vo = /* @__PURE__ */ J("<input class=\"mini-slider svelte-1k65run\" aria-label=\"Preview Balance\" type=\"range\" min=\"-6\" max=\"6\" step=\"0.1\" disabled=\"\"/> <p class=\"svelte-1k65run\"> </p>", 1), yo = /* @__PURE__ */ J("<input class=\"mini-slider svelte-1k65run\" type=\"range\" disabled=\"\"/>"), bo = /* @__PURE__ */ J("<div class=\"preamp-sliders svelte-1k65run\"></div> <p class=\"svelte-1k65run\"> </p>", 1), xo = /* @__PURE__ */ J("<div role=\"button\" tabindex=\"0\"><div class=\"stage-name svelte-1k65run\"><span class=\"dot svelte-1k65run\"></span> </div> <!></div>"), So = /* @__PURE__ */ J("<div class=\"stage reference-stage svelte-1k65run\"><div class=\"stage-name svelte-1k65run\"><span class=\"dot svelte-1k65run\"></span>Loudness</div> <!></div>"), Co = /* @__PURE__ */ xr("<path class=\"svelte-1k65run\"></path>"), wo = /* @__PURE__ */ xr("<path class=\"svelte-1k65run\"></path>"), To = /* @__PURE__ */ xr("<svg viewBox=\"0 0 100 48\" preserveAspectRatio=\"none\" role=\"img\" class=\"svelte-1k65run\"><line class=\"zero-reference svelte-1k65run\" x1=\"4\" x2=\"96\" y1=\"24\" y2=\"24\"></line><!></svg>"), Eo = /* @__PURE__ */ J("<div class=\"unavailable svelte-1k65run\">Curve Unavailable</div>"), Do = /* @__PURE__ */ J("<button type=\"button\"><div class=\"stage-name svelte-1k65run\"><span class=\"dot svelte-1k65run\"></span> </div> <!></button>"), Oo = /* @__PURE__ */ J("<p class=\"flat svelte-1k65run\">No enabled processing contributions · flat response</p>"), ko = /* @__PURE__ */ J("<option hidden=\"\" disabled=\"\">Custom</option>"), Ao = /* @__PURE__ */ J("<div class=\"plot-key svelte-1k65run\" aria-label=\"Response Line Key\"><span class=\"svelte-1k65run\"><svg width=\"26\" height=\"12\" viewBox=\"0 0 26 12\" aria-hidden=\"true\" class=\"svelte-1k65run\"><line x1=\"1\" x2=\"25\" y1=\"6\" y2=\"6\" stroke=\"currentColor\" stroke-width=\"2\"></line></svg>Left Channel</span> <span class=\"svelte-1k65run\"><svg width=\"26\" height=\"12\" viewBox=\"0 0 26 12\" aria-hidden=\"true\" class=\"svelte-1k65run\"><line x1=\"1\" x2=\"25\" y1=\"6\" y2=\"6\" stroke=\"currentColor\" stroke-width=\"2\" stroke-dasharray=\"5 4\"></line></svg>Right Channel</span></div>"), jo = /* @__PURE__ */ J("<div class=\"stages svelte-1k65run\" aria-label=\"Enabled processing stages\"></div> <div class=\"plot-controls svelte-1k65run\"><label class=\"svelte-1k65run\">Vertical Scale <select aria-label=\"Response vertical scale\" class=\"svelte-1k65run\"><option>Auto</option><option>±6 dB</option><option>±12 dB</option><option>±24 dB</option><option>±20 dB</option><!><option>±48 dB</option></select></label><button class=\"chip svelte-1k65run\" aria-label=\"Reset graph scale\">Reset</button></div> <div class=\"plot svelte-1k65run\"><!> <!></div>", 1), Mo = {
 	hash: "svelte-1k65run",
 	code: ".slider-stage.svelte-1k65run {cursor:pointer;}.preamp-sliders.svelte-1k65run {position:relative;height:20px;}.mini-slider.svelte-1k65run {appearance:none;background:transparent;width:100%;min-width:0;height:20px;margin:0;cursor:default;opacity:1;pointer-events:none;}.preamp-sliders.svelte-1k65run .mini-slider:where(.svelte-1k65run) {position:absolute;inset:0;pointer-events:none;}.mini-slider.svelte-1k65run::-webkit-slider-runnable-track {height:3px;background:color-mix(in srgb, var(--stage-color) 60%, #444);border-radius:3px;}.mini-slider.svelte-1k65run::-webkit-slider-thumb {appearance:none;width:8px;height:15px;margin-top:-6px;border-radius:3px;background:var(--thumb-color, var(--stage-color));pointer-events:none;}.mini-slider.svelte-1k65run::-moz-range-track {height:3px;background:var(--stage-color);}.mini-slider.svelte-1k65run::-moz-range-thumb {width:8px;height:15px;border:0;background:var(--thumb-color, var(--stage-color));pointer-events:none;}.response-controls.svelte-1k65run {display:inline-flex;align-items:center;gap:8px;}.preview-channel.svelte-1k65run {width:140px;min-width:140px;flex:0 0 140px;white-space:nowrap;}.mode-cycle.svelte-1k65run {width:80px;min-width:80px;flex:0 0 80px;}.stages.svelte-1k65run {container-type:inline-size;display:flex;flex-wrap:wrap;justify-content:center;gap:8px;padding:6px 14px 0;}.stage.svelte-1k65run {position:relative;display:grid;grid-template-rows:20px 20px 18px;align-content:start;height:72px;text-align:left;cursor:pointer;color:var(--text);font:inherit;min-width:0;--stage-columns: min(var(--stage-count), 2);flex:0 0 calc((100% - (var(--stage-columns) - 1) * 8px) / var(--stage-columns));padding:6px 10px;border:1px solid var(--stage-color);background:color-mix(in srgb, var(--stage-color) 12%, var(--panel-solid));border-radius:10px;}\n  @container (min-width: 346px) {.stage.svelte-1k65run {--stage-columns: min(var(--stage-count), 3);} }\n  @container (min-width: 464px) {.stage.svelte-1k65run {--stage-columns: min(var(--stage-count), 4);} }\n  @container (min-width: 582px) {.stage.svelte-1k65run {--stage-columns: min(var(--stage-count), 5);} }\n  @container (min-width: 700px) {.stage.svelte-1k65run {--stage-columns: min(var(--stage-count), 6);} }\n  @container (min-width: 818px) {.stage.svelte-1k65run {--stage-columns: min(var(--stage-count), 7);} }.stage[data-stage=\"fir\"].svelte-1k65run svg:where(.svelte-1k65run) {height:30px;}.stage[data-stage=\"fir\"].svelte-1k65run {grid-template-rows:20px 30px 8px;}.reference-stage.svelte-1k65run {cursor:default;grid-template-rows:20px 40px;}.stage.svelte-1k65run:not(.reference-stage):hover {background:color-mix(in srgb, var(--stage-color) 22%, var(--panel-solid));}.stage.selected.svelte-1k65run {background:color-mix(in srgb, var(--stage-color) 42%, var(--panel-solid));box-shadow:inset 0 0 0 2px var(--stage-color), 0 0 0 1px var(--stage-color);}.stage.svelte-1k65run:focus-visible {outline:2px solid var(--accent);outline-offset:2px;}.stage-name.svelte-1k65run {align-self:start;display:flex;gap:7px;align-items:center;flex-wrap:wrap;color:var(--text);font:14px var(--font-sans);}.dot.svelte-1k65run {height:5px;width:5px;background:var(--stage-color);border-radius:50%;}.stage.svelte-1k65run svg:where(.svelte-1k65run) {align-self:center;display:block;width:100%;height:20px;margin-top:0;}.stage.svelte-1k65run path:where(.svelte-1k65run) {fill:none;stroke:var(--stage-color);stroke-width:1.3;vector-effect:non-scaling-stroke;}.stage.svelte-1k65run line:where(.svelte-1k65run) {stroke:#92928d;stroke-width:1;vector-effect:non-scaling-stroke;}.stage.svelte-1k65run p:where(.svelte-1k65run) {font:14px/1.5 var(--font-sans);color:var(--text-dim);margin:2px 0 0;}.unavailable.svelte-1k65run {height:28px;display:grid;place-items:center;color:var(--text-faint);font:14px var(--font-sans);}.flat.svelte-1k65run {color:var(--text-dim);font:14px var(--font-sans);}.plot-controls.svelte-1k65run {display:flex;justify-content:flex-end;align-items:center;gap:8px;padding:6px 14px 0;}\n @media (max-width: 900px) {.plot-controls.svelte-1k65run {justify-content:center;} }.plot-controls.svelte-1k65run .chip:where(.svelte-1k65run) {min-height:30px;padding:4px 10px;font-size:13px;}.plot-controls.svelte-1k65run label:where(.svelte-1k65run) {display:flex;align-items:center;gap:8px;color:var(--text-dim);font:13px var(--font-sans);}.plot-controls.svelte-1k65run select:where(.svelte-1k65run) {min-height:30px;border:1px solid var(--border-hi);background-color:var(--panel-solid);color:var(--text);border-radius:7px;padding:4px 10px;font:inherit;}.plot.svelte-1k65run {position:relative;padding:6px 14px 0 6px;}.plot-key.svelte-1k65run {position:absolute;right:24px;top:14px;max-width:calc(100% - 80px);max-height:92px;overflow:auto;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:4px 14px;padding:6px 9px;border-radius:6px;background:color-mix(in srgb, var(--panel-solid) 88%, transparent);color:var(--text);font:12px var(--font-sans);}.plot-key.svelte-1k65run > span:where(.svelte-1k65run) {display:inline-flex;align-items:center;gap:6px;}.plot-key.svelte-1k65run svg:where(.svelte-1k65run) {flex-shrink:0;}\n  @media(max-width: 600px) {.stages.svelte-1k65run {padding:12px 12px 0;gap:8px;} }"
 };
-function jo(e, t) {
-	Ie(t, !0), Hr(e, Ao);
+function No(e, t) {
+	Fe(t, !0), Hr(e, Mo);
 	let n = /* @__PURE__ */ R(Ht([])), r = /* @__PURE__ */ R(!1), i = /* @__PURE__ */ R("auto"), a = /* @__PURE__ */ R(Ht([-20, 20]));
 	function o(e) {
 		z(a, e, !0), z(i, "custom");
@@ -3466,23 +3487,24 @@ function jo(e, t) {
 	function s() {
 		z(i, "auto"), z(a, [-20, 20], !0);
 	}
-	let c = !1;
+	let c = !1, l = null;
 	pn(() => {
-		t.profile.id, t.channel, z(n, [], !0), c = !1;
+		let e = t.profile.id;
+		e !== l && (l = e, z(n, [], !0), c = !1);
 	}), pn(() => {
 		let e = t.previewRequest;
 		e.serial && ar(() => {
 			e.stage && (!K(n).length || c) ? (z(n, [e.stage], !0), c = !0) : !e.stage && c && (z(n, [], !0), c = !1);
 		});
 	});
-	function l(e) {
+	function u(e) {
 		e !== "loudness" && (c = !1, z(n, K(n).includes(e) ? K(n).filter((t) => t !== e) : [...K(n), e], !0));
 	}
-	function u(e) {
+	function d(e) {
 		let t = e.composedPath();
-		t.find((e) => e instanceof HTMLElement && e.matches("section.panel"))?.querySelector(".stages") && (t.some((e) => e instanceof Element && e.matches("button, select, input, label, svg, [data-stage]")) || (z(n, [], !0), c = !1));
+		t.find((e) => e instanceof HTMLElement && e.matches("section.panel"))?.querySelector(".stages") && (t.some((e) => e instanceof Element && e.matches("button, select, input, label, svg, [data-stage], header")) || (z(n, [], !0), c = !1));
 	}
-	let d = /* @__PURE__ */ L(() => t.fir?.profile_id === t.profile.id && t.fir.revision === t.profile.revision ? t.fir : null), f = /* @__PURE__ */ L(() => po(t.settings, 0, t.profile.processing, K(d)?.left)), p = /* @__PURE__ */ L(() => po(t.settings, 1, t.profile.processing, K(d)?.right)), m = [
+	let f = /* @__PURE__ */ L(() => t.fir?.profile_id === t.profile.id && t.fir.revision === t.profile.revision ? t.fir : null), p = /* @__PURE__ */ L(() => ho(t.settings, 0, t.profile.processing, K(f)?.left)), m = /* @__PURE__ */ L(() => ho(t.settings, 1, t.profile.processing, K(f)?.right)), h = [
 		"preamp",
 		"balance",
 		"geq",
@@ -3490,39 +3512,42 @@ function jo(e, t) {
 		"correction",
 		"fir",
 		"loudness"
-	], h = /* @__PURE__ */ L(() => (K(r) ? [...K(f), ...K(p).filter((e) => !K(f).some((t) => t.id === e.id))] : t.channel === 0 ? K(f) : K(p)).slice().sort((e, t) => m.indexOf(e.id) - m.indexOf(t.id))), g = /* @__PURE__ */ L(() => [
-		K(h).find((e) => e.id === "preamp") ?? {
+	], g = /* @__PURE__ */ L(() => (K(r) ? [...K(p), ...K(m).filter((e) => !K(p).some((t) => t.id === e.id))] : t.channel === 0 ? K(p) : K(m)).slice().sort((e, t) => h.indexOf(e.id) - h.indexOf(t.id))), _ = /* @__PURE__ */ L(() => [
+		K(g).find((e) => e.id === "preamp") ?? {
 			id: "preamp",
 			label: "Preamp",
 			color: "#e8b857",
 			points: null
 		},
-		...t.settings.balance === void 0 ? [] : [K(h).find((e) => e.id === "balance") ?? {
+		...t.settings.balance === void 0 ? [] : [K(g).find((e) => e.id === "balance") ?? {
 			id: "balance",
 			label: "Balance",
 			color: "#b49cde",
 			points: null
 		}],
-		...K(h).filter((e) => e.id !== "preamp" && e.id !== "balance")
+		...K(g).filter((e) => e.id !== "preamp" && e.id !== "balance")
 	]);
-	function _(e) {
-		let r = K(e === 0 ? f : p), i = K(n).length ? r.filter((e) => K(n).includes(e.id)) : r, a = mo(i);
+	function v(e) {
+		let r = K(e === 0 ? p : m), i = K(n).length ? r.filter((e) => K(n).includes(e.id)) : r, a = go(i);
 		if (!K(n).length) return [{
 			id: "composite",
 			label: "Composite response",
-			points: mo(r.filter((e) => !e.illustrative)).points,
+			points: go(r.filter((e) => !e.illustrative)).points,
 			color: "#f1f0eb",
 			width: 2.4,
 			dashed: !1
 		}];
-		if (K(n).length === 1 && K(n)[0] === "peq") return ao(lo(t.settings, e), e).flatMap((e, t) => !e.bypass && (e.type === 6 || e.type === 9) ? [{
-			id: `band-${t}`,
-			label: `Band ${t + 1}`,
-			color: ji(t),
-			points: $a(e.type === 9 ? [] : [so(e)], 0),
-			width: 1.8,
-			fillOpacity: .2
-		}] : []);
+		if (K(n).length === 1 && (K(n)[0] === "peq" || K(n)[0] === "correction")) {
+			let r = fo(t.settings, e), i = K(n)[0] === "correction";
+			return (i ? r[e === 0 ? "enablePeqLeftFir" : "enablePeqRightFir"] : r[e === 0 ? "enableEQ" : "enableEQRight"]) === !1 ? [] : (i ? r[e === 0 ? "peqFirList" : "peqFirListRight"] ?? [] : ao(r, e)).flatMap((e, t) => !e.bypass && e.type >= 2 && e.type <= 9 ? [{
+				id: `band-${t}`,
+				label: `Band ${t + 1}`,
+				color: ji(t),
+				points: $a([so(e)], 0),
+				width: 1.8,
+				fillOpacity: .2
+			}] : []);
+		}
 		let o = [], s = Array(201).fill(0);
 		for (let e of i) !e.points || e.illustrative || (s = s.map((t, n) => t + e.points[n]), o.push({
 			id: e.id,
@@ -3539,34 +3564,34 @@ function jo(e, t) {
 			dashed: !1
 		}), o;
 	}
-	let v = /* @__PURE__ */ L(() => K(r) ? [0, 1].flatMap((e) => _(e).map((t) => ({
+	let y = /* @__PURE__ */ L(() => K(r) ? [0, 1].flatMap((e) => v(e).map((t) => ({
 		...t,
 		id: `${e}-${t.id}`,
 		label: `${e === 0 ? "Left" : "Right"} · ${t.label}`,
 		color: e === 0 ? t.color : `color-mix(in srgb, ${t.color} 45%, #69b9eb)`,
 		dashed: e === 1
-	}))) : _(t.channel).map((e) => ({
+	}))) : v(t.channel).map((e) => ({
 		...e,
 		dashed: t.channel === 1
-	}))), y = /* @__PURE__ */ L(() => {
+	}))), b = /* @__PURE__ */ L(() => {
 		if (K(i) === "default") return [-20, 20];
 		if (K(i) === "custom") return K(a);
 		if (K(i) !== "auto") {
 			let e = Number(K(i));
 			return [-e, e];
 		}
-		let e = K(v).flatMap((e) => e.points).filter(Number.isFinite), t = Math.min(0, ...e), n = Math.max(0, ...e), r = Math.max(1, (n - t) * .15);
+		let e = K(y).flatMap((e) => e.points).filter(Number.isFinite), t = Math.min(0, ...e), n = Math.max(0, ...e), r = Math.max(1, (n - t) * .15);
 		return [Math.floor((t - r) / 2) * 2, Math.ceil((n + r) / 2) * 2];
 	});
-	function b(e) {
+	function x(e) {
 		return e.points?.map((t, n) => `${n === 0 ? "M" : "L"}${4 + n / 2 * .92},${24 - Math.max(-24, Math.min(24, t)) * (e.id === "fir" ? 2.2 : .75)}`).join(" ") ?? "";
 	}
-	fr("click", Gt, u), wi(e, {
+	fr("click", Gt, d), wi(e, {
 		stackActions: !0,
 		code: "DSP.01",
 		title: "Processing Response",
 		titleControl: (e) => {
-			var n = ho(), i = B(n), a = B(i, !0);
+			var n = _o(), i = B(n), a = B(i, !0);
 			M(i);
 			var o = H(i), s = B(o, !0);
 			M(o), M(n), U(() => {
@@ -3580,95 +3605,95 @@ function jo(e, t) {
 			Vr(V(n), () => t.actions), Y(e, n);
 		},
 		children: (e, a) => {
-			var c = ko(), u = V(c);
+			var c = jo(), l = V(c);
 			let d;
-			Q(u, 21, () => K(g), (e) => e.id, (e, i) => {
+			Q(l, 21, () => K(_), (e) => e.id, (e, i) => {
 				var a = Cr(), o = V(a), s = (e) => {
-					var a = yo();
+					var a = xo();
 					let o, s;
-					var c = B(a), u = H(B(c), 1, !0);
+					var c = B(a), l = H(B(c), 1, !0);
 					M(c);
 					var d = H(c, 2), f = (e) => {
-						var n = go(), r = V(n);
+						var n = vo(), r = V(n);
 						ai(r);
 						var i = H(r, 2), a = B(i);
 						M(i), U(() => {
 							oi(r, t.settings.balance ?? 0), X(a, `${t.settings.balance ?? 0 ?? ""} dB`);
 						}), Y(e, n);
 					}, p = (e) => {
-						var n = vo(), a = V(n);
+						var n = bo(), a = V(n);
 						Q(a, 21, () => t.settings.settingType === 1 ? K(r) ? [0, 1] : [t.channel] : [0], Mr, (e, n) => {
-							var r = _o();
+							var r = yo();
 							ai(r);
 							let a;
 							U((e) => {
 								$(r, "aria-label", `${K(n) === 0 ? "Left" : "Right"} Preview Preamp`), $(r, "min", -30), $(r, "max", 12), $(r, "step", Li), oi(r, e), a = Xr(r, "", a, { "--thumb-color": K(n) === 0 ? K(i).color : "#fff0be" });
-							}, [() => oo(lo(t.settings, K(n)), K(n))]), Y(e, r);
+							}, [() => oo(fo(t.settings, K(n)), K(n))]), Y(e, r);
 						}), M(a);
 						var o = H(a, 2), s = B(o, !0);
-						M(o), U((e) => X(s, e), [() => K(r) && t.settings.settingType === 1 ? `L ${oo(lo(t.settings, 0), 0).toFixed(1)} · R ${oo(lo(t.settings, 1), 1).toFixed(1)} dB` : `${oo(lo(t.settings, t.channel), t.channel).toFixed(1)} dB`]), Y(e, n);
+						M(o), U((e) => X(s, e), [() => K(r) && t.settings.settingType === 1 ? `L ${oo(fo(t.settings, 0), 0).toFixed(1)} · R ${oo(fo(t.settings, 1), 1).toFixed(1)} dB` : `${oo(fo(t.settings, t.channel), t.channel).toFixed(1)} dB`]), Y(e, n);
 					};
 					Z(d, (e) => {
 						K(i).id === "balance" ? e(f) : e(p, -1);
 					}), M(a), U((e, t) => {
-						o = Jr(a, 1, "stage slider-stage svelte-1k65run", null, o, e), $(a, "data-response-stage", K(i).id), $(a, "data-stage", K(i).id), $(a, "aria-label", `${K(i).label} curve`), $(a, "aria-pressed", t), s = Xr(a, "", s, { "--stage-color": K(i).color }), X(u, K(i).label);
-					}, [() => ({ selected: K(n).includes(K(i).id) }), () => K(n).includes(K(i).id)]), q("click", a, () => l(K(i).id)), q("keydown", a, (e) => {
-						(e.key === "Enter" || e.key === " ") && (e.preventDefault(), l(K(i).id));
+						o = Jr(a, 1, "stage slider-stage svelte-1k65run", null, o, e), $(a, "data-response-stage", K(i).id), $(a, "data-stage", K(i).id), $(a, "aria-label", `${K(i).label} curve`), $(a, "aria-pressed", t), s = Xr(a, "", s, { "--stage-color": K(i).color }), X(l, K(i).label);
+					}, [() => ({ selected: K(n).includes(K(i).id) }), () => K(n).includes(K(i).id)]), q("click", a, () => u(K(i).id)), q("keydown", a, (e) => {
+						(e.key === "Enter" || e.key === " ") && (e.preventDefault(), u(K(i).id));
 					}), Y(e, a);
 				}, c = (e) => {
-					var t = bo();
+					var t = So();
 					let n;
 					Ba(H(B(t), 2), { compact: !0 }), M(t), U(() => {
 						$(t, "data-stage", K(i).id), n = Xr(t, "", n, { "--stage-color": K(i).color });
 					}), Y(e, t);
-				}, u = (e) => {
-					var a = To();
+				}, l = (e) => {
+					var a = Do();
 					let o, s;
-					var c = B(a), u = H(B(c), 1, !0);
+					var c = B(a), l = H(B(c), 1, !0);
 					M(c);
-					var d = H(c, 2), m = (e) => {
-						var n = Co(), a = H(B(n)), o = (e) => {
+					var d = H(c, 2), f = (e) => {
+						var n = To(), a = H(B(n)), o = (e) => {
 							var t = Cr();
-							Q(V(t), 17, () => [K(f).find((e) => e.id === K(i).id), K(p).find((e) => e.id === K(i).id)], Mr, (e, t, n) => {
+							Q(V(t), 17, () => [K(p).find((e) => e.id === K(i).id), K(m).find((e) => e.id === K(i).id)], Mr, (e, t, n) => {
 								var r = Cr(), a = V(r), o = (e) => {
-									var r = xo();
+									var r = Co();
 									$(r, "stroke-dasharray", n === 1 ? "5 4" : void 0);
 									let a;
 									U((e) => {
 										$(r, "d", e), a = Xr(r, "", a, { stroke: n === 0 ? K(i).color : `color-mix(in srgb, ${K(i).color} 45%, #69b9eb)` });
-									}, [() => b(K(t))]), Y(e, r);
+									}, [() => x(K(t))]), Y(e, r);
 								};
 								Z(a, (e) => {
 									K(t)?.points && e(o);
 								}), Y(e, r);
 							}), Y(e, t);
 						}, s = (e) => {
-							var n = So();
+							var n = wo();
 							U((e) => {
 								$(n, "d", e), $(n, "stroke-dasharray", t.channel === 1 ? "5 4" : void 0);
-							}, [() => b(K(i))]), Y(e, n);
+							}, [() => x(K(i))]), Y(e, n);
 						};
 						Z(a, (e) => {
 							K(r) ? e(o) : e(s, -1);
 						}), M(n), U(() => $(n, "aria-label", `${K(i).label} contribution`)), Y(e, n);
-					}, h = /* @__PURE__ */ L(() => K(i).points || K(r) && K(p).find((e) => e.id === K(i).id)?.points), g = (e) => {
-						Y(e, wo());
+					}, h = /* @__PURE__ */ L(() => K(i).points || K(r) && K(m).find((e) => e.id === K(i).id)?.points), g = (e) => {
+						Y(e, Eo());
 					};
 					Z(d, (e) => {
-						K(h) ? e(m) : e(g, -1);
+						K(h) ? e(f) : e(g, -1);
 					}), M(a), U((e, t) => {
-						o = Jr(a, 1, "stage svelte-1k65run", null, o, e), $(a, "data-response-stage", K(i).id), $(a, "data-stage", K(i).id), $(a, "aria-label", `${K(i).label} curve`), $(a, "aria-pressed", t), s = Xr(a, "", s, { "--stage-color": K(i).color }), X(u, K(i).label);
-					}, [() => ({ selected: K(n).includes(K(i).id) }), () => K(n).includes(K(i).id)]), q("click", a, () => l(K(i).id)), Y(e, a);
+						o = Jr(a, 1, "stage svelte-1k65run", null, o, e), $(a, "data-response-stage", K(i).id), $(a, "data-stage", K(i).id), $(a, "aria-label", `${K(i).label} curve`), $(a, "aria-pressed", t), s = Xr(a, "", s, { "--stage-color": K(i).color }), X(l, K(i).label);
+					}, [() => ({ selected: K(n).includes(K(i).id) }), () => K(n).includes(K(i).id)]), q("click", a, () => u(K(i).id)), Y(e, a);
 				};
 				Z(o, (e) => {
-					K(i).id === "preamp" || K(i).id === "balance" ? e(s) : K(i).illustrative ? e(c, 1) : e(u, -1);
+					K(i).id === "preamp" || K(i).id === "balance" ? e(s) : K(i).illustrative ? e(c, 1) : e(l, -1);
 				}), Y(e, a);
 			}, (e) => {
-				Y(e, Eo());
-			}), M(u);
-			var m = H(u, 2), h = B(m), _ = H(B(h)), x = B(_);
-			x.value = x.__value = "auto";
-			var S = H(x);
+				Y(e, Oo());
+			}), M(l);
+			var f = H(l, 2), h = B(f), g = H(B(h)), v = B(g);
+			v.value = v.__value = "auto";
+			var S = H(v);
 			S.value = S.__value = "6";
 			var C = H(S);
 			C.value = C.__value = "12";
@@ -3677,50 +3702,50 @@ function jo(e, t) {
 			var T = H(w);
 			T.value = T.__value = "default";
 			var ee = H(T), te = (e) => {
-				var t = Do();
+				var t = ko();
 				t.value = t.__value = "custom", Y(e, t);
 			};
 			Z(ee, (e) => {
 				K(i) === "custom" && e(te);
 			});
 			var ne = H(ee);
-			ne.value = ne.__value = "48", M(_), M(h);
+			ne.value = ne.__value = "48", M(g), M(h);
 			var re = H(h);
-			M(m);
-			var ie = H(m, 2), ae = B(ie);
+			M(f);
+			var ie = H(f, 2), ae = B(ie);
 			Fa(ae, {
 				get curves() {
-					return K(v);
+					return K(y);
 				},
 				height: 280,
 				get yRange() {
-					return K(y);
+					return K(b);
 				},
 				onRangeChange: o
 			});
 			var oe = H(ae, 2), E = (e) => {
-				Y(e, Oo());
+				Y(e, Ao());
 			};
 			Z(oe, (e) => {
-				K(v).length && e(E);
-			}), M(ie), U((e) => d = Xr(u, "", d, e), [() => ({ "--stage-count": Math.max(1, K(g).length) })]), $r(_, () => K(i), (e) => z(i, e)), q("click", re, s), Y(e, c);
+				K(y).length && e(E);
+			}), M(ie), U((e) => d = Xr(l, "", d, e), [() => ({ "--stage-count": Math.max(1, K(_).length) })]), $r(g, () => K(i), (e) => z(i, e)), q("click", re, s), Y(e, c);
 		},
 		$$slots: {
 			titleControl: !0,
 			right: !0,
 			default: !0
 		}
-	}), Le();
+	}), Ie();
 }
 pr(["click", "keydown"]);
 //#endregion
 //#region src/Editor.svelte
-var Mo = /* @__PURE__ */ J("<option disabled=\"\">Select A Profile</option>"), No = /* @__PURE__ */ J("<option> </option>"), Po = /* @__PURE__ */ J("<div class=\"notice error svelte-1jdjhi\" role=\"alert\"> </div>"), Fo = /* @__PURE__ */ J("<div class=\"notice warning svelte-1jdjhi\" role=\"alert\">This profile changed on the device. Discard And Reload before saving.</div>"), Io = /* @__PURE__ */ J("<div class=\"savebar svelte-1jdjhi\"><span> </span><div class=\"actions svelte-1jdjhi\"><button class=\"chip md svelte-1jdjhi\">↻ Reload</button> <button class=\"chip md svelte-1jdjhi\">Discard</button> <button class=\"chip md accent svelte-1jdjhi\">Save Profile</button></div></div>"), Lo = /* @__PURE__ */ J("<p class=\"hint\"> </p>"), Ro = /* @__PURE__ */ J("<button> </button>"), zo = /* @__PURE__ */ J("<option></option>"), Bo = /* @__PURE__ */ J("<select class=\"band-picker svelte-1jdjhi\" aria-label=\"Band to tune\"></select>"), Vo = /* @__PURE__ */ J("<div class=\"sliders svelte-1jdjhi\"><label class=\"svelte-1jdjhi\">Frequency <span class=\"svelte-1jdjhi\"> </span><input aria-label=\"Band frequency slider\" type=\"range\" min=\"0\" max=\"1000\" step=\"1\" class=\"svelte-1jdjhi\"/></label> <label class=\"svelte-1jdjhi\">Gain <span class=\"svelte-1jdjhi\"> </span><input aria-label=\"Band gain slider\" type=\"range\" min=\"-15\" max=\"15\" step=\"0.1\" class=\"svelte-1jdjhi\"/></label> <label class=\"svelte-1jdjhi\">Q <span class=\"svelte-1jdjhi\"> </span><input aria-label=\"Band Q slider\" type=\"range\" min=\"0.1\" max=\"100\" step=\"0.01\" class=\"svelte-1jdjhi\"/></label></div>"), Ho = /* @__PURE__ */ J("<label class=\"toggle-label svelte-1jdjhi\"><input class=\"switch\" type=\"checkbox\" role=\"switch\" aria-label=\"Enable graphic EQ\"/></label>"), Uo = /* @__PURE__ */ J("<!> <button class=\"chip hi\" aria-label=\"Reset graphic EQ\">Reset</button>", 1), Wo = /* @__PURE__ */ J("<div class=\"geq-band svelte-1jdjhi\"><input class=\"geq-gain svelte-1jdjhi\" type=\"number\" min=\"-15\" max=\"15\" step=\"0.1\"/> <input class=\"geq-slider svelte-1jdjhi\" aria-orientation=\"vertical\" type=\"range\" min=\"-15\" max=\"15\" step=\"0.1\"/> <span> </span></div>"), Go = /* @__PURE__ */ J("<div class=\"geq-bands svelte-1jdjhi\"></div>"), Ko = /* @__PURE__ */ J("<label class=\"toggle-label svelte-1jdjhi\"><input aria-label=\"Loudness enabled\" class=\"switch\" role=\"switch\" type=\"checkbox\"/></label>"), qo = /* @__PURE__ */ J("<div class=\"loudness-reference svelte-1jdjhi\"><!></div>"), Jo = /* @__PURE__ */ J("<label class=\"toggle-label svelte-1jdjhi\"><input class=\"switch\" role=\"switch\" type=\"checkbox\" aria-label=\"Enable FIR\"/></label>"), Yo = /* @__PURE__ */ J("<span class=\"import-name svelte-1jdjhi\"> </span>"), Xo = /* @__PURE__ */ J("<div class=\"output svelte-1jdjhi\"><span class=\"svelte-1jdjhi\"> </span> <button class=\"chip\">Select On Device File</button> <!> <label class=\"svelte-1jdjhi\"><input class=\"switch\" role=\"switch\" type=\"checkbox\"/> Enable</label> <div class=\"fir-stats svelte-1jdjhi\"><span> </span></div></div>"), Zo = /* @__PURE__ */ J("<div class=\"outputs fir-assignments svelte-1jdjhi\"></div>"), Qo = /* @__PURE__ */ J("<option> </option>"), $o = /* @__PURE__ */ J("<option> </option>"), es = /* @__PURE__ */ J("<div class=\"output svelte-1jdjhi\"><span class=\"svelte-1jdjhi\"> </span> <select class=\"svelte-1jdjhi\"><!><!></select> <label class=\"svelte-1jdjhi\"><input class=\"switch\" role=\"switch\" type=\"checkbox\"/> Enable</label></div>"), ts = /* @__PURE__ */ J("<div class=\"outputs svelte-1jdjhi\"></div>"), ns = /* @__PURE__ */ J("<!> <!> <nav class=\"sections svelte-1jdjhi\" aria-label=\"Processing controls\"></nav> <fieldset class=\"edit-grid svelte-1jdjhi\"><div><!> <!></div> <div><!></div> <div><!></div> <div><!></div> <div><!></div> <div><!></div></fieldset>", 1), rs = /* @__PURE__ */ J("<div class=\"empty svelte-1jdjhi\">Select or create a profile to start shaping your sound.</div>"), is = /* @__PURE__ */ J("<option> </option>"), as = /* @__PURE__ */ xr("<svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" aria-hidden=\"true\"><path d=\"m8 5 9 7-9 7Z\" fill=\"currentColor\"></path></svg>"), os = /* @__PURE__ */ J("<tr><td class=\"svelte-1jdjhi\"><button class=\"file-entry svelte-1jdjhi\"><span class=\"file-icon svelte-1jdjhi\" aria-hidden=\"true\"><!></span> </button></td><td class=\"svelte-1jdjhi\"> </td><td class=\"file-size svelte-1jdjhi\"> </td></tr>"), ss = /* @__PURE__ */ J("<tr class=\"svelte-1jdjhi\"><td colspan=\"3\" class=\"file-empty svelte-1jdjhi\"> </td></tr>"), cs = /* @__PURE__ */ J("<div class=\"file-pagination svelte-1jdjhi\"><button class=\"chip\">Previous</button><span> </span><button class=\"chip\">Next</button></div>"), ls = /* @__PURE__ */ J("<p role=\"alert\" class=\"svelte-1jdjhi\"> </p>"), us = /* @__PURE__ */ J("<p class=\"svelte-1jdjhi\"> </p>"), ds = /* @__PURE__ */ J("<label class=\"svelte-1jdjhi\">Profile Name<input aria-label=\"Profile Name\" type=\"text\" required=\"\" maxlength=\"100\" class=\"svelte-1jdjhi\"/></label>"), fs = /* @__PURE__ */ J("<div class=\"shell svelte-1jdjhi\"><header class=\"topbar svelte-1jdjhi\"><div><h1 class=\"svelte-1jdjhi\"> </h1></div></header> <div><label class=\"profile-select svelte-1jdjhi\"><span>Profile</span> <select aria-label=\"Profile\" class=\"svelte-1jdjhi\"><!><!></select></label> <div class=\"actions profile-actions svelte-1jdjhi\"><button class=\"chip md svelte-1jdjhi\">＋ New</button> <button class=\"chip md svelte-1jdjhi\">Save As</button> <button class=\"chip md svelte-1jdjhi\">Rename</button> <button class=\"chip md danger svelte-1jdjhi\">Delete</button></div></div> <!> <!> <!></div> <dialog class=\"file-picker svelte-1jdjhi\" aria-label=\"Internal FIR File Browser\"><div class=\"file-heading svelte-1jdjhi\"><h2 class=\"svelte-1jdjhi\">Import FIR Filter</h2><span class=\"svelte-1jdjhi\"> </span></div> <div class=\"file-location svelte-1jdjhi\"><button class=\"chip hi directory-action svelte-1jdjhi\" aria-label=\"Parent Folder\">↑</button> <div class=\"file-path svelte-1jdjhi\"><input type=\"text\" aria-label=\"Directory Path\" class=\"svelte-1jdjhi\"/> <button class=\"chip hi directory-action svelte-1jdjhi\" aria-label=\"Open Directory\" type=\"button\"><svg viewBox=\"0 0 24 24\" width=\"22\" height=\"22\" aria-hidden=\"true\"><path d=\"M19 5v10H5m5-5-5 5 5 5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></path></svg></button></div></div> <div class=\"file-tools svelte-1jdjhi\"><input type=\"text\" aria-label=\"Search\" placeholder=\"Search\" class=\"svelte-1jdjhi\"/> <label class=\"svelte-1jdjhi\">Sort<select aria-label=\"File Sort\" class=\"svelte-1jdjhi\"></select></label></div> <div class=\"file-list svelte-1jdjhi\" aria-label=\"Folder Contents\"><table class=\"svelte-1jdjhi\"><thead><tr class=\"svelte-1jdjhi\"><th class=\"svelte-1jdjhi\">Name</th><th class=\"svelte-1jdjhi\">Type</th><th class=\"file-size svelte-1jdjhi\">Size</th></tr></thead><tbody></tbody></table></div> <!> <label class=\"file-selection svelte-1jdjhi\">File Name<input type=\"text\" aria-label=\"Selected File Name\" readonly=\"\" placeholder=\"Select A WAV File\" class=\"svelte-1jdjhi\"/></label> <!> <div class=\"file-footer svelte-1jdjhi\"><span class=\"svelte-1jdjhi\">WAV Files (*.wav)</span><div class=\"svelte-1jdjhi\"><button class=\"chip hi\">Cancel</button><button class=\"chip accent\">Import</button></div></div></dialog> <dialog aria-label=\"Unsaved Changes\" class=\"svelte-1jdjhi\"><h2 class=\"svelte-1jdjhi\">Unsaved Changes</h2> <p class=\"svelte-1jdjhi\">Discard changes that have not been saved to the device?</p> <div class=\"actions svelte-1jdjhi\"><button class=\"chip md\">Keep Editing</button><button class=\"chip md danger\"> </button></div></dialog> <dialog class=\"svelte-1jdjhi\"><form><h2 class=\"svelte-1jdjhi\"> </h2> <!> <div class=\"actions svelte-1jdjhi\"><button type=\"button\" class=\"chip md\">Cancel</button><button type=\"submit\"> </button></div></form></dialog>", 1), ps = {
+var Po = /* @__PURE__ */ J("<option disabled=\"\">Select A Profile</option>"), Fo = /* @__PURE__ */ J("<option> </option>"), Io = /* @__PURE__ */ J("<div class=\"notice error svelte-1jdjhi\" role=\"alert\"> </div>"), Lo = /* @__PURE__ */ J("<div class=\"notice warning svelte-1jdjhi\" role=\"alert\">This profile changed on the device. Discard And Reload before saving.</div>"), Ro = /* @__PURE__ */ J("<div class=\"savebar svelte-1jdjhi\"><span> </span><div class=\"actions svelte-1jdjhi\"><button class=\"chip md svelte-1jdjhi\">↻ Reload</button> <button class=\"chip md svelte-1jdjhi\">Discard</button> <button class=\"chip md accent svelte-1jdjhi\">Save Profile</button></div></div>"), zo = /* @__PURE__ */ J("<p class=\"hint\"> </p>"), Bo = /* @__PURE__ */ J("<button> </button>"), Vo = /* @__PURE__ */ J("<option></option>"), Ho = /* @__PURE__ */ J("<select class=\"band-picker svelte-1jdjhi\" aria-label=\"Band to tune\"></select>"), Uo = /* @__PURE__ */ J("<div class=\"sliders svelte-1jdjhi\"><label class=\"svelte-1jdjhi\">Frequency <span class=\"svelte-1jdjhi\"> </span><input aria-label=\"Band frequency slider\" type=\"range\" min=\"0\" max=\"1000\" step=\"1\" class=\"svelte-1jdjhi\"/></label> <label class=\"svelte-1jdjhi\">Gain <span class=\"svelte-1jdjhi\"> </span><input aria-label=\"Band gain slider\" type=\"range\" min=\"-15\" max=\"15\" step=\"0.1\" class=\"svelte-1jdjhi\"/></label> <label class=\"svelte-1jdjhi\">Q <span class=\"svelte-1jdjhi\"> </span><input aria-label=\"Band Q slider\" type=\"range\" min=\"0.1\" max=\"100\" step=\"0.01\" class=\"svelte-1jdjhi\"/></label></div>"), Wo = /* @__PURE__ */ J("<label class=\"toggle-label svelte-1jdjhi\"><input class=\"switch\" type=\"checkbox\" role=\"switch\" aria-label=\"Enable graphic EQ\"/></label>"), Go = /* @__PURE__ */ J("<!> <button class=\"chip hi\" aria-label=\"Reset graphic EQ\">Reset</button>", 1), Ko = /* @__PURE__ */ J("<div class=\"geq-band svelte-1jdjhi\"><input class=\"geq-gain svelte-1jdjhi\" type=\"number\" min=\"-15\" max=\"15\" step=\"0.1\"/> <input class=\"geq-slider svelte-1jdjhi\" aria-orientation=\"vertical\" type=\"range\" min=\"-15\" max=\"15\" step=\"0.1\"/> <span> </span></div>"), qo = /* @__PURE__ */ J("<div class=\"geq-bands svelte-1jdjhi\"></div>"), Jo = /* @__PURE__ */ J("<label class=\"toggle-label svelte-1jdjhi\"><input aria-label=\"Loudness enabled\" class=\"switch\" role=\"switch\" type=\"checkbox\"/></label>"), Yo = /* @__PURE__ */ J("<div class=\"loudness-reference svelte-1jdjhi\"><!></div>"), Xo = /* @__PURE__ */ J("<label class=\"toggle-label svelte-1jdjhi\"><input class=\"switch\" role=\"switch\" type=\"checkbox\" aria-label=\"Enable FIR\"/></label>"), Zo = /* @__PURE__ */ J("<span class=\"import-name svelte-1jdjhi\"> </span>"), Qo = /* @__PURE__ */ J("<div class=\"output svelte-1jdjhi\"><span class=\"svelte-1jdjhi\"> </span> <button class=\"chip\">Select On Device File</button> <!> <label class=\"svelte-1jdjhi\"><input class=\"switch\" role=\"switch\" type=\"checkbox\"/> Enable</label> <div class=\"fir-stats svelte-1jdjhi\"><span> </span></div></div>"), $o = /* @__PURE__ */ J("<div class=\"outputs fir-assignments svelte-1jdjhi\"></div>"), es = /* @__PURE__ */ J("<option> </option>"), ts = /* @__PURE__ */ J("<option> </option>"), ns = /* @__PURE__ */ J("<div class=\"output svelte-1jdjhi\"><span class=\"svelte-1jdjhi\"> </span> <select class=\"svelte-1jdjhi\"><!><!></select> <label class=\"svelte-1jdjhi\"><input class=\"switch\" role=\"switch\" type=\"checkbox\"/> Enable</label></div>"), rs = /* @__PURE__ */ J("<div class=\"outputs svelte-1jdjhi\"></div>"), is = /* @__PURE__ */ J("<!> <!> <nav class=\"sections svelte-1jdjhi\" aria-label=\"Processing controls\"></nav> <fieldset class=\"edit-grid svelte-1jdjhi\"><div><!> <!></div> <div><!></div> <div><!></div> <div><!></div> <div><!></div> <div><!></div></fieldset>", 1), as = /* @__PURE__ */ J("<div class=\"empty svelte-1jdjhi\">Select or create a profile to start shaping your sound.</div>"), os = /* @__PURE__ */ J("<option> </option>"), ss = /* @__PURE__ */ xr("<svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" aria-hidden=\"true\"><path d=\"m8 5 9 7-9 7Z\" fill=\"currentColor\"></path></svg>"), cs = /* @__PURE__ */ J("<tr><td class=\"svelte-1jdjhi\"><button class=\"file-entry svelte-1jdjhi\"><span class=\"file-icon svelte-1jdjhi\" aria-hidden=\"true\"><!></span> </button></td><td class=\"svelte-1jdjhi\"> </td><td class=\"file-size svelte-1jdjhi\"> </td></tr>"), ls = /* @__PURE__ */ J("<tr class=\"svelte-1jdjhi\"><td colspan=\"3\" class=\"file-empty svelte-1jdjhi\"> </td></tr>"), us = /* @__PURE__ */ J("<div class=\"file-pagination svelte-1jdjhi\"><button class=\"chip\">Previous</button><span> </span><button class=\"chip\">Next</button></div>"), ds = /* @__PURE__ */ J("<p role=\"alert\" class=\"svelte-1jdjhi\"> </p>"), fs = /* @__PURE__ */ J("<p class=\"svelte-1jdjhi\"> </p>"), ps = /* @__PURE__ */ J("<label class=\"svelte-1jdjhi\">Profile Name<input aria-label=\"Profile Name\" type=\"text\" required=\"\" maxlength=\"100\" class=\"svelte-1jdjhi\"/></label>"), ms = /* @__PURE__ */ J("<div class=\"shell svelte-1jdjhi\"><header class=\"topbar svelte-1jdjhi\"><div><h1 class=\"svelte-1jdjhi\"> </h1></div></header> <div><label class=\"profile-select svelte-1jdjhi\"><span>Profile</span> <select aria-label=\"Profile\" class=\"svelte-1jdjhi\"><!><!></select></label> <div class=\"actions profile-actions svelte-1jdjhi\"><button class=\"chip md svelte-1jdjhi\">＋ New</button> <button class=\"chip md svelte-1jdjhi\">Save As</button> <button class=\"chip md svelte-1jdjhi\">Rename</button> <button class=\"chip md danger svelte-1jdjhi\">Delete</button></div></div> <!> <!> <!></div> <dialog class=\"file-picker svelte-1jdjhi\" aria-label=\"Internal FIR File Browser\"><div class=\"file-heading svelte-1jdjhi\"><h2 class=\"svelte-1jdjhi\">Import FIR Filter</h2><span class=\"svelte-1jdjhi\"> </span></div> <div class=\"file-location svelte-1jdjhi\"><button class=\"chip hi directory-action svelte-1jdjhi\" aria-label=\"Parent Folder\">↑</button> <div class=\"file-path svelte-1jdjhi\"><input type=\"text\" aria-label=\"Directory Path\" class=\"svelte-1jdjhi\"/> <button class=\"chip hi directory-action svelte-1jdjhi\" aria-label=\"Open Directory\" type=\"button\"><svg viewBox=\"0 0 24 24\" width=\"22\" height=\"22\" aria-hidden=\"true\"><path d=\"M19 5v10H5m5-5-5 5 5 5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></path></svg></button></div></div> <div class=\"file-tools svelte-1jdjhi\"><input type=\"text\" aria-label=\"Search\" placeholder=\"Search\" class=\"svelte-1jdjhi\"/> <label class=\"svelte-1jdjhi\">Sort<select aria-label=\"File Sort\" class=\"svelte-1jdjhi\"></select></label></div> <div class=\"file-list svelte-1jdjhi\" aria-label=\"Folder Contents\"><table class=\"svelte-1jdjhi\"><thead><tr class=\"svelte-1jdjhi\"><th class=\"svelte-1jdjhi\">Name</th><th class=\"svelte-1jdjhi\">Type</th><th class=\"file-size svelte-1jdjhi\">Size</th></tr></thead><tbody></tbody></table></div> <!> <label class=\"file-selection svelte-1jdjhi\">File Name<input type=\"text\" aria-label=\"Selected File Name\" readonly=\"\" placeholder=\"Select A WAV File\" class=\"svelte-1jdjhi\"/></label> <!> <div class=\"file-footer svelte-1jdjhi\"><span class=\"svelte-1jdjhi\">WAV Files (*.wav)</span><div class=\"svelte-1jdjhi\"><button class=\"chip hi\">Cancel</button><button class=\"chip accent\">Import</button></div></div></dialog> <dialog aria-label=\"Unsaved Changes\" class=\"svelte-1jdjhi\"><h2 class=\"svelte-1jdjhi\">Unsaved Changes</h2> <p class=\"svelte-1jdjhi\">Discard changes that have not been saved to the device?</p> <div class=\"actions svelte-1jdjhi\"><button class=\"chip md\">Keep Editing</button><button class=\"chip md danger\"> </button></div></dialog> <dialog class=\"svelte-1jdjhi\"><form><h2 class=\"svelte-1jdjhi\"> </h2> <!> <div class=\"actions svelte-1jdjhi\"><button type=\"button\" class=\"chip md\">Cancel</button><button type=\"submit\"> </button></div></form></dialog>", 1), hs = {
 	hash: "svelte-1jdjhi",
 	code: "dialog.file-picker.svelte-1jdjhi {width:720px;max-height:88vh;padding:20px;}.file-heading.svelte-1jdjhi {display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:18px;}.file-heading.svelte-1jdjhi h2:where(.svelte-1jdjhi) {margin:0;font-size:21px;}.file-heading.svelte-1jdjhi > span:where(.svelte-1jdjhi), .file-footer.svelte-1jdjhi > span:where(.svelte-1jdjhi) {font-size:13px;color:var(--text-dim);}.file-location.svelte-1jdjhi {display:grid;grid-template-columns:auto minmax(0,1fr);align-items:stretch;gap:10px;margin-bottom:12px;}.file-tools.svelte-1jdjhi label:where(.svelte-1jdjhi) {display:grid;gap:5px;font-size:13px;}.file-tools.svelte-1jdjhi select:where(.svelte-1jdjhi) {width:100%;font-size:14px;}.directory-action.svelte-1jdjhi {width:40px;min-width:40px;padding:0;font-size:22px;flex-shrink:0;display:grid;place-items:center;line-height:1;}.file-path.svelte-1jdjhi {display:flex;gap:8px;min-width:0;}.file-path.svelte-1jdjhi input:where(.svelte-1jdjhi) {min-width:0;width:100%;font-size:14px;}.file-location.svelte-1jdjhi .chip:where(.svelte-1jdjhi), .file-path.svelte-1jdjhi input:where(.svelte-1jdjhi) {height:44px;box-sizing:border-box;}.file-tools.svelte-1jdjhi {display:flex;align-items:end;gap:12px;margin-bottom:12px;}.file-tools.svelte-1jdjhi > input:where(.svelte-1jdjhi) {flex:1;min-width:0;font-size:14px;}.file-tools.svelte-1jdjhi label:where(.svelte-1jdjhi) {grid-template-columns:auto auto;align-items:center;gap:8px;}.file-list.svelte-1jdjhi {height:260px;overflow:auto;border:1px solid var(--border-hi);border-radius:7px;background:var(--panel);}.file-list.svelte-1jdjhi table:where(.svelte-1jdjhi) {width:100%;border-collapse:collapse;font-size:14px;}.file-list.svelte-1jdjhi th:where(.svelte-1jdjhi) {position:sticky;top:0;background:var(--panel-solid);color:var(--text-dim);text-align:left;font-size:12px;font-weight:500;padding:9px 12px;border-bottom:1px solid var(--border-hi);}.file-list.svelte-1jdjhi td:where(.svelte-1jdjhi) {padding:0 12px;height:40px;border-bottom:1px solid var(--border);white-space:nowrap;}.file-list.svelte-1jdjhi td:where(.svelte-1jdjhi):first-child {width:100%;white-space:normal;}.file-list.svelte-1jdjhi tr.selected:where(.svelte-1jdjhi) {background:color-mix(in srgb, var(--accent) 22%, var(--panel));}.file-list.svelte-1jdjhi tr:where(.svelte-1jdjhi):hover {background:var(--wash-strong);}.file-entry.svelte-1jdjhi {display:flex;align-items:center;gap:10px;text-align:left;width:100%;min-height:40px;padding:6px 0;background:transparent;border:0;font:inherit;color:var(--text);cursor:pointer;overflow-wrap:anywhere;}.file-entry.svelte-1jdjhi:disabled {opacity:.45;cursor:default;}.file-icon.svelte-1jdjhi {color:var(--text-dim);width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;font-size:20px;line-height:1;flex-shrink:0;}.file-size.svelte-1jdjhi {text-align:right !important;}.file-empty.svelte-1jdjhi {text-align:center;color:var(--text-dim);padding:30px !important;}.file-selection.svelte-1jdjhi {display:grid;grid-template-columns:78px minmax(0,1fr);align-items:center;gap:10px !important;margin-top:14px;font-size:14px;}.file-selection.svelte-1jdjhi input:where(.svelte-1jdjhi) {font-size:14px;}.file-footer.svelte-1jdjhi {display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:16px;}.file-footer.svelte-1jdjhi > div:where(.svelte-1jdjhi), .file-pagination.svelte-1jdjhi {display:flex;align-items:center;gap:8px;}.file-pagination.svelte-1jdjhi {justify-content:center;margin-top:10px;font-size:13px;}\n  @media (max-width: 480px) {dialog.file-picker.svelte-1jdjhi {padding:14px;}.file-location.svelte-1jdjhi {grid-template-columns:auto minmax(0,1fr);}.file-tools.svelte-1jdjhi {align-items:stretch;flex-direction:column;}.file-list.svelte-1jdjhi th:where(.svelte-1jdjhi):nth-child(2),.file-list.svelte-1jdjhi td:where(.svelte-1jdjhi):nth-child(2) {display:none;}.file-heading.svelte-1jdjhi {align-items:start;}.file-list.svelte-1jdjhi {height:220px;} }.geq-bands.svelte-1jdjhi {display:flex;gap:8px;padding:20px 14px;overflow-x:auto;}.geq-band.svelte-1jdjhi {display:flex;flex:1 0 44px;flex-direction:column;align-items:center;gap:12px;font-size:13px;}.geq-gain.svelte-1jdjhi {width:52px;padding:4px 0;text-align:center;color:var(--text);background:transparent;border:1px solid transparent;border-radius:5px;font:inherit;font-variant-numeric:tabular-nums;appearance:textfield;}.geq-gain.svelte-1jdjhi::-webkit-inner-spin-button, .geq-gain.svelte-1jdjhi::-webkit-outer-spin-button {appearance:none;margin:0;}.geq-gain.svelte-1jdjhi:hover {border-color:var(--border-hi);}.geq-gain.svelte-1jdjhi:focus {outline:1px solid var(--accent);background:var(--wash);}.geq-slider.svelte-1jdjhi {appearance:none;writing-mode:vertical-lr;direction:rtl;width:32px;height:210px;margin:0;cursor:ns-resize;background:transparent;}.geq-slider.svelte-1jdjhi::-webkit-slider-runnable-track {width:6px;height:100%;border-radius:4px;background:#4a4a46;}.geq-slider.svelte-1jdjhi::-webkit-slider-thumb {appearance:none;width:30px;height:10px;margin-left:-12px;border:1px solid #a5a59f;border-radius:3px;background:#eeeeea;box-shadow:0 2px 3px #0005;}.geq-slider.svelte-1jdjhi::-moz-range-track {width:6px;height:100%;border-radius:4px;background:#4a4a46;}.geq-slider.svelte-1jdjhi::-moz-range-thumb {width:30px;height:10px;border:1px solid #a5a59f;border-radius:3px;background:#eeeeea;}.geq-slider.svelte-1jdjhi:focus-visible {outline:1px solid var(--accent);outline-offset:3px;border-radius:4px;}.import-name.svelte-1jdjhi {grid-column:2 / -1;overflow-wrap:anywhere;}* {box-sizing:border-box;}.shell.svelte-1jdjhi {padding:12px 16px;max-width:1500px;margin:auto;min-height:100%;}.topbar.svelte-1jdjhi {display:flex;align-items:center;gap:18px;margin-bottom:10px;}.brand.svelte-1jdjhi {flex:1;display:flex;justify-content:flex-start;text-align:left;align-items:baseline;gap:16px;}.brand.centered.svelte-1jdjhi {justify-content:center;text-align:center;}h1.svelte-1jdjhi {margin:0;font-size:23px;font-weight:600;letter-spacing:0;}.toolbar.svelte-1jdjhi, .savebar.svelte-1jdjhi {display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}.toolbar.svelte-1jdjhi {margin-bottom:12px;}.profile-actions.svelte-1jdjhi {flex-wrap:wrap;justify-content:flex-end;margin-left:auto;}.toolbar.wrapped.svelte-1jdjhi {justify-content:center;}.toolbar.wrapped.svelte-1jdjhi .profile-actions:where(.svelte-1jdjhi) {justify-content:center;margin-inline:auto;}.profile-select.svelte-1jdjhi {display:grid;grid-template-columns:60px auto;align-items:center;gap:12px;}label.svelte-1jdjhi, .savebar.svelte-1jdjhi {font:16px var(--font-sans);letter-spacing:0;color:var(--text-dim);}select.svelte-1jdjhi, input[type=text].svelte-1jdjhi {background:var(--panel-solid);color:var(--text);border:1px solid var(--border-hi);border-radius:9px;min-height:36px;padding:6px 10px;font:17px var(--font-sans);max-width:100%;}.actions.svelte-1jdjhi {display:flex;flex-wrap:wrap;gap:8px;}.edit-grid.svelte-1jdjhi {border:0;padding:0;margin:8px 0 8px;min-width:0;display:grid;grid-template-columns:minmax(0, 1fr);align-items:start;}.loudness-reference.svelte-1jdjhi {padding:16px;max-width:680px;margin:auto;width:100%;}.sections.svelte-1jdjhi {display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin-top:12px;}.tab-pane.svelte-1jdjhi {grid-area:1 / 1;min-width:0;}.tab-pane.inactive.svelte-1jdjhi {visibility:hidden;pointer-events:none;}.bands-wrap.svelte-1jdjhi {min-width:0;display:flex;flex-direction:column;gap:18px;}.bands-wrap.svelte-1jdjhi .panel {min-width:0;}input[type=range].svelte-1jdjhi {width:100%;}.band-picker.svelte-1jdjhi {min-height:32px;padding:2px 24px 2px 8px;}.sliders.svelte-1jdjhi {padding:8px 14px;display:grid;gap:2px;}.sliders.svelte-1jdjhi label:where(.svelte-1jdjhi) {display:grid;gap:12px;grid-template-columns:80px 80px minmax(0, 1fr);align-items:center;min-height:34px;font-size:14px;}.sliders.svelte-1jdjhi label:where(.svelte-1jdjhi) span:where(.svelte-1jdjhi) {text-align:right;color:var(--text);font-variant-numeric:tabular-nums;}.sliders.svelte-1jdjhi input:where(.svelte-1jdjhi) {min-width:0;margin:0;height:28px;}\n  @media (max-width: 480px) {.sliders.svelte-1jdjhi {padding:6px 10px;}.sliders.svelte-1jdjhi label:where(.svelte-1jdjhi) {grid-template-columns:64px 64px minmax(0, 1fr);gap:8px;} }.savebar.svelte-1jdjhi {margin:0;padding:0;border:0;font-size:13px;gap:8px;}.savebar.svelte-1jdjhi .actions:where(.svelte-1jdjhi) {justify-content:flex-end;}\n  @media (max-width: 900px) {.savebar.svelte-1jdjhi {flex-direction:column;align-items:stretch;width:max-content;max-width:100%;gap:5px;}.savebar.svelte-1jdjhi > span:where(.svelte-1jdjhi) {text-align:center;width:100%;}.savebar.svelte-1jdjhi .actions:where(.svelte-1jdjhi) {width:100%;justify-content:center;}\n  }.savebar.svelte-1jdjhi .chip:where(.svelte-1jdjhi) {min-height:34px;padding:6px 10px;font-size:13px;}.unsaved.svelte-1jdjhi {color:var(--warn);}.outputs.svelte-1jdjhi {display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);}.output.svelte-1jdjhi {padding:4px 14px;background:var(--panel-solid);display:grid;grid-template-columns:140px minmax(0, 1fr) auto;gap:12px;align-items:center;}.output.svelte-1jdjhi > span:where(.svelte-1jdjhi) {font-size:16px;}.output.svelte-1jdjhi label:where(.svelte-1jdjhi) {display:flex;align-items:center;gap:6px;}.notice.svelte-1jdjhi {padding:14px;border-radius:5px;margin:10px 0;font-size:14px;background:var(--wash);}.error.svelte-1jdjhi {color:var(--err);border:1px solid var(--err);}.warning.svelte-1jdjhi {color:var(--warn);}.fir-stats.svelte-1jdjhi {grid-column:3;grid-row:1;display:flex;flex-wrap:wrap;gap:8px 24px;margin:0;font-size:13px;color:var(--text-dim);}.fir-assignments.svelte-1jdjhi {grid-template-columns:1fr;}.fir-assignments.svelte-1jdjhi .output:where(.svelte-1jdjhi) {grid-template-columns:70px minmax(0, 1fr) auto auto;}.fir-assignments.svelte-1jdjhi .output:where(.svelte-1jdjhi) > label:where(.svelte-1jdjhi) {grid-column:4;grid-row:1;}.empty.svelte-1jdjhi {padding:50px 0;color:var(--text-dim);}dialog.svelte-1jdjhi {color:var(--text);background:var(--panel-solid);border:1px solid var(--border-hi);border-radius:10px;width:440px;max-width:92vw;padding:25px;}dialog.svelte-1jdjhi::backdrop {background:#000a;backdrop-filter:blur(6px);}dialog.svelte-1jdjhi h2:where(.svelte-1jdjhi) {margin-top:0;font-weight:500;}dialog.svelte-1jdjhi label:where(.svelte-1jdjhi) {display:grid;gap:12px;}dialog.svelte-1jdjhi .actions:where(.svelte-1jdjhi) {margin-top:24px;justify-content:flex-end;}dialog.svelte-1jdjhi p:where(.svelte-1jdjhi) {line-height:1.6;}\n  @media (max-width: 1100px) {.edit-grid.svelte-1jdjhi {grid-template-columns:1fr;}.outputs.svelte-1jdjhi {grid-template-columns:1fr;}.shell.svelte-1jdjhi {padding:16px;} }\n  @media (max-width: 600px) {.fir-assignments.svelte-1jdjhi .output:where(.svelte-1jdjhi) {grid-template-columns:42px minmax(0, 1fr) auto;}.fir-assignments.svelte-1jdjhi .output:where(.svelte-1jdjhi) > span:where(.svelte-1jdjhi) {grid-column:1;}.fir-assignments.svelte-1jdjhi .output:where(.svelte-1jdjhi) > label:where(.svelte-1jdjhi) {grid-column:3;}.fir-stats.svelte-1jdjhi {grid-column:2;grid-row:2;}.output.svelte-1jdjhi {grid-template-columns:minmax(0, 1fr) auto;gap:4px 10px;}.output.svelte-1jdjhi > span:where(.svelte-1jdjhi) {grid-column:1 / -1;}.topbar.svelte-1jdjhi {margin-bottom:10px;}.brand.svelte-1jdjhi {min-width:0;flex-wrap:wrap;gap:0 12px;}.brand.svelte-1jdjhi h1:where(.svelte-1jdjhi) {font-size:26px;line-height:1.25;margin-top:6px;}.toolbar.svelte-1jdjhi .profile-select:where(.svelte-1jdjhi) {gap:12px;width:auto;}.profile-select.svelte-1jdjhi select:where(.svelte-1jdjhi) {max-width:100%;}.toolbar.svelte-1jdjhi .actions:where(.svelte-1jdjhi) {display:flex;justify-content:flex-end;width:100%;gap:8px;}.toolbar.svelte-1jdjhi .chip:where(.svelte-1jdjhi) {padding:10px 6px;font-size:14px;}\n  }"
 };
-function ms(e, t) {
-	Ie(t, !0), Hr(e, ps);
+function gs(e, t) {
+	Fe(t, !0), Hr(e, hs);
 	let n = /* @__PURE__ */ R(Ht({
 		profiles: [],
 		outputs: []
@@ -3753,7 +3778,7 @@ function ms(e, t) {
 	}
 	let E = /* @__PURE__ */ R(0), D = /* @__PURE__ */ R(void 0), se = Ht({});
 	async function ce(e = "/", t = 0) {
-		let n = await P("files", {
+		let n = await qe("files", {
 			url: e,
 			sort: K(b),
 			start: t
@@ -3761,30 +3786,30 @@ function ms(e, t) {
 		z(_, n.list.filter((e) => e.url === "flash://" || e.url.startsWith("flash:///")), !0), z(y, e, !0), z(te, e, !0), z(x, t, !0), z(S, n.total, !0), z(C, ""), z(w, "");
 	}
 	async function le(e) {
-		if (K(Be)) {
-			z(A, "Save or discard profile edits before importing FIR.");
+		if (K(We)) {
+			z(Oe, "Save or discard profile edits before importing FIR.");
 			return;
 		}
-		z(E, e, !0), z(v, [], !0), await We(async () => {
+		z(E, e, !0), z(v, [], !0), await Je(async () => {
 			await ce(), K(D)?.showModal();
 		});
 	}
 	async function ue(e) {
 		if (!K(r)) return;
-		let t = K(r).id, n = await P("import_fir", {
+		let t = K(r).id, n = await qe("import_fir", {
 			profile_id: t,
 			revision: K(r).revision,
 			channel: K(E),
 			path: e.url
 		});
-		se[`${t}:${K(E)}`] = e.name, Ke(n), await qe(), K(D)?.close(), z(we, "FIR Imported");
+		se[`${t}:${K(E)}`] = e.name, Ze(n), await I(), K(D)?.close(), z(ke, "FIR Imported");
 	}
 	let de = /* @__PURE__ */ R("peq"), fe = /* @__PURE__ */ R(Ht({
 		stage: null,
 		serial: 0
 	}));
 	function pe(e) {
-		(e === "peq" || e === "correction") && (Te[K(h)] = K(j), z(u, e === "correction"), z(j, Te[K(u) ? !K(l) || K(s) === 0 ? "peqFirList" : "peqFirListRight" : eo(K(l) ? K(o) : 0)] ?? 0, !0)), z(de, e, !0), z(fe, {
+		(e === "peq" || e === "correction") && (je[K(h)] = K(Ae), z(u, e === "correction"), z(Ae, je[K(u) ? !K(l) || K(s) === 0 ? "peqFirList" : "peqFirListRight" : eo(K(l) ? K(o) : 0)] ?? 0, !0)), z(de, e, !0), z(fe, {
 			stage: e === "peq" ? "peq" : e === "correction" ? "correction" : e === "fir" ? "fir" : e === "geq" ? "geq" : null,
 			serial: K(fe).serial + 1
 		}, !0);
@@ -3792,7 +3817,7 @@ function ms(e, t) {
 	let me = /* @__PURE__ */ R(""), he = /* @__PURE__ */ R(void 0), ge = /* @__PURE__ */ R(void 0), _e = /* @__PURE__ */ R(void 0), ve = /* @__PURE__ */ R(!1), ye = /* @__PURE__ */ R(void 0), O = null, be = /* @__PURE__ */ R("Discard And Reload");
 	function xe(e, t = "Discard And Reload") {
 		if (!K(k)) {
-			if (!K(Be)) {
+			if (!K(We)) {
 				e();
 				return;
 			}
@@ -3806,21 +3831,36 @@ function ms(e, t) {
 		let e = O;
 		O = null, K(ye)?.close(), e?.();
 	}
-	let k = /* @__PURE__ */ R(!1), A = /* @__PURE__ */ R(""), we = /* @__PURE__ */ R("Loading Profile…"), j = /* @__PURE__ */ R(0), Te = Ht({}), Ee = /* @__PURE__ */ R(void 0), Oe = /* @__PURE__ */ R("create"), ke = /* @__PURE__ */ R(""), Ae = /* @__PURE__ */ R(!1), je = /* @__PURE__ */ R(null), Me = /* @__PURE__ */ R(""), Ne = /* @__PURE__ */ R(!1), Pe = /* @__PURE__ */ R(Ht({
+	let k = /* @__PURE__ */ R(!1), A = !1, we = 0, j = /* @__PURE__ */ R(Ht({})), Te = (e, t) => `${K(r)?.id}:${e}:${t}`, Ee = /* @__PURE__ */ L(() => {
+		let e = io(K(i));
+		for (let t of [
+			"audioTunningEQList",
+			"audioTunningEQListRight",
+			"peqFirList",
+			"peqFirListRight"
+		]) e[t] = e[t]?.map((e, n) => ({
+			...e,
+			bypass: Te(t, n) in K(j)
+		}));
+		return e;
+	}), Oe = /* @__PURE__ */ R(""), ke = /* @__PURE__ */ R("Loading Profile…"), Ae = /* @__PURE__ */ R(0), je = Ht({}), Me = /* @__PURE__ */ R(void 0), N = /* @__PURE__ */ R("create"), Ne = /* @__PURE__ */ R(""), P = /* @__PURE__ */ R(!1), Pe = /* @__PURE__ */ R(null), Le = /* @__PURE__ */ R(""), Re = /* @__PURE__ */ R(!1), ze = /* @__PURE__ */ R(Ht({
 		left: !1,
 		right: !1
 	}));
-	function N(e) {
-		K(k) || (e || z(Pe, {
+	function Be(e) {
+		K(k) || (e || z(ze, {
 			left: K(i).enableLeftFir ?? !1,
 			right: K(i).enableRightFir ?? !1
-		}, !0), z(Ne, e, !0), K(i).enableLeftFir !== void 0 && (K(i).enableLeftFir = e && K(Pe).left), K(i).enableRightFir !== void 0 && (K(i).enableRightFir = e && K(Pe).right));
+		}, !0), z(Re, e, !0), K(i).enableLeftFir !== void 0 && (K(i).enableLeftFir = e && K(ze).left), K(i).enableRightFir !== void 0 && (K(i).enableRightFir = e && K(ze).right));
 	}
-	function Fe(e, t) {
-		K(k) || !K(Ne) || (K(Pe)[e] = t, K(i)[e === "left" ? "enableLeftFir" : "enableRightFir"] = t);
+	function Ve(e, t) {
+		K(k) || !K(Re) || (K(ze)[e] = t, K(i)[e === "left" ? "enableLeftFir" : "enableRightFir"] = t);
 	}
-	let Re = !0, ze = /* @__PURE__ */ L(() => K(je)?.profile_id === K(r)?.id && K(je)?.revision === K(r)?.revision ? K(je) : null), Be = /* @__PURE__ */ L(() => K(r) !== null && JSON.stringify(K(i)) !== JSON.stringify(K(r).settings)), Ve = /* @__PURE__ */ L(() => K(i)[K(h)] ?? []), He = /* @__PURE__ */ L(() => K(Ve).map(so)), Ue = /* @__PURE__ */ L(() => K(Ve)[K(j)]);
-	function P(e, n = {}) {
+	let He = !0, Ue = /* @__PURE__ */ L(() => K(Pe)?.profile_id === K(r)?.id && K(Pe)?.revision === K(r)?.revision ? K(Pe) : null), We = /* @__PURE__ */ L(() => K(r) !== null && JSON.stringify(K(i)) !== JSON.stringify(K(r).settings)), F = /* @__PURE__ */ L(() => K(i)[K(h)] ?? []), Ge = /* @__PURE__ */ L(() => K(F).map((e, t) => so({
+		...e,
+		bypass: Te(K(h), t) in K(j)
+	}))), Ke = /* @__PURE__ */ L(() => K(F)[K(Ae)]);
+	function qe(e, n = {}) {
 		return t.hass.callWS({
 			type: "eversolo/eq",
 			entry_id: t.panel.config.entry_id,
@@ -3828,67 +3868,80 @@ function ms(e, t) {
 			payload: n
 		});
 	}
-	async function We(e) {
+	async function Je(e) {
 		if (!K(k)) {
-			z(k, !0), z(A, "");
+			we++, z(k, !0), z(Oe, "");
 			try {
 				await e();
 			} catch (e) {
-				z(A, e instanceof Error ? e.message : String(e?.message ?? e), !0), z(we, "Request Needs Attention");
+				z(Oe, e instanceof Error ? e.message : String(e?.message ?? e), !0), z(ke, "Request Needs Attention");
 			} finally {
 				z(k, !1);
 			}
 		}
 	}
-	async function F() {
-		z(n, await P("snapshot"), !0);
+	async function Ye() {
+		z(n, await qe("snapshot"), !0);
 		try {
 			let e = (await t.hass.callWS({ type: "config/entity_registry/list" })).find((e) => e.config_entry_id === t.panel.config.entry_id && e.entity_id.startsWith("media_player."));
 			e && z(me, (await t.hass.callWS({ type: "get_states" })).find((t) => t.entity_id === e.entity_id)?.attributes.friendly_name || e.name || e.original_name || e.entity_id, !0);
 		} catch {}
 	}
-	function Ge() {
-		xe(() => void We(Xe));
+	function Xe() {
+		xe(() => void Je(et));
 	}
-	function Ke(e, t = !1) {
-		t && K(r)?.id === e.id && !K(Ne) || (z(Pe, {
+	function Ze(e, t = !1) {
+		t && K(r)?.id === e.id && !K(Re) || (z(ze, {
 			left: e.settings.enableLeftFir ?? !1,
 			right: e.settings.enableRightFir ?? !1
-		}, !0), z(Ne, K(Pe).left || K(Pe).right, !0)), z(r, e, !0), z(i, io(e.settings), !0), z(Ae, !1), z(je, null), z(Me, ""), z(j, 0), ao(K(i), K(a)).length || z(a, 0), z(we, "Read From Device");
+		}, !0), z(Re, K(ze).left || K(ze).right, !0)), t || z(j, {}, !0), z(r, e, !0), z(i, io(e.settings), !0), z(P, !1), z(Pe, null), z(Le, ""), z(Ae, 0), ao(K(i), K(a)).length || z(a, 0), z(ke, "Read From Device");
 	}
-	async function qe(e = K(r)) {
+	async function I(e = K(r)) {
 		if (!(!e || e.processing?.hasFir === !1)) try {
-			let t = await P("curves", { profile_id: e.id });
-			Re && K(r)?.id === e.id && (z(je, t, !0), z(Me, ""));
+			let t = await qe("curves", { profile_id: e.id });
+			He && K(r)?.id === e.id && (z(Pe, t, !0), z(Le, ""));
 		} catch {
-			K(r)?.id === e.id && (z(je, null), z(Me, "FIR curve request failed. PEQ editing remains available."));
+			K(r)?.id === e.id && (z(Pe, null), z(Le, "FIR curve request failed. PEQ editing remains available."));
 		}
 	}
-	async function Je(e) {
-		Ke(await P("read", { profile_id: e })), await qe();
+	async function Qe(e) {
+		Ze(await qe("read", { profile_id: e })), await I();
 	}
-	function Ye(e) {
+	function $e(e) {
 		let t = e.currentTarget, n = Number(t.value);
-		t.value = String(K(r)?.id ?? ""), xe(() => void We(async () => {
-			await Je(n);
+		t.value = String(K(r)?.id ?? ""), xe(() => void Je(async () => {
+			await Qe(n);
 		}), "Discard And Switch");
 	}
-	async function Xe() {
-		await F();
+	async function et() {
+		await Ye();
 		let e = K(n).profiles.some((e) => e.id === K(r)?.id) ? K(r).id : K(n).profiles[0]?.id;
-		e === void 0 ? (z(r, null), z(i, {}, !0), z(we, "Create Your First Profile")) : await Je(e);
+		e === void 0 ? (z(r, null), z(i, {}, !0), z(ke, "Create Your First Profile")) : await Qe(e);
 	}
-	async function Ze() {
-		K(k) || !Re || document.hidden || K(Ee)?.open || K(D)?.open || K(ye)?.open || await We(async () => {
-			if (await F(), K(r)) {
-				let e = await P("read", { profile_id: K(r).id });
-				if (!Re) return;
-				K(Be) ? z(Ae, e.revision !== K(r).revision) : e.revision !== K(r).revision && Ke(e), await qe(e);
+	async function tt() {
+		if (K(k) || A || !He || document.hidden || K(Me)?.open || K(D)?.open || K(ye)?.open) return;
+		A = !0;
+		let e = we, t = K(r)?.id;
+		try {
+			let i = await qe("snapshot");
+			if (!He || K(k) || e !== we || K(r)?.id !== t) return;
+			if (JSON.stringify(K(n)) !== JSON.stringify(i) && z(n, i, !0), K(r)) {
+				let n = await qe("read", { profile_id: t });
+				if (!He || K(k) || e !== we || K(r)?.id !== t) return;
+				if (K(We)) z(P, n.revision !== K(r).revision);
+				else if (n.revision !== K(r).revision) {
+					let e = document.activeElement?.shadowRoot?.activeElement ?? document.activeElement;
+					if (e instanceof HTMLInputElement || e instanceof HTMLSelectElement) return;
+					Ze(n);
+				}
+				(!K(Pe) || K(Pe).revision !== n.revision) && await I(n);
 			}
-		});
+		} catch {} finally {
+			A = !1;
+		}
 	}
 	yi(() => {
-		We(Xe);
+		Je(et);
 		let e = new ResizeObserver(() => {
 			if (!K(ge) || !K(_e)) return;
 			let e = K(ge).getBoundingClientRect();
@@ -3899,17 +3952,24 @@ function ms(e, t) {
 			K(ge),
 			K(_e)
 		]) t && e.observe(t);
-		let t = setInterval(() => void Ze(), 15e3), n = (e) => {
-			K(Be) && (e.preventDefault(), e.returnValue = "");
+		let t = setInterval(() => void tt(), 15e3), n = (e) => {
+			K(We) && (e.preventDefault(), e.returnValue = "");
 		};
 		return window.addEventListener("beforeunload", n), () => {
-			Re = !1, e.disconnect(), clearInterval(t), window.removeEventListener("beforeunload", n);
+			He = !1, e.disconnect(), clearInterval(t), window.removeEventListener("beforeunload", n);
 		};
 	});
-	function I(e, t) {
-		K(k) || (K(i)[K(h)] = K(Ve).map((n, r) => r === e ? co(n, t) : n), z(j, e, !0));
+	function nt(e, t) {
+		if (K(k)) return;
+		let n = Te(K(h), e);
+		if (t.bypass !== void 0) {
+			t.bypass && (K(j)[n] = K(F)[e].gain);
+			let r = t.bypass ? 0 : K(j)[n] ?? 0;
+			t.bypass || delete K(j)[n], K(i)[K(h)] = K(F).map((n, i) => i === e ? co(n, !t.bypass, r) : n);
+		} else t.gain !== void 0 && delete K(j)[n], K(i)[K(h)] = K(F).map((n, r) => r === e ? uo(n, t) : n);
+		z(Ae, e, !0);
 	}
-	function Qe(e, t) {
+	function rt(e, t) {
 		if (K(k) || !Number.isFinite(t)) return;
 		let n = Math.round(Math.max(-15, Math.min(15, t)) * 10) / 10;
 		K(i)[K(f)] = K(i)[K(f)]?.map((t, r) => r === e ? {
@@ -3917,7 +3977,7 @@ function ms(e, t) {
 			gain: n
 		} : t);
 	}
-	function $e(e, t = 0) {
+	function it(e, t = 0) {
 		if (K(k)) return;
 		let n = eo(t);
 		K(i)[n] = K(i)[n]?.map((t) => ({
@@ -3925,128 +3985,122 @@ function ms(e, t) {
 			volume: Math.round(e * 10)
 		}));
 	}
-	function et(e) {
-		K(l) && (Te[K(h)] = K(j), K(u) ? z(s, e, !0) : z(o, e, !0), z(j, Te[K(u) ? e === 0 ? "peqFirList" : "peqFirListRight" : eo(e)] ?? 0, !0));
+	function at(e) {
+		K(l) && (je[K(h)] = K(Ae), K(u) ? z(s, e, !0) : z(o, e, !0), z(Ae, je[K(u) ? e === 0 ? "peqFirList" : "peqFirListRight" : eo(e)] ?? 0, !0));
 	}
-	function tt() {
+	function ot() {
 		if (K(k) || !K(l)) return;
 		let e = +(K(d) === 0), t = K(u) ? e === 0 ? "peqFirList" : "peqFirListRight" : eo(e);
-		if (K(i)[t]?.length !== K(Ve).length) {
-			z(A, "Channel band counts differ; reload the profile before setting both channels.");
+		if (K(i)[t]?.length !== K(F).length) {
+			z(Oe, "Channel band counts differ; reload the profile before setting both channels.");
 			return;
 		}
-		K(i)[t] = io(K(Ve));
+		K(i)[t] = io(K(F));
 	}
-	function nt() {
-		K(i)[K(h)] = K(Ve).map((e) => ({
-			...e,
-			gain: 0,
-			q: 1,
-			type: 6,
-			volume: 0
-		}));
+	function st() {
+		K(F).forEach((e, t) => delete K(j)[Te(K(h), t)]), K(i)[K(h)] = K(F).map(lo);
 	}
-	function rt(e) {
+	function ct(e) {
 		if (K(k)) return;
 		let t = () => {
-			z(Oe, e, !0), z(ke, e === "rename" || e === "save_as" ? K(r)?.name ?? "" : "", !0), K(Ee)?.showModal();
+			z(N, e, !0), z(Ne, e === "rename" || e === "save_as" ? K(r)?.name ?? "" : "", !0), K(Me)?.showModal();
 		};
 		e === "create" ? xe(t, "Discard And Continue") : t();
 	}
-	async function it(e) {
+	async function lt(e) {
 		e.preventDefault();
 		let t = K(r);
-		K(Ee)?.close(), await We(async () => {
-			K(Oe) === "create" ? (Ke(await P("create", { name: K(ke) })), await qe(), await F(), z(we, "Profile Created")) : t && K(Oe) === "save_as" ? (Ke(await P("save_as", {
+		K(Me)?.close(), await Je(async () => {
+			K(N) === "create" ? (Ze(await qe("create", { name: K(Ne) })), await I(), await Ye(), z(ke, "Profile Created")) : t && K(N) === "save_as" ? (Ze(await qe("save_as", {
 				profile_id: t.id,
 				revision: t.revision,
-				name: K(ke),
+				name: K(Ne),
 				settings: io(K(i))
-			})), await qe(), await F(), z(we, "Profile Copied And Verified On Device")) : t && K(Oe) === "rename" ? (z(r, await P("rename", {
+			})), await I(), await Ye(), z(ke, "Profile Copied And Verified On Device")) : t && K(N) === "rename" ? (z(r, await qe("rename", {
 				profile_id: t.id,
 				revision: t.revision,
-				name: K(ke)
-			}), !0), await qe(), await F(), z(we, "Profile Renamed")) : t && (await P("delete", {
+				name: K(Ne)
+			}), !0), await I(), await Ye(), z(ke, "Profile Renamed")) : t && (await qe("delete", {
 				profile_id: t.id,
 				revision: t.revision,
 				expected_name: t.name
-			}), z(r, null), z(i, {}, !0), await Xe(), z(we, "Profile Deleted"));
+			}), z(r, null), z(i, {}, !0), await et(), z(ke, "Profile Deleted"));
 		});
 	}
-	async function at() {
-		K(r) && (Ke(await P("save", {
+	async function ut() {
+		K(r) && (Ze(await qe("save", {
 			profile_id: K(r).id,
 			revision: K(r).revision,
 			settings: io(K(i))
-		}), !0), await qe(), await F(), z(we, "Saved And Verified On Device"));
+		}), !0), await I(), await Ye(), z(ke, "Saved And Verified On Device"));
 	}
-	function ot(e, t, n, r) {
+	function dt(e, t, n, r) {
 		let a = Number(e.currentTarget.value);
-		t === "frequency" && (a = Math.round(20 * 1e3 ** (a / 1e3))), K(k) || (K(i)[n] = K(i)[n]?.map((e, n) => n === r ? co(e, { [t]: a }) : e));
+		t === "frequency" && (a = Math.round(20 * 1e3 ** (a / 1e3))), !K(k) && t === "gain" && delete K(j)[Te(n, r)], K(k) || (K(i)[n] = K(i)[n]?.map((e, n) => n === r ? uo(e, { [t]: a }) : e));
 	}
-	var st = fs(), ct = V(st), lt = B(ct), ut = B(lt);
-	let dt;
-	var ft = B(ut), pt = B(ft, !0);
-	M(ft), M(ut), M(lt);
-	var mt = H(lt, 2);
-	let ht;
-	var gt = B(mt), _t = H(B(gt), 2), vt = B(_t), yt = (e) => {
-		var t = Mo();
+	var ft = ms(), pt = V(ft), mt = B(pt), ht = B(mt);
+	let gt;
+	var _t = B(ht), vt = B(_t, !0);
+	M(_t), M(ht), M(mt);
+	var yt = H(mt, 2);
+	let bt;
+	var xt = B(yt), St = H(B(xt), 2), Ct = B(St), wt = (e) => {
+		var t = Po();
 		t.value = t.__value = "", Y(e, t);
 	};
-	Z(vt, (e) => {
-		K(r) || e(yt);
-	}), Q(H(vt), 17, () => K(n).profiles, (e) => e.id, (e, t) => {
-		var n = No(), r = B(n);
+	Z(Ct, (e) => {
+		K(r) || e(wt);
+	}), Q(H(Ct), 17, () => K(n).profiles, (e) => e.id, (e, t) => {
+		var n = Fo(), r = B(n);
 		M(n);
 		var i = {};
 		U(() => {
 			X(r, `${(K(t).name || "Unnamed") ?? ""} · #${K(t).id ?? ""}`), i !== (i = K(t).id) && (n.value = (n.__value = K(t).id) ?? "");
 		}), Y(e, n);
-	}), M(_t);
-	var bt;
-	Qr(_t), M(gt), _i(gt, (e) => z(ge, e), () => K(ge));
-	var xt = H(gt, 2), St = B(xt), Ct = H(St, 2), wt = H(Ct, 2), Tt = H(wt, 2);
-	M(xt), _i(xt, (e) => z(_e, e), () => K(_e)), M(mt), _i(mt, (e) => z(he, e), () => K(he));
-	var Et = H(mt, 2), Dt = (e) => {
-		var t = Po(), n = B(t, !0);
-		M(t), U(() => X(n, K(A))), Y(e, t);
+	}), M(St);
+	var Tt;
+	Qr(St), M(xt), _i(xt, (e) => z(ge, e), () => K(ge));
+	var Et = H(xt, 2), Dt = B(Et), Ot = H(Dt, 2), kt = H(Ot, 2), At = H(kt, 2);
+	M(Et), _i(Et, (e) => z(_e, e), () => K(_e)), M(yt), _i(yt, (e) => z(he, e), () => K(he));
+	var jt = H(yt, 2), Mt = (e) => {
+		var t = Io(), n = B(t, !0);
+		M(t), U(() => X(n, K(Oe))), Y(e, t);
 	};
-	Z(Et, (e) => {
-		K(A) && e(Dt);
+	Z(jt, (e) => {
+		K(Oe) && e(Mt);
 	});
-	var Ot = H(Et, 2), kt = (e) => {
-		Y(e, Fo());
+	var Nt = H(jt, 2), Pt = (e) => {
+		Y(e, Lo());
 	};
-	Z(Ot, (e) => {
-		K(Ae) && e(kt);
+	Z(Nt, (e) => {
+		K(P) && e(Pt);
 	});
-	var At = H(Ot, 2), jt = (e) => {
+	var Ft = H(Nt, 2), It = (e) => {
 		let t = (e) => {
-			var t = Io(), n = B(t);
+			var t = Ro(), n = B(t);
 			let r;
 			var i = B(n, !0);
 			M(n);
 			var a = H(n), o = B(a), s = H(o, 2), c = H(s, 2);
 			M(a), M(t), U(() => {
-				r = Jr(n, 1, "svelte-1jdjhi", null, r, { unsaved: K(Be) }), X(i, K(Be) ? "Unsaved Changes" : K(we)), o.disabled = K(k), s.disabled = K(k) || !K(Be), c.disabled = K(k) || !K(Be) || K(Ae);
-			}), q("click", o, Ge), q("click", s, Ge), q("click", c, () => void We(at)), Y(e, t);
+				r = Jr(n, 1, "svelte-1jdjhi", null, r, { unsaved: K(We) }), X(i, K(We) ? "Unsaved Changes" : K(ke)), o.disabled = K(k), s.disabled = K(k) || !K(We), c.disabled = K(k) || !K(We) || K(P);
+			}), q("click", o, Xe), q("click", s, Xe), q("click", c, () => void Je(ut)), Y(e, t);
 		};
-		var o = ns(), s = V(o);
-		jo(s, {
+		var o = is(), s = V(o);
+		No(s, {
 			get busy() {
 				return K(k);
 			},
 			onModeChange: (e) => K(i).settingType = e,
 			onChannelChange: (e) => z(a, e, !0),
 			get settings() {
-				return K(i);
+				return K(Ee);
 			},
 			get profile() {
 				return K(r);
 			},
 			get fir() {
-				return K(je);
+				return K(Pe);
 			},
 			get channel() {
 				return K(a);
@@ -4059,11 +4113,11 @@ function ms(e, t) {
 			}
 		});
 		var _ = H(s, 2), v = (e) => {
-			var t = Lo(), n = B(t, !0);
-			M(t), U(() => X(n, K(Me))), Y(e, t);
+			var t = zo(), n = B(t, !0);
+			M(t), U(() => X(n, K(Le))), Y(e, t);
 		};
 		Z(_, (e) => {
-			K(Me) && e(v);
+			K(Le) && e(v);
 		});
 		var y = H(_, 2);
 		Q(y, 20, () => [
@@ -4077,7 +4131,7 @@ function ms(e, t) {
 		], Mr, (e, t) => {
 			var n = /* @__PURE__ */ L(() => m(t, 2));
 			let r = () => K(n)[0], i = () => K(n)[1];
-			var a = Ro();
+			var a = Bo();
 			let o;
 			var s = B(a, !0);
 			M(a), U(() => {
@@ -4108,21 +4162,21 @@ function ms(e, t) {
 				get bankChannel() {
 					return K(d);
 				},
-				onBankChannel: et,
+				onBankChannel: at,
 				get selectedBand() {
-					return K(j);
+					return K(Ae);
 				},
-				onSelect: (e) => z(j, e, !0),
+				onSelect: (e) => z(Ae, e, !0),
 				get enabled() {
 					return K(i)[K(g)];
 				},
 				onEnable: (e) => K(i)[K(g)] = e,
 				get bands() {
-					return K(He);
+					return K(Ge);
 				},
-				onPatch: I,
-				onReset: nt,
-				onSetBoth: tt,
+				onPatch: nt,
+				onReset: st,
+				onSetBoth: ot,
 				get types() {
 					return K(n);
 				},
@@ -4135,21 +4189,21 @@ function ms(e, t) {
 				onToggleLink: () => {}
 			});
 		}
-		jr(H(C, 2), () => `${K(h)}:${K(j)}`, (e) => {
-			let t = /* @__PURE__ */ L(() => K(h)), n = /* @__PURE__ */ L(() => K(j));
+		jr(H(C, 2), () => `${K(h)}:${K(Ae)}`, (e) => {
+			let t = /* @__PURE__ */ L(() => K(h)), n = /* @__PURE__ */ L(() => K(Ae));
 			var r = Cr(), i = V(r), a = (e) => {
 				wi(e, {
 					code: "EQ.05",
 					title: "Band Sliders",
 					right: (e) => {
-						var t = Bo();
-						Q(t, 21, () => K(Ve), Mr, (e, t, n) => {
-							var r = zo();
+						var t = Ho();
+						Q(t, 21, () => K(F), Mr, (e, t, n) => {
+							var r = Vo();
 							r.textContent = `Band ${n + 1}`, r.value = r.__value = n, Y(e, r);
-						}), M(t), $r(t, () => K(j), (e) => z(j, e)), Y(e, t);
+						}), M(t), $r(t, () => K(Ae), (e) => z(Ae, e)), Y(e, t);
 					},
 					children: (e, r) => {
-						var i = Vo(), a = B(i), o = H(B(a)), s = B(o);
+						var i = Uo(), a = B(i), o = H(B(a)), s = B(o);
 						M(o);
 						var c = H(o);
 						ai(c), M(a);
@@ -4161,8 +4215,8 @@ function ms(e, t) {
 						M(m);
 						var g = H(m);
 						ai(g), M(p), M(i), U((e) => {
-							X(s, `${K(Ue).fc ?? ""} Hz`), oi(c, e), X(d, `${K(Ue).gain ?? ""} dB`), oi(f, K(Ue).gain), X(h, K(Ue).q), oi(g, K(Ue).q);
-						}, [() => Math.log(K(Ue).fc / 20) / Math.log(1e3) * 1e3]), q("input", c, (e) => ot(e, "frequency", K(t), K(n))), q("input", f, (e) => ot(e, "gain", K(t), K(n))), q("input", g, (e) => ot(e, "q", K(t), K(n))), Y(e, i);
+							X(s, `${K(Ke).fc ?? ""} Hz`), oi(c, e), X(d, `${K(Ke).gain ?? ""} dB`), oi(f, K(Ke).gain), X(h, K(Ke).q), oi(g, K(Ke).q);
+						}, [() => Math.log(K(Ke).fc / 20) / Math.log(1e3) * 1e3]), q("input", c, (e) => dt(e, "frequency", K(t), K(n))), q("input", f, (e) => dt(e, "gain", K(t), K(n))), q("input", g, (e) => dt(e, "q", K(t), K(n))), Y(e, i);
 					},
 					$$slots: {
 						right: !0,
@@ -4171,7 +4225,7 @@ function ms(e, t) {
 				});
 			};
 			Z(i, (e) => {
-				K(Ue) && e(a);
+				K(Ke) && e(a);
 			}), Y(e, r);
 		}), M(x);
 		var w = H(x, 2);
@@ -4180,13 +4234,13 @@ function ms(e, t) {
 			code: "EQ.06",
 			title: "Graphic EQ",
 			titleControl: (e) => {
-				var t = Ho(), n = B(t);
+				var t = Wo(), n = B(t);
 				ai(n), M(t), U(() => {
 					si(n, K(i)[K(p)] ?? !1), n.disabled = K(i)[K(p)] === void 0;
 				}), q("change", n, (e) => K(i)[K(p)] = e.currentTarget.checked), Y(e, t);
 			},
 			right: (e) => {
-				var t = Uo(), n = V(t);
+				var t = Go(), n = V(t);
 				{
 					let e = /* @__PURE__ */ L(() => !K(l));
 					Di(n, {
@@ -4206,9 +4260,9 @@ function ms(e, t) {
 				}))), Y(e, t);
 			},
 			children: (e, t) => {
-				var n = Go();
+				var n = qo();
 				Q(n, 21, () => K(i)[K(f)] ?? [], Mr, (e, t, n) => {
-					var r = Wo(), a = B(r);
+					var r = Ko(), a = B(r);
 					ai(a);
 					var o = H(a, 2);
 					ai(o);
@@ -4216,8 +4270,8 @@ function ms(e, t) {
 					M(s), M(r), U((e) => {
 						$(a, "aria-label", `Graphic EQ ${K(t).freq} Hz gain value`), oi(a, e), $(o, "aria-label", `Graphic EQ ${K(t).freq} Hz gain`), oi(o, K(t).gain), X(c, K(t).freq >= 1e3 ? `${K(t).freq / 1e3}k` : K(t).freq);
 					}, [() => K(t).gain.toFixed(1)]), q("change", a, (e) => {
-						Qe(n, e.currentTarget.valueAsNumber), e.currentTarget.value = K(i)[K(f)][n].gain.toFixed(1);
-					}), q("input", o, (e) => Qe(n, e.currentTarget.valueAsNumber)), Y(e, r);
+						rt(n, e.currentTarget.valueAsNumber), e.currentTarget.value = K(i)[K(f)][n].gain.toFixed(1);
+					}), q("input", o, (e) => rt(n, e.currentTarget.valueAsNumber)), Y(e, r);
 				}), M(n), Y(e, n);
 			},
 			$$slots: {
@@ -4233,11 +4287,11 @@ function ms(e, t) {
 				code: "DSP.02",
 				title: "Loudness Compensation",
 				titleControl: (e) => {
-					var t = Ko(), n = B(t);
+					var t = Jo(), n = B(t);
 					ai(n), M(t), U((e) => si(n, e), [() => K(i)[no(K(a))] === 1]), q("change", n, (e) => K(i)[no(K(a))] = +!!e.currentTarget.checked), Y(e, t);
 				},
 				children: (e, t) => {
-					var n = qo();
+					var n = Yo();
 					Ba(B(n), {}), M(n), Y(e, n);
 				},
 				$$slots: {
@@ -4266,10 +4320,10 @@ function ms(e, t) {
 						return K(n);
 					},
 					accentChannelId: 0,
-					onChange: (e) => $e(e, 0),
-					onRightChange: (e) => $e(e, 1),
+					onChange: (e) => it(e, 0),
+					onRightChange: (e) => it(e, 1),
 					onReset: () => {
-						$e(0, 0), K(l) && $e(0, 1), K(i).balance !== void 0 && (K(i).balance = 0);
+						it(0, 0), K(l) && it(0, 1), K(i).balance !== void 0 && (K(i).balance = 0);
 					}
 				});
 			}
@@ -4284,19 +4338,19 @@ function ms(e, t) {
 				code: "DSP.03",
 				title: "FIR Filters",
 				titleControl: (e) => {
-					var t = Jo(), n = B(t);
+					var t = Xo(), n = B(t);
 					ai(n), M(t), U(() => {
-						si(n, K(Ne)), n.disabled = K(i).enableLeftFir === void 0 && K(i).enableRightFir === void 0;
-					}), q("change", n, (e) => N(e.currentTarget.checked)), Y(e, t);
+						si(n, K(Re)), n.disabled = K(i).enableLeftFir === void 0 && K(i).enableRightFir === void 0;
+					}), q("change", n, (e) => Be(e.currentTarget.checked)), Y(e, t);
 				},
 				children: (e, t) => {
-					var n = Zo();
+					var n = $o();
 					Q(n, 20, () => ["left", "right"], Mr, (e, t) => {
 						let n = /* @__PURE__ */ L(() => t === "left" ? 0 : 1);
-						var a = Xo(), o = B(a), s = B(o, !0);
+						var a = Qo(), o = B(a), s = B(o, !0);
 						M(o);
 						var c = H(o, 2), l = H(c, 2), u = (e) => {
-							var t = Yo(), i = B(t, !0);
+							var t = Zo(), i = B(t, !0);
 							M(t), U(() => X(i, se[`${K(r).id}:${K(n)}`])), Y(e, t);
 						};
 						Z(l, (e) => {
@@ -4306,8 +4360,8 @@ function ms(e, t) {
 						ai(f), De(), M(d);
 						var p = H(d, 2), m = B(p), h = B(m, !0);
 						M(m), M(p), M(a), U((e) => {
-							X(s, t === "left" ? "Left" : "Right"), c.disabled = K(k) || K(Be), $(f, "aria-label", `${t === "left" ? "Left" : "Right"} FIR Enabled`), si(f, K(i)[t === "left" ? "enableLeftFir" : "enableRightFir"] ?? !1), f.disabled = !K(Ne) || K(i)[t === "left" ? "enableLeftFir" : "enableRightFir"] === void 0, $(p, "aria-label", `${t === "left" ? "Left" : "Right"} FIR Status`), X(h, e);
-						}, [() => K(ze)?.[t]?.loaded && K(ze)[t].points.length > 0 && K(ze)[t].points.every((e) => Number.isFinite(e.x) && Number.isFinite(e.y)) ? "Filter Imported" : "Filter Not Imported"]), q("click", c, () => void le(K(n))), q("change", f, (e) => Fe(t, e.currentTarget.checked)), Y(e, a);
+							X(s, t === "left" ? "Left" : "Right"), c.disabled = K(k) || K(We), $(f, "aria-label", `${t === "left" ? "Left" : "Right"} FIR Enabled`), si(f, K(i)[t === "left" ? "enableLeftFir" : "enableRightFir"] ?? !1), f.disabled = !K(Re) || K(i)[t === "left" ? "enableLeftFir" : "enableRightFir"] === void 0, $(p, "aria-label", `${t === "left" ? "Left" : "Right"} FIR Status`), X(h, e);
+						}, [() => K(Ue)?.[t]?.loaded && K(Ue)[t].points.length > 0 && K(Ue)[t].points.every((e) => Number.isFinite(e.x) && Number.isFinite(e.y)) ? "Filter Imported" : "Filter Not Imported"]), q("click", c, () => void le(K(n))), q("change", f, (e) => Ve(t, e.currentTarget.checked)), Y(e, a);
 					}), M(n), Y(e, n);
 				},
 				$$slots: {
@@ -4325,12 +4379,12 @@ function ms(e, t) {
 			code: "IO.01",
 			title: "Output Assignments",
 			children: (e, t) => {
-				var r = ts();
+				var r = rs();
 				Q(r, 21, () => K(n).outputs, (e) => e.id, (e, t) => {
-					var r = es(), i = B(r), a = B(i, !0);
+					var r = ns(), i = B(r), a = B(i, !0);
 					M(i);
 					var o = H(i, 2), s = B(o), c = (e) => {
-						var n = Qo(), r = B(n);
+						var n = es(), r = B(n);
 						M(n);
 						var i = {};
 						U(() => {
@@ -4340,7 +4394,7 @@ function ms(e, t) {
 					Z(s, (e) => {
 						K(l) && e(c);
 					}), Q(H(s), 17, () => K(n).profiles, (e) => e.id, (e, t) => {
-						var n = $o(), r = B(n);
+						var n = ts(), r = B(n);
 						M(n);
 						var i = {};
 						U(() => {
@@ -4354,19 +4408,19 @@ function ms(e, t) {
 						X(a, K(t).name), $(o, "aria-label", `${K(t).name} assigned profile`), o.disabled = K(k), u !== (u = K(t).eqId) && (o.value = (o.__value = K(t).eqId) ?? "", Zr(o, K(t).eqId)), si(f, K(t).enable), f.disabled = K(k);
 					}), q("change", o, (e) => {
 						let n = Number(e.currentTarget.value);
-						e.currentTarget.value = String(K(t).eqId), We(async () => {
-							await P("output", {
+						e.currentTarget.value = String(K(t).eqId), Je(async () => {
+							await qe("output", {
 								output_id: K(t).id,
 								profile_id: n
-							}), await F();
+							}), await Ye();
 						});
 					}), q("change", f, (e) => {
 						let n = e.currentTarget.checked;
-						e.currentTarget.checked = K(t).enable, We(async () => {
-							await P("output", {
+						e.currentTarget.checked = K(t).enable, Je(async () => {
+							await qe("output", {
 								output_id: K(t).id,
 								enabled: n
-							}), await F();
+							}), await Ye();
 						});
 					}), Y(e, r);
 				}), M(r), Y(e, r);
@@ -4375,22 +4429,22 @@ function ms(e, t) {
 		}), M(ge), M(b), U(() => {
 			b.disabled = K(k), S = Jr(x, 1, "tab-pane bands-wrap svelte-1jdjhi", null, S, { inactive: K(de) !== "peq" && K(de) !== "correction" }), x.inert = K(de) !== "peq" && K(de) !== "correction", T = Jr(w, 1, "tab-pane svelte-1jdjhi", null, T, { inactive: K(de) !== "geq" }), w.inert = K(de) !== "geq", te = Jr(ee, 1, "tab-pane svelte-1jdjhi", null, te, { inactive: K(de) !== "loudness" }), ee.inert = K(de) !== "loudness", oe = Jr(ae, 1, "tab-pane svelte-1jdjhi", null, oe, { inactive: K(de) !== "preamp" }), ae.inert = K(de) !== "preamp", ue = Jr(ce, 1, "tab-pane svelte-1jdjhi", null, ue, { inactive: K(de) !== "fir" }), ce.inert = K(de) !== "fir", _e = Jr(ge, 1, "tab-pane output-panel svelte-1jdjhi", null, _e, { inactive: K(de) !== "outputs" }), ge.inert = K(de) !== "outputs";
 		}), Y(e, o);
-	}, Mt = (e) => {
-		Y(e, rs());
+	}, Lt = (e) => {
+		Y(e, as());
 	};
-	Z(At, (e) => {
-		K(r) ? e(jt) : K(k) || e(Mt, 1);
-	}), M(ct);
-	var Nt = H(ct, 2), Pt = B(Nt), Ft = H(B(Pt)), It = B(Ft);
-	M(Ft), M(Pt);
-	var Lt = H(Pt, 2), Rt = B(Lt), zt = H(Rt, 2), Bt = B(zt);
-	ai(Bt);
-	var Vt = H(Bt, 2);
-	M(zt), M(Lt);
-	var Ut = H(Lt, 2), Wt = B(Ut);
-	ai(Wt);
-	var Gt = H(Wt, 2), Kt = H(B(Gt));
-	Q(Kt, 20, () => [
+	Z(Ft, (e) => {
+		K(r) ? e(It) : K(k) || e(Lt, 1);
+	}), M(pt);
+	var Rt = H(pt, 2), zt = B(Rt), Bt = H(B(zt)), Vt = B(Bt);
+	M(Bt), M(zt);
+	var Ut = H(zt, 2), Wt = B(Ut), Gt = H(Wt, 2), Kt = B(Gt);
+	ai(Kt);
+	var qt = H(Kt, 2);
+	M(Gt), M(Ut);
+	var Jt = H(Ut, 2), Yt = B(Jt);
+	ai(Yt);
+	var Xt = H(Yt, 2), Zt = H(B(Xt));
+	Q(Zt, 20, () => [
 		"Name ↑",
 		"Name ↓",
 		"Size ↑",
@@ -4400,15 +4454,15 @@ function ms(e, t) {
 		"Type ↑",
 		"Type ↓"
 	], Mr, (e, t, n) => {
-		var r = is(), i = B(r, !0);
+		var r = os(), i = B(r, !0);
 		M(r), r.value = r.__value = n, U(() => X(i, t)), Y(e, r);
-	}), M(Kt), M(Gt), M(Ut);
-	var qt = H(Ut, 2), Jt = B(qt), Yt = H(B(Jt));
-	Q(Yt, 21, () => K(ee), (e) => e.url, (e, t) => {
-		var n = os();
+	}), M(Zt), M(Xt), M(Jt);
+	var Qt = H(Jt, 2), $t = B(Qt), en = H(B($t));
+	Q(en, 21, () => K(ee), (e) => e.url, (e, t) => {
+		var n = cs();
 		let r;
 		var i = B(n), a = B(i), o = B(a), s = B(o), c = (e) => {
-			Y(e, as());
+			Y(e, ss());
 		}, l = (e) => {
 			Y(e, Sr("♫"));
 		};
@@ -4427,62 +4481,62 @@ function ms(e, t) {
 			() => K(t).fileType === 0 ? "Folder" : K(t).name.toLowerCase().endsWith(".wav") ? "WAV Audio" : "File",
 			() => K(t).fileType === 0 ? "—" : oe(K(t).size)
 		]), q("click", a, () => {
-			K(t).fileType === 0 ? We(() => ie(K(t).url)) : z(C, K(t).url, !0);
+			K(t).fileType === 0 ? Je(() => ie(K(t).url)) : z(C, K(t).url, !0);
 		}), Y(e, n);
 	}, (e) => {
-		var t = ss(), n = B(t), r = B(n, !0);
+		var t = ls(), n = B(t), r = B(n, !0);
 		M(n), M(t), U(() => X(r, K(w) ? "No Matching Files" : "This Folder Is Empty")), Y(e, t);
-	}), M(Yt), M(Jt), M(qt);
-	var Xt = H(qt, 2), Zt = (e) => {
-		var t = cs(), n = B(t), r = H(n), i = B(r);
+	}), M(en), M($t), M(Qt);
+	var tn = H(Qt, 2), nn = (e) => {
+		var t = us(), n = B(t), r = H(n), i = B(r);
 		M(r);
 		var a = H(r);
 		M(t), U((e) => {
 			n.disabled = K(k) || K(x) === 0, X(i, `${K(x) + 1}–${e ?? ""} / ${K(S) ?? ""}`), a.disabled = K(k) || K(x) + 1e3 >= K(S);
-		}, [() => Math.min(K(x) + 1e3, K(S))]), q("click", n, () => void We(() => ce(K(y), Math.max(0, K(x) - 1e3)))), q("click", a, () => void We(() => ce(K(y), K(x) + 1e3))), Y(e, t);
+		}, [() => Math.min(K(x) + 1e3, K(S))]), q("click", n, () => void Je(() => ce(K(y), Math.max(0, K(x) - 1e3)))), q("click", a, () => void Je(() => ce(K(y), K(x) + 1e3))), Y(e, t);
 	};
-	Z(Xt, (e) => {
-		K(S) > 1e3 && e(Zt);
+	Z(tn, (e) => {
+		K(S) > 1e3 && e(nn);
 	});
-	var Qt = H(Xt, 2), $t = H(B(Qt));
-	ai($t), M(Qt);
-	var en = H(Qt, 2), tn = (e) => {
-		var t = ls(), n = B(t, !0);
-		M(t), U(() => X(n, K(A))), Y(e, t);
+	var rn = H(tn, 2), an = H(B(rn));
+	ai(an), M(rn);
+	var on = H(rn, 2), sn = (e) => {
+		var t = ds(), n = B(t, !0);
+		M(t), U(() => X(n, K(Oe))), Y(e, t);
 	};
-	Z(en, (e) => {
-		K(A) && e(tn);
+	Z(on, (e) => {
+		K(Oe) && e(sn);
 	});
-	var nn = H(en, 2), rn = H(B(nn)), an = B(rn), on = H(an);
-	M(rn), M(nn), M(Nt), _i(Nt, (e) => z(D, e), () => K(D));
-	var sn = H(Nt, 2), cn = H(B(sn), 4), ln = B(cn), un = H(ln), dn = B(un, !0);
-	M(un), M(cn), M(sn), _i(sn, (e) => z(ye, e), () => K(ye));
-	var fn = H(sn, 2), pn = B(fn), mn = B(pn), hn = B(mn, !0);
-	M(mn);
-	var gn = H(mn, 2), _n = (e) => {
-		var t = us(), n = B(t);
+	var cn = H(on, 2), ln = H(B(cn)), un = B(ln), dn = H(un);
+	M(ln), M(cn), M(Rt), _i(Rt, (e) => z(D, e), () => K(D));
+	var fn = H(Rt, 2), pn = H(B(fn), 4), mn = B(pn), hn = H(mn), gn = B(hn, !0);
+	M(hn), M(pn), M(fn), _i(fn, (e) => z(ye, e), () => K(ye));
+	var _n = H(fn, 2), vn = B(_n), yn = B(vn), bn = B(yn, !0);
+	M(yn);
+	var xn = H(yn, 2), Sn = (e) => {
+		var t = fs(), n = B(t);
 		M(t), U((e) => X(n, `Permanently delete “${e ?? ""}” (#${K(r)?.id ?? ""}) from this device? Any unsaved edits will be discarded.`), [() => K(r)?.name.trim()]), Y(e, t);
-	}, vn = (e) => {
-		var t = ds(), n = H(B(t));
-		ai(n), M(t), di(n, () => K(ke), (e) => z(ke, e)), Y(e, t);
+	}, Cn = (e) => {
+		var t = ps(), n = H(B(t));
+		ai(n), M(t), di(n, () => K(Ne), (e) => z(Ne, e)), Y(e, t);
 	};
-	Z(gn, (e) => {
-		K(Oe) === "delete" ? e(_n) : e(vn, -1);
+	Z(xn, (e) => {
+		K(N) === "delete" ? e(Sn) : e(Cn, -1);
 	});
-	var yn = H(gn, 2), bn = B(yn), xn = H(bn);
-	let Sn;
-	var Cn = B(xn, !0);
-	M(xn), M(yn), M(pn), M(fn), _i(fn, (e) => z(Ee, e), () => K(Ee)), U((e, i) => {
-		dt = Jr(ut, 1, "brand svelte-1jdjhi", null, dt, { centered: K(ve) }), X(pt, K(me) || t.panel.config.title), ht = Jr(mt, 1, "toolbar svelte-1jdjhi", null, ht, { wrapped: K(ve) }), _t.disabled = K(k) || !K(n).profiles.length, bt !== (bt = K(r)?.id ?? "") && (_t.value = (_t.__value = K(r)?.id ?? "") ?? "", Zr(_t, K(r)?.id ?? "")), St.disabled = K(k), Ct.disabled = K(k) || !K(r) || K(Ae), wt.disabled = K(k) || !K(r), Tt.disabled = K(k) || !K(r), X(It, `${K(E) === 0 ? "Left" : "Right"} Channel`), Rt.disabled = K(k) || !K(v).length, Bt.disabled = K(k), Vt.disabled = K(k), Kt.disabled = K(k), oi($t, K(T)?.name ?? ""), on.disabled = K(k) || !K(T), X(dn, K(be)), X(hn, K(Oe) === "create" ? "Create Profile" : K(Oe) === "save_as" ? "Save Profile As" : K(Oe) === "rename" ? "Rename Profile" : "Delete Profile"), Sn = Jr(xn, 1, "chip md", null, Sn, {
-			danger: K(Oe) === "delete",
-			accent: K(Oe) !== "delete"
-		}), xn.disabled = e, X(Cn, i);
-	}, [() => K(k) || K(Oe) !== "delete" && !K(ke).trim(), () => K(Oe) === "save_as" ? "Save As" : K(Oe)[0].toUpperCase() + K(Oe).slice(1)]), q("change", _t, Ye), q("click", St, () => rt("create")), q("click", Ct, () => rt("save_as")), q("click", wt, () => rt("rename")), q("click", Tt, () => rt("delete")), q("click", Nt, re), q("click", Rt, () => void We(() => ae(K(v).length - 1))), q("keydown", Bt, (e) => {
-		e.key === "Enter" && (e.preventDefault(), We(ne));
-	}), di(Bt, () => K(te), (e) => z(te, e)), q("click", Vt, () => void We(ne)), di(Wt, () => K(w), (e) => z(w, e)), q("change", Kt, () => void We(() => ce(K(y)))), $r(Kt, () => K(b), (e) => z(b, e)), q("click", an, () => K(D)?.close()), q("click", on, () => {
+	var wn = H(xn, 2), Tn = B(wn), En = H(Tn);
+	let Dn;
+	var On = B(En, !0);
+	M(En), M(wn), M(vn), M(_n), _i(_n, (e) => z(Me, e), () => K(Me)), U((e, i) => {
+		gt = Jr(ht, 1, "brand svelte-1jdjhi", null, gt, { centered: K(ve) }), X(vt, K(me) || t.panel.config.title), bt = Jr(yt, 1, "toolbar svelte-1jdjhi", null, bt, { wrapped: K(ve) }), St.disabled = K(k) || !K(n).profiles.length, Tt !== (Tt = K(r)?.id ?? "") && (St.value = (St.__value = K(r)?.id ?? "") ?? "", Zr(St, K(r)?.id ?? "")), Dt.disabled = K(k), Ot.disabled = K(k) || !K(r) || K(P), kt.disabled = K(k) || !K(r), At.disabled = K(k) || !K(r), X(Vt, `${K(E) === 0 ? "Left" : "Right"} Channel`), Wt.disabled = K(k) || !K(v).length, Kt.disabled = K(k), qt.disabled = K(k), Zt.disabled = K(k), oi(an, K(T)?.name ?? ""), dn.disabled = K(k) || !K(T), X(gn, K(be)), X(bn, K(N) === "create" ? "Create Profile" : K(N) === "save_as" ? "Save Profile As" : K(N) === "rename" ? "Rename Profile" : "Delete Profile"), Dn = Jr(En, 1, "chip md", null, Dn, {
+			danger: K(N) === "delete",
+			accent: K(N) !== "delete"
+		}), En.disabled = e, X(On, i);
+	}, [() => K(k) || K(N) !== "delete" && !K(Ne).trim(), () => K(N) === "save_as" ? "Save As" : K(N)[0].toUpperCase() + K(N).slice(1)]), q("change", St, $e), q("click", Dt, () => ct("create")), q("click", Ot, () => ct("save_as")), q("click", kt, () => ct("rename")), q("click", At, () => ct("delete")), q("click", Rt, re), q("click", Wt, () => void Je(() => ae(K(v).length - 1))), q("keydown", Kt, (e) => {
+		e.key === "Enter" && (e.preventDefault(), Je(ne));
+	}), di(Kt, () => K(te), (e) => z(te, e)), q("click", qt, () => void Je(ne)), di(Yt, () => K(w), (e) => z(w, e)), q("change", Zt, () => void Je(() => ce(K(y)))), $r(Zt, () => K(b), (e) => z(b, e)), q("click", un, () => K(D)?.close()), q("click", dn, () => {
 		let e = K(T);
-		e && We(() => ue(e));
-	}), fr("cancel", sn, () => O = null), q("click", ln, Se), q("click", un, Ce), fr("submit", pn, it), q("click", bn, () => K(Ee)?.close()), Y(e, st), Le();
+		e && Je(() => ue(e));
+	}), fr("cancel", fn, () => O = null), q("click", mn, Se), q("click", hn, Ce), fr("submit", vn, lt), q("click", Tn, () => K(Me)?.close()), Y(e, ft), Ie();
 }
 pr([
 	"change",
@@ -4492,7 +4546,7 @@ pr([
 ]);
 //#endregion
 //#region src/theme.css?inline
-var hs = ":host{--lightningcss-light: ;--lightningcss-dark:initial;color-scheme:dark;--bg:#050505;--bg-glow:var(--bg);--panel:#1a1a19;--panel-hi:#292927;--panel-solid:#20201e;--text:#f1f0ed;--text-dim:#cbc9c4;--text-faint:#a6a49f;--border:#30302d;--border-hi:#4b4b46;--wash-faint:#1f1f1d;--wash:#262624;--wash-strong:#333330;--accent:#70bdce;--ok:#e3e2de;--warn:#d2bfa0;--err:#d8948b;--number-positive:var(--text);--number-negative:var(--text);--dim-disabled:.5;--pad:20px;--radius-s:7px;--radius-m:12px;--radius:18px;--font-sans:-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif;--font-mono:var(--font-sans);height:100%;font-family:var(--font-sans);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;font-size:17px;line-height:1.5;display:block;overflow:auto}button,input,select{font-family:inherit}button{color:var(--text)}button,select,input{-webkit-tap-highlight-color:transparent}input[type=checkbox]{accent-color:#d9d8d3;flex-shrink:0;width:20px;height:20px}input[type=range]{appearance:none;cursor:pointer;background:0 0;height:44px;margin:0;padding:0;display:block}input[type=range]::-webkit-slider-runnable-track{background:#4a4a46;border-radius:4px;height:6px}input[type=range]::-webkit-slider-thumb{appearance:none;background:#eeeeea;border:0;border-radius:3px;width:8px;height:24px;margin-top:-9px}input[type=range]::-moz-range-track{background:#4a4a46;border-radius:4px;height:6px}input[type=range]::-moz-range-thumb{background:#eeeeea;border:0;border-radius:3px;width:8px;height:24px}input[type=range]:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}.chip{font-family:var(--font-sans);letter-spacing:0;background:var(--wash);border:1px solid var(--border-hi);min-height:40px;color:var(--text);cursor:pointer;border-radius:9px;padding:9px 14px;font-size:15px;font-weight:500;line-height:1.3}.chip:hover:not(:disabled){background:var(--wash-strong)}.chip:focus-visible{outline:2px solid var(--accent);outline-offset:3px}.chip:disabled{opacity:var(--dim-disabled);cursor:default}.chip.md{min-height:44px;padding:11px 16px;font-size:15px}.chip.hi{background:0 0}.chip.accent{color:#f5f4f0;background:#3d4548;border-color:#687275}.chip.accent:hover:not(:disabled){background:#4b5558}.chip.danger{color:#e0aaa2;background:0 0;border-color:#71514b}.chip.warn{color:var(--warn)}.chip.on{color:var(--accent);border-color:var(--accent)}.microlbl{font:500 15px/1.5 var(--font-sans);color:var(--text-dim)}.hint{font:14px/1.6 var(--font-sans);color:var(--text-faint);margin:0}.ch-left,.ch-right{--ch-glow:#dddad3}.toggle-label{min-height:44px;font:16px var(--font-sans);color:var(--text-dim);align-items:center;gap:12px;display:inline-flex}input.switch[type=checkbox]{appearance:none;border:1px solid var(--border-hi);cursor:pointer;vertical-align:middle;background:#494945;border-radius:18px;flex:0 0 54px;width:54px;height:30px;min-height:30px;margin:7px 0;padding:3px;position:relative}input.switch[type=checkbox]:after{content:\"\";background:#eee;border-radius:50%;width:22px;height:22px;transition:transform .15s;display:block}input.switch[type=checkbox]:checked{background:#8baba6}input.switch[type=checkbox]:checked:after{transform:translate(24px)}input.switch[type=checkbox]:focus-visible{outline:2px solid var(--accent);outline-offset:3px}input.switch[type=checkbox]:disabled{opacity:.5;cursor:default}select{appearance:none!important;background-image:linear-gradient(45deg, transparent 50%, var(--text-faint) 50%), linear-gradient(135deg, var(--text-faint) 50%, transparent 50%)!important;background-position:calc(100% - 17px),calc(100% - 13px)!important;background-repeat:no-repeat!important;background-size:4px 4px,4px 4px!important;padding-right:34px!important}", gs = class extends HTMLElement {
+var _s = ":host{--lightningcss-light: ;--lightningcss-dark:initial;color-scheme:dark;--bg:#050505;--bg-glow:var(--bg);--panel:#1a1a19;--panel-hi:#292927;--panel-solid:#20201e;--text:#f1f0ed;--text-dim:#cbc9c4;--text-faint:#a6a49f;--border:#30302d;--border-hi:#4b4b46;--wash-faint:#1f1f1d;--wash:#262624;--wash-strong:#333330;--accent:#70bdce;--ok:#e3e2de;--warn:#d2bfa0;--err:#d8948b;--number-positive:var(--text);--number-negative:var(--text);--dim-disabled:.5;--pad:20px;--radius-s:7px;--radius-m:12px;--radius:18px;--font-sans:-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif;--font-mono:var(--font-sans);height:100%;font-family:var(--font-sans);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;font-size:17px;line-height:1.5;display:block;overflow:auto}button,input,select{font-family:inherit}button{color:var(--text)}button,select,input{-webkit-tap-highlight-color:transparent}input[type=checkbox]{accent-color:#d9d8d3;flex-shrink:0;width:20px;height:20px}input[type=range]{appearance:none;cursor:pointer;background:0 0;height:44px;margin:0;padding:0;display:block}input[type=range]::-webkit-slider-runnable-track{background:#4a4a46;border-radius:4px;height:6px}input[type=range]::-webkit-slider-thumb{appearance:none;background:#eeeeea;border:0;border-radius:3px;width:8px;height:24px;margin-top:-9px}input[type=range]::-moz-range-track{background:#4a4a46;border-radius:4px;height:6px}input[type=range]::-moz-range-thumb{background:#eeeeea;border:0;border-radius:3px;width:8px;height:24px}input[type=range]:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}.chip{font-family:var(--font-sans);letter-spacing:0;background:var(--wash);border:1px solid var(--border-hi);min-height:40px;color:var(--text);cursor:pointer;border-radius:9px;padding:9px 14px;font-size:15px;font-weight:500;line-height:1.3}.chip:hover:not(:disabled){background:var(--wash-strong)}.chip:focus-visible{outline:2px solid var(--accent);outline-offset:3px}.chip:disabled{opacity:var(--dim-disabled);cursor:default}.chip.md{min-height:44px;padding:11px 16px;font-size:15px}.chip.hi{background:0 0}.chip.accent{color:#f5f4f0;background:#3d4548;border-color:#687275}.chip.accent:hover:not(:disabled){background:#4b5558}.chip.danger{color:#e0aaa2;background:0 0;border-color:#71514b}.chip.warn{color:var(--warn)}.chip.on{color:var(--accent);border-color:var(--accent)}.microlbl{font:500 15px/1.5 var(--font-sans);color:var(--text-dim)}.hint{font:14px/1.6 var(--font-sans);color:var(--text-faint);margin:0}.ch-left,.ch-right{--ch-glow:#dddad3}.toggle-label{min-height:44px;font:16px var(--font-sans);color:var(--text-dim);align-items:center;gap:12px;display:inline-flex}input.switch[type=checkbox]{appearance:none;border:1px solid var(--border-hi);cursor:pointer;vertical-align:middle;background:#494945;border-radius:18px;flex:0 0 54px;width:54px;height:30px;min-height:30px;margin:7px 0;padding:3px;position:relative}input.switch[type=checkbox]:after{content:\"\";background:#eee;border-radius:50%;width:22px;height:22px;transition:transform .15s;display:block}input.switch[type=checkbox]:checked{background:#8baba6}input.switch[type=checkbox]:checked:after{transform:translate(24px)}input.switch[type=checkbox]:focus-visible{outline:2px solid var(--accent);outline-offset:3px}input.switch[type=checkbox]:disabled{opacity:.5;cursor:default}select{appearance:none!important;background-image:linear-gradient(45deg, transparent 50%, var(--text-faint) 50%), linear-gradient(135deg, var(--text-faint) 50%, transparent 50%)!important;background-position:calc(100% - 17px),calc(100% - 13px)!important;background-repeat:no-repeat!important;background-size:4px 4px,4px 4px!important;padding-right:34px!important}", vs = class extends HTMLElement {
 	instance;
 	currentHass;
 	currentPanel;
@@ -4520,7 +4574,7 @@ var hs = ":host{--lightningcss-light: ;--lightningcss-dark:initial;color-scheme:
 	start() {
 		if (this.resetting || !this.isConnected || this.instance || !this.currentHass || !this.currentPanel) return;
 		let e = document.createElement("style");
-		e.textContent = hs, this.root.append(e), this.instance = wr(ms, {
+		e.textContent = _s, this.root.append(e), this.instance = wr(gs, {
 			target: this.root,
 			props: {
 				hass: { callWS: (e) => this.currentHass.callWS(e) },
@@ -4529,5 +4583,5 @@ var hs = ":host{--lightningcss-light: ;--lightningcss-dark:initial;color-scheme:
 		});
 	}
 };
-customElements.get("eversolo-peq-panel") || customElements.define("eversolo-peq-panel", gs);
+customElements.get("eversolo-peq-panel") || customElements.define("eversolo-peq-panel", vs);
 //#endregion

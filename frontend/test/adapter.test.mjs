@@ -15,9 +15,9 @@ test('Eversolo Peak=6 maps to DSPi Peaking=1 without leaking enum codes', () => 
   assert.throws(() => adapter.patchBand(band, { type: 2 }), /Unverified/);
 });
 test('unknown device filter remains distinct from every DSPi filter', () => {
-  const unknown = { ...band, type: 2 };
-  assert.equal(adapter.toUiBand(unknown).type, 1002);
-  assert.equal(adapter.patchBand(unknown, { gain: 3 }).type, 2);
+  const unknown = { ...band, type: 42 };
+  assert.equal(adapter.toUiBand(unknown).type, 1042);
+  assert.equal(adapter.patchBand(unknown, { gain: 3 }).type, 42);
   assert.equal(adapter.preview({ audioTunningEQList: [unknown] }, 0), null);
 });
 test('preamp scaling, bypass, and left/right previews are independent', () => {
@@ -36,12 +36,13 @@ test('peak response approaches its gain at center and is finite over the plot', 
   assert.ok(Math.max(...points) > 5.9 && Math.max(...points) <= 6.01);
 });
 
-test('disabled stages and neutral preamp/balance disappear from the stack', () => {
+test('neutral preamp and balance retain flat curves while disabled EQ is omitted', () => {
   const settings = { audioTunningEQList: [{ ...band, volume: 0 }], enableEQ: false, balance: 0, loudness: 0 };
   const processing = { firEnabled: { left: false, right: false }, hasFir: true, hasLoudness: true };
-  assert.deepEqual(adapter.processingStages(settings, 0, processing), []);
+  assert.deepEqual(adapter.processingStages(settings, 0, processing).map(stage => stage.id), ['preamp', 'balance']);
+  assert.ok(adapter.processingStages(settings, 0, processing).every(stage => stage.points.every(value => value === 0)));
   settings.enableEQ = true;
-  assert.deepEqual(adapter.processingStages(settings, 0, processing).map(stage => stage.id), ['peq']);
+  assert.deepEqual(adapter.processingStages(settings, 0, processing).map(stage => stage.id), ['preamp', 'balance', 'peq']);
 });
 
 test('FIR log-frequency points interpolate in dB and reject unavailable data', () => {
@@ -81,7 +82,7 @@ test('FIR belongs to the enabled channel only and adds once to the known respons
 });
 
 test('unmapped filters and unavailable FIR are omitted; positive balance attenuates left', () => {
-  const settings = { audioTunningEQList: [{ ...band, type: 2 }], enableEQ: true, balance: 2 };
+  const settings = { audioTunningEQList: [{ ...band, type: 42 }], enableEQ: true, balance: 2 };
   const processing = { firEnabled: { left: true, right: false }, hasFir: true, hasLoudness: true };
   const result = adapter.sumStages(adapter.processingStages(settings, 0, processing));
   assert.deepEqual(result.omitted, ['PEQ', 'FIR']);
@@ -176,14 +177,40 @@ test('preview cards follow the control tab order with balance beside preamp', ()
 });
 
 
-test('enabled correction has its own GEQ-style preview and is omitted when disabled', () => {
+test('enabled correction sums independent parametric contributions and is omitted when disabled', () => {
   const correction = [{...band, fc:100, gain:3, volume:-20}, {...band, fc:1000, gain:-4, volume:-20}];
   const settings = {enablePeqLeftFir:true, peqFirList:correction};
   const stage = adapter.processingStages(settings,0).find(s=>s.id==='correction');
   assert.equal(stage.label,'Correction PEQ');
-  const expected = adapter.geqResponse(correction.map(b=>({freq:b.fc,gain:b.gain}))).map(p=>p-2);
-  assert.deepEqual(stage.points,expected);
-  assert.deepEqual(adapter.sumStages([stage]).points,expected);
+  const expected = adapter.preview({audioTunningEQList:correction},0);
+  assert.ok(stage.points.every((value,index)=>Math.abs(value-expected[index]) < 1e-9));
+  assert.ok(adapter.sumStages([stage]).points.every((value,index)=>Math.abs(value-expected[index]) < 1e-9));
   assert.ok(!adapter.processingStages({...settings,enablePeqLeftFir:false},0).some(s=>s.id==='correction'));
   assert.ok(!adapter.processingStages(settings,1).some(s=>s.id==='correction'));
+});
+
+
+test('every offered device filter has a finite curve with the expected shape', () => {
+  const curve = type => adapter.preview({audioTunningEQList:[{...band,type,volume:0,q:0.707}]},0);
+  for (let type=2; type<=9; type++) assert.ok(curve(type).every(Number.isFinite));
+  assert.ok(curve(2)[0] > -0.1 && curve(2).at(-1) < -30);
+  assert.ok(curve(3)[0] < -30 && curve(3).at(-1) > -0.1);
+  assert.ok(Math.max(...curve(4)) > -0.1 && curve(4)[0] < -20);
+  assert.ok(Math.min(...curve(5)) < -20);
+  assert.ok(Math.abs(curve(7)[0]-6) < 0.1 && Math.abs(curve(7).at(-1)) < 0.1);
+  assert.ok(Math.abs(curve(8)[0]) < 0.1 && Math.abs(curve(8).at(-1)-6) < 0.1);
+  assert.ok(curve(9).every(value=>value===0));
+});
+
+
+test('band disabling changes only gain and re-enabling restores it', () => {
+  for (const bypass of [false, true]) {
+    const original = {...band, bypass};
+    const disabled = adapter.setBandEnabled(original,false);
+    assert.deepEqual(disabled,{...original,gain:0});
+    assert.deepEqual(adapter.setBandEnabled(disabled,true,original.gain),original);
+  }
+});
+test('reset clears the band response without resetting preamp or bypass', () => {
+  assert.deepEqual(adapter.resetBand({...band,type:7,q:3,bypass:true}),{...band,gain:0,type:6,q:1,bypass:true});
 });

@@ -31,7 +31,7 @@ async def async_setup_panel(hass, entry):
     await panel_custom.async_register_panel(
         hass, frontend_url_path=path, webcomponent_name="eversolo-peq-panel",
         sidebar_title=f"{entry.title} PEQ", sidebar_icon="mdi:tune-vertical",
-        module_url=f"{STATIC_URL}/eversolo-peq.js?v=1.0.0",
+        module_url=f"{STATIC_URL}/eversolo-peq.js?v=1.0.1",
         config={"entry_id": entry.entry_id, "title": entry.title},
         require_admin=True,
     )

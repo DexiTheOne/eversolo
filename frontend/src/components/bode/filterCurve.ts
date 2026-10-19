@@ -31,6 +31,20 @@ function coeffsFor(type: FilterType, f: number, q: number, gainDb: number, fs: n
     };
   }
 
+  const normalized = (b0: number, b1: number, b2: number, a0: number, a1: number, a2: number): Coeffs =>
+    ({b0: b0/a0, b1: b1/a0, b2: b2/a0, a1: a1/a0, a2: a2/a0});
+  if (type === 1002) return normalized((1-cosw0)/2, 1-cosw0, (1-cosw0)/2, 1+alpha, -2*cosw0, 1-alpha);
+  if (type === 1003) return normalized((1+cosw0)/2, -1-cosw0, (1+cosw0)/2, 1+alpha, -2*cosw0, 1-alpha);
+  if (type === 1004) return normalized(alpha, 0, -alpha, 1+alpha, -2*cosw0, 1-alpha);
+  if (type === 1005) return normalized(1, -2*cosw0, 1, 1+alpha, -2*cosw0, 1-alpha);
+  if (type === 1007 || type === 1008) {
+    const A = Math.pow(10, gainDb/40), t = 2*Math.sqrt(A)*alpha;
+    if (type === 1007) return normalized(A*((A+1)-(A-1)*cosw0+t), 2*A*((A-1)-(A+1)*cosw0), A*((A+1)-(A-1)*cosw0-t),
+      (A+1)+(A-1)*cosw0+t, -2*((A-1)+(A+1)*cosw0), (A+1)+(A-1)*cosw0-t);
+    return normalized(A*((A+1)+(A-1)*cosw0+t), -2*A*((A-1)+(A+1)*cosw0), A*((A+1)+(A-1)*cosw0-t),
+      (A+1)-(A-1)*cosw0+t, 2*((A-1)-(A+1)*cosw0), (A+1)-(A-1)*cosw0-t);
+  }
+
   return null;
 }
 
@@ -47,7 +61,7 @@ function magDbAt(c: Coeffs, w: number): number {
   const num2 = numRe * numRe + numIm * numIm;
   const den2 = denRe * denRe + denIm * denIm;
   // 10*log10(|num|^2 / |den|^2) -- half the multiplications of taking sqrt first.
-  return (10 / LN10) * Math.log(num2 / den2);
+  return (10 / LN10) * Math.log(Math.max(1e-24, num2) / Math.max(1e-24, den2));
 }
 
 // Collect active peaking sections.

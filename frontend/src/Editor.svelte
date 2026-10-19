@@ -7,7 +7,7 @@
   import PreampPanel from './components/eq/PreampPanel.svelte';
   import ProcessingResponse from './components/eq/ProcessingResponse.svelte';
   import { FilterType, type ChannelId, type FilterParams } from './domain';
-  import { bandKey, enableKey, loudnessKey, channelName, clone, channelBands, preamp, toUiBand, patchBand,
+  import { bandKey, enableKey, loudnessKey, channelName, clone, channelBands, preamp, toUiBand, patchBand, setBandEnabled, resetBand,
     type Hass, type PanelInfo, type Profile, type Settings, type Snapshot, type FirCurves } from './adapter';
 
   const { hass, panel }: { hass: Hass; panel: PanelInfo } = $props();
@@ -120,6 +120,16 @@
     action?.();
   }
   let busy = $state(false);
+  let polling = false;
+  let commandVersion = 0;
+  let disabledGains = $state<Record<string, number>>({});
+  const bandId = (key: string, index: number) => `${profile?.id}:${key}:${index}`;
+  const previewSettings = $derived.by(() => {
+    const value = clone(draft);
+    for (const key of ['audioTunningEQList', 'audioTunningEQListRight', 'peqFirList', 'peqFirListRight'] as const)
+      value[key] = value[key]?.map((band, index) => ({...band, bypass: bandId(key, index) in disabledGains}));
+    return value;
+  });
   let error = $state('');
   let status = $state('Loading Profile…');
   let selectedBand = $state(0);
@@ -148,7 +158,7 @@
   const currentFir = $derived(fir?.profile_id === profile?.id && fir?.revision === profile?.revision ? fir : null);
   const dirty = $derived(profile !== null && JSON.stringify(draft) !== JSON.stringify(profile.settings));
   const bands = $derived(draft[editKey] ?? []);
-  const uiBands = $derived(bands.map(toUiBand));
+  const uiBands = $derived(bands.map((band, index) => toUiBand({...band, bypass: bandId(editKey, index) in disabledGains})));
   const currentBand = $derived(bands[selectedBand]);
   const preampDb = $derived((bands[0]?.volume ?? 0) / 10);
 
@@ -157,7 +167,7 @@
   }
   async function run(action: () => Promise<void>) {
     if (busy) return;
-    busy = true; error = '';
+    commandVersion++; busy = true; error = '';
     try { await action(); }
     catch (err) { error = err instanceof Error ? err.message : String((err as { message?: string })?.message ?? err); status = 'Request Needs Attention'; }
     finally { busy = false; }
@@ -182,6 +192,7 @@
       firChoices = {left: value.settings.enableLeftFir ?? false, right: value.settings.enableRightFir ?? false};
       firMaster = firChoices.left || firChoices.right;
     }
+    if (!preserveFirChoices) disabledGains = {};
     profile = value; draft = clone(value.settings); stale = false;
     fir = null; firError = '';
     selectedBand = 0;
@@ -209,17 +220,26 @@
     else { profile = null; draft = {}; status = 'Create Your First Profile'; }
   }
   async function poll() {
-    if (busy || !alive || document.hidden || dialog?.open || fileDialog?.open || reloadDialog?.open) return;
-    await run(async () => {
-      await snapshot();
+    if (busy || polling || !alive || document.hidden || dialog?.open || fileDialog?.open || reloadDialog?.open) return;
+    polling = true;
+    const version = commandVersion, id = profile?.id;
+    try {
+      const nextCatalog = await request<Snapshot>('snapshot');
+      if (!alive || busy || version !== commandVersion || profile?.id !== id) return;
+      if (JSON.stringify(catalog) !== JSON.stringify(nextCatalog)) catalog = nextCatalog;
       if (profile) {
-        const fresh = await request<Profile>('read', { profile_id: profile.id });
-        if (!alive) return;
+        const fresh = await request<Profile>('read', {profile_id: id});
+        if (!alive || busy || version !== commandVersion || profile?.id !== id) return;
         if (dirty) stale = fresh.revision !== profile.revision;
-        else if (fresh.revision !== profile.revision) accept(fresh);
-        await refreshFir(fresh);
+        else if (fresh.revision !== profile.revision) {
+          const active = document.activeElement?.shadowRoot?.activeElement ?? document.activeElement;
+          if (active instanceof HTMLInputElement || active instanceof HTMLSelectElement) return;
+          accept(fresh);
+        }
+        if (!fir || fir.revision !== fresh.revision) await refreshFir(fresh);
       }
-    });
+    } catch { /* Foreground commands report actionable request errors. */ }
+    finally { polling = false; }
   }
   onMount(() => {
     void run(reload);
@@ -237,7 +257,16 @@
   });
   function patch(index: number, value: Partial<FilterParams>) {
     if (busy) return;
-    draft[editKey] = bands.map((band, i) => i === index ? patchBand(band, value) : band);
+    const id = bandId(editKey, index);
+    if (value.bypass !== undefined) {
+      if (value.bypass) disabledGains[id] = bands[index].gain;
+      const gain = value.bypass ? 0 : disabledGains[id] ?? 0;
+      if (!value.bypass) delete disabledGains[id];
+      draft[editKey] = bands.map((band, i) => i === index ? setBandEnabled(band, !value.bypass, gain) : band);
+    } else {
+      if (value.gain !== undefined) delete disabledGains[id];
+      draft[editKey] = bands.map((band, i) => i === index ? patchBand(band, value) : band);
+    }
     selectedBand = index;
   }
   function setGeqGain(index: number, value: number) {
@@ -268,7 +297,8 @@
     draft[targetKey] = clone(bands);
   }
   function reset() {
-    draft[editKey] = bands.map(band => ({ ...band, gain: 0, q: 1, type: 6, volume: 0 }));
+    bands.forEach((_, index) => delete disabledGains[bandId(editKey, index)]);
+    draft[editKey] = bands.map(resetBand);
   }
   function openDialog(action: typeof modal) {
     if (busy) return;
@@ -307,6 +337,7 @@
   function setSlider(event: Event, key: 'frequency' | 'q' | 'gain', targetKey: typeof editKey, targetIndex: number) {
     let value = Number((event.currentTarget as HTMLInputElement).value);
     if (key === 'frequency') value = Math.round(20 * Math.pow(1000, value / 1000));
+    if (!busy && key === 'gain') delete disabledGains[bandId(targetKey, targetIndex)];
     if (!busy) draft[targetKey] = draft[targetKey]?.map((band, index) => index === targetIndex ? patchBand(band, { [key]: value }) : band);
   }
 </script>
@@ -342,7 +373,7 @@
       <button class="chip md accent" disabled={busy || !dirty || stale} onclick={() => void run(save)}>Save Profile</button>
     </div></div>
     {/snippet}
-    <ProcessingResponse {busy} onModeChange={(value) => draft.settingType = value} onChannelChange={(value) => channel = value} settings={draft} {profile} {fir} {channel} actions={saveActions} {previewRequest} />
+    <ProcessingResponse {busy} onModeChange={(value) => draft.settingType = value} onChannelChange={(value) => channel = value} settings={previewSettings} {profile} {fir} {channel} actions={saveActions} {previewRequest} />
     {#if firError}<p class="hint">{firError}</p>{/if}
 
     <nav class="sections" aria-label="Processing controls">

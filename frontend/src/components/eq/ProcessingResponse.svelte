@@ -17,7 +17,11 @@
   function panRange(range: [number, number]) { customRange = range; verticalScale = 'custom'; }
   function resetGraph() { verticalScale = 'auto'; customRange = [-20, 20]; }
   let tabSelected = false;
-  $effect(() => { profile.id; channel; selected = []; tabSelected = false; });
+  let selectedProfileId: number | null = null;
+  $effect(() => {
+    const id = profile.id;
+    if (id !== selectedProfileId) { selectedProfileId = id; selected = []; tabSelected = false; }
+  });
   $effect(() => {
     const request = previewRequest;
     if (!request.serial) return;
@@ -40,7 +44,7 @@
     const path = event.composedPath();
     const panel = path.find(target => target instanceof HTMLElement && target.matches('section.panel')) as HTMLElement | undefined;
     if (!panel?.querySelector('.stages')) return;
-    if (path.some(target => target instanceof Element && target.matches('button, select, input, label, svg, [data-stage]'))) return;
+    if (path.some(target => target instanceof Element && target.matches('button, select, input, label, svg, [data-stage], header'))) return;
     selected = [];
     tabSelected = false;
   }
@@ -64,10 +68,16 @@
       return [{ id: 'composite', label: 'Composite response', points: composite.points,
         color: '#f1f0eb', width: 2.4, dashed: false }];
     }
-    if (selected.length === 1 && selected[0] === 'peq') {
-      return channelBands(responseSettings(settings, bank), bank).flatMap((band, index) =>
-        !band.bypass && (band.type === 6 || band.type === 9) ? [{ id: `band-${index}`, label: `Band ${index + 1}`,
-          color: bandColor(index), points: filterCurve(band.type === 9 ? [] : [toUiBand(band)], 0), width: 1.8, fillOpacity: .2 }] : []);
+    if (selected.length === 1 && (selected[0] === 'peq' || selected[0] === 'correction')) {
+      const routed = responseSettings(settings, bank);
+      const correction = selected[0] === 'correction';
+      const enabled = correction ? routed[bank === 0 ? 'enablePeqLeftFir' : 'enablePeqRightFir'] : routed[bank === 0 ? 'enableEQ' : 'enableEQRight'];
+      if (enabled === false) return [];
+      const bands = correction ? routed[bank === 0 ? 'peqFirList' : 'peqFirListRight'] ?? [] : channelBands(routed, bank);
+      return bands.flatMap((band, index) => !band.bypass && band.type >= 2 && band.type <= 9 ? [{
+        id: `band-${index}`, label: `Band ${index + 1}`, color: bandColor(index),
+        points: filterCurve([toUiBand(band)], 0), width: 1.8, fillOpacity: .2,
+      }] : []);
     }
     const result: BodeCurve[] = [];
     let running = Array<number>(201).fill(0);

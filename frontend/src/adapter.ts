@@ -40,6 +40,10 @@ export function toUiBand(band: Band): FilterParams {
     type: (band.type === 6 ? FilterType.Peaking : 1000 + band.type) as FilterType };
 }
 
+export const setBandEnabled = (band: Band, enabled: boolean, restoreGain = 0): Band =>
+  ({...band, gain: enabled ? restoreGain : 0});
+export const resetBand = (band: Band): Band => ({...band, gain: 0, q: 1, type: 6});
+
 export function patchBand(band: Band, patch: Partial<FilterParams>): Band {
   const result = { ...band };
   if (patch.frequency !== undefined) result.fc = patch.frequency;
@@ -68,8 +72,7 @@ export function preview(settings: Settings, channel: ChannelId): number[] | null
   const bands = channelBands(settings, channel);
   if (!bands.length) return null;
   if (settings[enableKey(channel)] === false) return filterCurve([], preamp(settings, channel));
-  // Never turn a DSPi enum into a guessed Eversolo filter response.
-  if (bands.some(band => !band.bypass && band.type !== 6 && band.type !== 9)) return null;
+  if (bands.some(band => !band.bypass && (band.type < 2 || band.type > 9))) return null;
   return filterCurve(bands.filter(band => band.type !== 9).map(toUiBand), preamp(settings, channel));
 }
 
@@ -120,18 +123,18 @@ export function processingStages(settings: Settings, channel: ChannelId, process
   const enabled = settings[enableKey(channel)] !== false && bands.length > 0;
   if (bands.length) {
     const gain = preamp(settings, channel);
-    if (gain !== 0) stages.push({ id: 'preamp', label: 'Preamp', color: STAGE_COLORS.preamp,
+    stages.push({ id: 'preamp', label: 'Preamp', color: STAGE_COLORS.preamp,
       detail: `${gain > 0 ? '+' : ''}${gain.toFixed(1)} dB`, points: Array(BODE_BINS).fill(gain) });
   }
   const balance = settings.balance ?? 0;
-  if (balance !== 0) {
+  if (settings.balance !== undefined) {
     const attenuation = channel === 1 ? Math.min(0, balance) : -Math.max(0, balance);
     stages.push({ id: 'balance', label: 'Balance', color: STAGE_COLORS.balance,
       detail: balance < 0 ? `${Math.abs(balance).toFixed(1)} dB left` : `${balance.toFixed(1)} dB right`,
       points: Array(BODE_BINS).fill(attenuation) });
   }
   if (enabled) {
-    const known = bands.every(band => band.bypass || band.type === 6 || band.type === 9);
+    const known = bands.every(band => band.bypass || (band.type >= 2 && band.type <= 9));
     stages.push({ id: 'peq', label: 'PEQ', color: STAGE_COLORS.peq,
       detail: known ? `${bands.filter(band => !band.bypass).length} active bands · Provisional 48 kHz preview` : 'Unmapped filter · curve unavailable',
       points: known ? filterCurve(bands.filter(band => band.type !== 9).map(toUiBand), 0) : null });
@@ -145,7 +148,7 @@ export function processingStages(settings: Settings, channel: ChannelId, process
   if (settings[channel === 0 ? 'enablePeqLeftFir' : 'enablePeqRightFir'])
   {
     const correction = settings[channel === 0 ? 'peqFirList' : 'peqFirListRight'] ?? [];
-    const points = geqResponse(correction.map(band => ({freq: band.fc, gain: band.bypass || band.type === 9 ? 0 : band.gain})));
+    const points = filterCurve(correction.map(toUiBand), 0);
     const gain = (correction[0]?.volume ?? 0) / 10;
     stages.push({ id: 'correction', label: 'Correction PEQ', color: STAGE_COLORS.peq,
       detail: `${correction.length} Bands`, points: points?.map(point => point + gain) ?? null });
