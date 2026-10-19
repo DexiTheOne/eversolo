@@ -20,7 +20,7 @@
   let geqChannel = $state<ChannelId>(0);
   const stereo = $derived(draft.settingType === 1);
   let correction = $state(false);
-  const editorChannel = $derived(!stereo ? 0 : correction ? correctionChannel : peqChannel);
+  const editorChannel = $derived(correction ? correctionChannel : !stereo ? 0 : peqChannel);
   const gainKey = $derived(!stereo || geqChannel === 0 ? 'eqGeqGainBeans' : 'eqGeqGainBeansRight');
   const geqEnable = $derived(!stereo || geqChannel === 0 ? 'enableGeq' : 'enableGeqRight');
   const editKey = $derived(correction ? (editorChannel === 0 ? "peqFirList" : "peqFirListRight") : bandKey(editorChannel));
@@ -91,7 +91,7 @@
     if (id === 'peq' || id === 'correction') {
       selectedRows[editKey] = selectedBand;
       correction = id === 'correction';
-      const nextKey = correction ? (!stereo || correctionChannel === 0 ? 'peqFirList' : 'peqFirListRight') : bandKey(stereo ? peqChannel : 0);
+      const nextKey = correction ? (correctionChannel === 0 ? 'peqFirList' : 'peqFirListRight') : bandKey(stereo ? peqChannel : 0);
       selectedBand = selectedRows[nextKey] ?? 0;
     }
     section = id;
@@ -120,7 +120,17 @@
     action?.();
   }
   let busy = $state(false);
-  let autoSave = $state(false);
+  const autoSaveStorageKey = untrack(() => `eversolo:${panel.config.entry_id}:auto-save`);
+  function readAutoSave(): boolean {
+    try { return localStorage.getItem(autoSaveStorageKey) === 'true'; }
+    catch { return false; }
+  }
+  let autoSave = $state(readAutoSave());
+  $effect(() => {
+    const value = autoSave;
+    try { localStorage.setItem(autoSaveStorageKey, String(value)); }
+    catch {}
+  });
   let draggingRange = $state(false);
   $effect(() => {
     const serialized = JSON.stringify(apiSettings(draft));
@@ -139,7 +149,7 @@
   });
   let polling = false;
   let commandVersion = 0;
-  let disabledGains = $state<Record<string, number>>({});
+  let disabledGains = $state<Record<string, {gain: number; type: number}>>({});
   const bandId = (key: string, index: number) => `${profile?.id}:${key}:${index}`;
   const previewSettings = $derived.by(() => {
     const value = clone(draft);
@@ -184,8 +194,8 @@
   const currentFir = $derived(fir?.profile_id === profile?.id && fir?.revision === profile?.revision ? fir : null);
   const dirty = $derived(profile !== null && JSON.stringify(apiSettings(draft)) !== JSON.stringify(apiSettings(profile.settings)));
   const bands = $derived(draft[editKey] ?? []);
-  const uiBands = $derived(bands.map((band, index) => toUiBand({...band, bypass: bandId(editKey, index) in disabledGains})));
-  const currentBand = $derived(bands[selectedBand]);
+  const uiBands = $derived(bands.map((band, index) => toUiBand({...band, ...disabledGains[bandId(editKey, index)], bypass: bandId(editKey, index) in disabledGains})));
+  const currentBand = $derived(bands[selectedBand] ? {...bands[selectedBand], ...disabledGains[bandId(editKey, selectedBand)]} : undefined);
   const preampDb = $derived((bands[0]?.volume ?? 0) / 10);
 
   function request<T>(operation: string, payload = {}): Promise<T> {
@@ -227,7 +237,7 @@
     status = 'Read From Device';
   }
   async function refreshFir(value = profile) {
-    if (!value || value.processing?.hasFir === false) return;
+    if (!alive || document.hidden || !value || value.processing?.hasFir === false) return;
     try {
       const result = await request<FirCurves>('curves', { profile_id: value.id });
       if (alive && profile?.id === value.id) { fir = result; firError = ''; }
@@ -252,11 +262,11 @@
     const version = commandVersion, id = profile?.id;
     try {
       const nextCatalog = await request<Snapshot>('snapshot');
-      if (!alive || busy || version !== commandVersion || profile?.id !== id) return;
+      if (!alive || document.hidden || busy || version !== commandVersion || profile?.id !== id) return;
       if (JSON.stringify(catalog) !== JSON.stringify(nextCatalog)) catalog = nextCatalog;
       if (profile) {
         const fresh = await request<Profile>('read', {profile_id: id});
-        if (!alive || busy || version !== commandVersion || profile?.id !== id) return;
+        if (!alive || document.hidden || busy || version !== commandVersion || profile?.id !== id) return;
         if (dirty) stale = fresh.revision !== profile.revision;
         else if (fresh.revision !== profile.revision) {
           const active = document.activeElement?.shadowRoot?.activeElement ?? document.activeElement;
@@ -277,19 +287,27 @@
       toolbarWrapped = actions.top >= selector.bottom - 1;
     });
     for (const element of [profileToolbar, profileSelector, profileActions]) if (element) toolbarObserver.observe(element);
-    const timer = setInterval(() => void poll(), 15000);
+    let timer: ReturnType<typeof setInterval> | undefined;
+    const updatePolling = () => {
+      if (timer !== undefined) clearInterval(timer);
+      timer = undefined;
+      if (alive && !document.hidden) timer = setInterval(() => void poll(), 15000);
+    };
+    updatePolling();
+    document.addEventListener('visibilitychange', updatePolling);
     const beforeUnload = (event: BeforeUnloadEvent) => { if (dirty) { event.preventDefault(); event.returnValue = ''; } };
     window.addEventListener('beforeunload', beforeUnload);
-    return () => { alive = false; toolbarObserver.disconnect(); clearInterval(timer); window.removeEventListener('beforeunload', beforeUnload); };
+    return () => { alive = false; toolbarObserver.disconnect(); clearInterval(timer); document.removeEventListener('visibilitychange', updatePolling); window.removeEventListener('beforeunload', beforeUnload); };
   });
   function patch(index: number, value: Partial<FilterParams>) {
     if (busy) return;
     const id = bandId(editKey, index);
     if (value.bypass !== undefined) {
-      if (value.bypass) disabledGains[id] = bands[index].gain;
-      const gain = value.bypass ? 0 : disabledGains[id] ?? 0;
+      if (value.bypass) disabledGains[id] = {gain: bands[index].gain, type: bands[index].type};
+      const gain = value.bypass ? 0 : disabledGains[id]?.gain ?? 0;
+      const type = disabledGains[id]?.type ?? bands[index].type;
       if (!value.bypass) delete disabledGains[id];
-      draft[editKey] = bands.map((band, i) => i === index ? setBandEnabled(band, !value.bypass, gain) : band);
+      draft[editKey] = bands.map((band, i) => i === index ? setBandEnabled(band, !value.bypass, gain, type) : band);
     } else {
       if (value.gain !== undefined) delete disabledGains[id];
       draft[editKey] = bands.map((band, i) => i === index ? patchBand(band, value) : band);
@@ -307,14 +325,14 @@
     draft[key] = draft[key]?.map(band => ({ ...band, volume: Math.round(value * 10) }));
   }
   function chooseEditorChannel(value: ChannelId) {
-    if (!stereo) return;
+    if (!correction && !stereo) return;
     selectedRows[editKey] = selectedBand;
     if (correction) correctionChannel = value; else peqChannel = value;
     const key = correction ? (value === 0 ? 'peqFirList' : 'peqFirListRight') : bandKey(value);
     selectedBand = selectedRows[key] ?? 0;
   }
   function setBothChannels() {
-    if (busy || !stereo) return;
+    if (busy || (!correction && !stereo)) return;
     const peer = editorChannel === 0 ? 1 : 0;
     const targetKey = correction ? (peer === 0 ? 'peqFirList' : 'peqFirListRight') : bandKey(peer);
     if (draft[targetKey]?.length !== bands.length) {
@@ -322,6 +340,12 @@
       return;
     }
     draft[targetKey] = clone(bands);
+    bands.forEach((_, index) => {
+      const source = disabledGains[bandId(editKey, index)];
+      const target = bandId(targetKey, index);
+      if (source) disabledGains[target] = {...source};
+      else delete disabledGains[target];
+    });
   }
   function reset() {
     bands.forEach((_, index) => delete disabledGains[bandId(editKey, index)]);
@@ -415,7 +439,7 @@
     <fieldset disabled={busy} class="edit-grid">
       <div class="tab-pane bands-wrap" class:inactive={section !== 'peq' && section !== 'correction'} inert={section !== 'peq' && section !== 'correction'}>
 
-        <BandsPanel stageLabel={correction ? 'Correction PEQ' : 'PEQ'} mono={!stereo} bankChannel={editorChannel} onBankChannel={chooseEditorChannel} selectedBand={selectedBand} onSelect={(index) => selectedBand = index} enabled={draft[editEnableKey]} onEnable={(value) => draft[editEnableKey] = value} bands={uiBands} onPatch={patch} onReset={reset} onSetBoth={setBothChannels}
+        <BandsPanel stageLabel={correction ? 'Correction PEQ' : 'PEQ'} mono={!correction && !stereo} bankChannel={editorChannel} onBankChannel={chooseEditorChannel} selectedBand={selectedBand} onSelect={(index) => selectedBand = index} enabled={draft[editEnableKey]} onEnable={(value) => draft[editEnableKey] = value} bands={uiBands} onPatch={patch} onReset={reset} onSetBoth={setBothChannels}
           types={[1002,1003,1004,1005,FilterType.Peaking,1007,1008,1009] as FilterType[]} link={{ grouped: false, locked: false, peerLabel: '', selectedShort: '' }} onToggleLink={() => {}} />
         {#key `${editKey}:${selectedBand}`}
         {@const sliderBank = editKey}

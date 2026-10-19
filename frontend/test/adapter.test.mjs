@@ -157,9 +157,10 @@ test('Mono preview uses left EQ banks while preserving independent FIR and store
   const routed = adapter.responseSettings(settings,1);
   assert.deepEqual(routed.audioTunningEQListRight,settings.audioTunningEQList);
   assert.deepEqual(routed.eqGeqGainBeansRight,settings.eqGeqGainBeans);
-  assert.deepEqual(routed.peqFirListRight,settings.peqFirList);
+  assert.deepEqual(routed.peqFirListRight,settings.peqFirListRight);
+  assert.equal(routed.enablePeqRightFir, false);
   assert.equal(routed.enableRightFir,false);
-  for (const id of ['peq','geq','correction','preamp']) {
+  for (const id of ['peq','geq','preamp']) {
     const left = adapter.processingStages(settings,0).find(s=>s.id===id);
     const right = adapter.processingStages(settings,1).find(s=>s.id===id);
     assert.deepEqual(right.points,left.points);
@@ -204,12 +205,12 @@ test('every offered device filter has a finite curve with the expected shape', (
 });
 
 
-test('band disabling changes only gain and re-enabling restores it', () => {
+test('band bypass sends a zero-gain peaking filter and restores the original filter', () => {
   for (const bypass of [false, true]) {
-    const original = {...band, bypass};
+    const original = {...band, type: 3, bypass};
     const disabled = adapter.setBandEnabled(original,false);
-    assert.deepEqual(disabled,{...original,gain:0});
-    assert.deepEqual(adapter.setBandEnabled(disabled,true,original.gain),original);
+    assert.deepEqual(disabled,{...original,type:6,gain:0});
+    assert.deepEqual(adapter.setBandEnabled(disabled,true,original.gain,original.type),original);
   }
 });
 test('reset clears the band response without resetting preamp or bypass', () => {
@@ -283,5 +284,21 @@ test('stored loudness contours span the complete response grid', () => {
     assert.equal(points[0], ends[index][0]);
     assert.equal(points.at(-1), ends[index][1]);
     assert.notEqual(points[2048], 0);
+  }
+});
+
+
+test('Mono mode keeps correction channel responses and enables independent', () => {
+  const settings = {settingType: 0, enablePeqLeftFir: true, enablePeqRightFir: true,
+    peqFirList: [{...band, gain: 4, volume: 0}], peqFirListRight: [{...band, gain: -3, volume: 0}]};
+  const left = adapter.processingStages(settings, 0).find(s => s.id === 'correction');
+  const right = adapter.processingStages(settings, 1).find(s => s.id === 'correction');
+  assert.ok(Math.max(...left.points) > 3.9);
+  assert.ok(Math.min(...right.points) < -2.9);
+  assert.ok(adapter.processingStages({...settings, enablePeqLeftFir: false}, 1).some(s => s.id === 'correction'));
+  for (const key of ['audioTunningEQList', 'audioTunningEQListRight', 'peqFirList', 'peqFirListRight']) {
+    const bypassed = adapter.setBandEnabled({...band, type: 5}, false);
+    assert.equal(adapter.apiSettings({[key]: [bypassed]})[key][0].type, 6);
+    assert.equal(adapter.apiSettings({[key]: [bypassed]})[key][0].gain, 0);
   }
 });

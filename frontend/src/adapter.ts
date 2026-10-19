@@ -40,8 +40,8 @@ export function toUiBand(band: Band): FilterParams {
     type: (band.type === 6 ? FilterType.Peaking : 1000 + band.type) as FilterType };
 }
 
-export const setBandEnabled = (band: Band, enabled: boolean, restoreGain = 0): Band =>
-  ({...band, gain: enabled ? restoreGain : 0});
+export const setBandEnabled = (band: Band, enabled: boolean, restoreGain = 0, restoreType = band.type): Band =>
+  ({...band, type: enabled ? restoreType : 6, gain: enabled ? restoreGain : 0});
 export const resetBand = (band: Band): Band => ({...band, gain: 0, q: 1, type: 6});
 
 export function patchBand(band: Band, patch: Partial<FilterParams>): Band {
@@ -63,7 +63,6 @@ export function responseSettings(settings: Settings, channel: ChannelId): Settin
   return {...settings,
     audioTunningEQListRight: settings.audioTunningEQList, enableEQRight: settings.enableEQ,
     eqGeqGainBeansRight: settings.eqGeqGainBeans, enableGeqRight: settings.enableGeq,
-    peqFirListRight: settings.peqFirList, enablePeqRightFir: settings.enablePeqLeftFir,
   };
 }
 

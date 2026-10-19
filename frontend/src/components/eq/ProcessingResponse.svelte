@@ -1,5 +1,7 @@
 <script lang="ts">
   import { untrack, type Snippet } from 'svelte';
+  import { Tween } from 'svelte/motion';
+  import { cubicOut } from 'svelte/easing';
   import { BODE_BINS } from '../bode/bodeFreqs';
   import { bandColor } from '@/styles/palette';
   import { filterCurve } from '../bode/filterCurve';
@@ -106,7 +108,31 @@
     const values = curves.flatMap(curve => curve.points).filter(Number.isFinite);
     const low = Math.min(0, ...values), high = Math.max(0, ...values);
     const padding = Math.max(1, (high - low) * .15);
-    return [Math.floor((low - padding) / 2) * 2, Math.ceil((high + padding) / 2) * 2];
+    return [low - padding, high + padding];
+  });
+  const animatedRange = new Tween<[number, number]>([-1, 1], { easing: cubicOut });
+  let rangeInitialized = false;
+  let previousGraph = '';
+  $effect(() => {
+    const requested = graphRange;
+    const graph = JSON.stringify([profile.id, selected, stereoPreview, channel, settings.settingType]);
+    const switchedGraph = graph !== previousGraph;
+    previousGraph = graph;
+    if (verticalScale !== 'auto' || !rangeInitialized || switchedGraph) {
+      void animatedRange.set(requested, { duration: 0 });
+      rangeInitialized = true;
+      return;
+    }
+    const current = untrack(() => animatedRange.target);
+    const low = Math.floor(requested[0] / 2) * 2;
+    const high = Math.ceil(requested[1] / 2) * 2;
+    if (requested[0] < current[0] || requested[1] > current[1]) {
+      void animatedRange.set([Math.min(low, current[0]), Math.max(high, current[1])], { duration: 180 });
+    }
+    const timer = setTimeout(() => {
+      void animatedRange.set([low, high], { duration: 300 });
+    }, 700);
+    return () => clearTimeout(timer);
   });
   function sparkline(stage: ResponseStage) {
     return stage.points?.map((value, index) => `${index === 0 ? 'M' : 'L'}${4 + index / (stage.points!.length - 1) * 92},${24 - Math.max(-24, Math.min(24, value)) * (stage.id === 'fir' ? 2.2 : .75)}`).join(' ') ?? '';
@@ -160,7 +186,7 @@
     </select>
   </label><button class="chip" aria-label="Reset graph scale" onclick={resetGraph}>Reset</button></div>
   <div class="plot">
-    <BodePlot {curves} height={280} yRange={graphRange} onRangeChange={panRange} />
+    <BodePlot {curves} height={280} yRange={animatedRange.current} onRangeChange={panRange} />
     {#if curves.length}<div class="plot-key" aria-label="Response Line Key">
       <span><svg width="26" height="12" viewBox="0 0 26 12" aria-hidden="true"><line x1="1" x2="25" y1="6" y2="6" stroke="currentColor" stroke-width="2" /></svg>Left Channel</span>
       <span><svg width="26" height="12" viewBox="0 0 26 12" aria-hidden="true"><line x1="1" x2="25" y1="6" y2="6" stroke="currentColor" stroke-width="2" stroke-dasharray="5 4" /></svg>Right Channel</span>
