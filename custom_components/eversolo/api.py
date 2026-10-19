@@ -8,6 +8,8 @@ import json
 import math
 from urllib.parse import urlencode
 
+from yarl import URL
+
 from .const import LOGGER
 
 
@@ -51,6 +53,7 @@ class EversoloApiClient:
         result = await self._api_wrapper(
             method="get",
             url=f"http://{self._host}:{self._port}/ZidooMusicControl/v2/{endpoint}?{urlencode(params)}",
+            preserve_query=True,
         )
         if not isinstance(result, dict) or str(result.get("status")) != "200":
             raise EversoloApiClientError(f"EQ request {endpoint} was rejected")
@@ -140,7 +143,8 @@ class EversoloApiClient:
             raise EversoloApiClientError("Invalid internal file location")
         result = await self._api_wrapper(method="get", url=(
             f"http://{self._host}:{self._port}/ZidooFileControl/v2/getFiles?"
-            + urlencode({"url": url, "sort": sort, "startIndex": start, "requestCount": 1000})))
+            + urlencode({"url": url, "sort": sort, "startIndex": start, "requestCount": 1000})),
+            preserve_query=True)
         data = result.get("data") if isinstance(result, dict) else None
         if (not isinstance(result, dict) or str(result.get("code")) != "0" or not isinstance(data, dict)
                 or not isinstance(data.get("list"), list)):
@@ -592,13 +596,14 @@ class EversoloApiClient:
         data: dict | None = None,
         headers: dict | None = None,
         parseJson: bool = True,
+        preserve_query: bool = False,
     ) -> any:
         """Get information from the API."""
         try:
             async with asyncio.timeout(5):
                 response = await self._session.request(
                     method=method,
-                    url=url,
+                    url=URL(url, encoded=True) if preserve_query else url,
                     headers=headers,
                     json=data,
                 )

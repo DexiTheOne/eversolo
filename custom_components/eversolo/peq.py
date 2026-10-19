@@ -92,6 +92,8 @@ async def async_profile_command(coordinator, operation, payload):
         try:
             return await _async_command(coordinator, client, operation, payload)
         except EversoloApiClientError as err:
+            if operation == "files":
+                raise HomeAssistantError("Could not browse device files. Try opening the folder again.") from err
             # Never replay a mutation: a transport timeout may follow a successful write.
             raise HomeAssistantError(
                 "Device request failed or its outcome is uncertain. Reload to reconcile before retrying."

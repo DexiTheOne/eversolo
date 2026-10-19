@@ -4,7 +4,7 @@ from copy import deepcopy
 import json
 from pathlib import Path
 from unittest.mock import AsyncMock
-from urllib.parse import parse_qs, urlsplit
+from urllib.parse import parse_qs, quote_plus, urlsplit
 
 import pytest
 from homeassistant.exceptions import HomeAssistantError
@@ -104,4 +104,30 @@ def test_fir_import_conflict_and_no_output_assignment():
         with pytest.raises(HomeAssistantError,match='changed'):
             await async_profile_command(coordinator,'import_fir',payload)
         assert client.async_import_eq_fir.await_count == 1
+    asyncio.run(scenario())
+
+
+def test_http_transport_preserves_encoded_file_and_import_paths():
+    """Keep escaped slashes intact at the actual HTTP session boundary."""
+    from types import SimpleNamespace
+    from unittest.mock import Mock
+    from yarl import URL
+
+    async def scenario():
+        response = SimpleNamespace(status=200, raise_for_status=Mock(), json=AsyncMock())
+        session = SimpleNamespace(request=AsyncMock(return_value=response))
+        client = EversoloApiClient("192.0.2.10", 9529, session)
+        response.json.return_value = {"code": 0, "data": {"list": [], "total": 0}}
+        for path in ("/", "flash://", "flash:///FIR Filters/L & R + 50% café"):
+            await client.async_get_fir_files(path)
+            url = session.request.call_args.kwargs["url"]
+            assert isinstance(url, URL)
+            assert "url=" + quote_plus(path) in url.raw_query_string
+            assert parse_qs(url.raw_query_string)["url"] == [path]
+        response.json.return_value = {"status": 200}
+        path = "flash:///FIR Filters/L & R + 50% café.wav"
+        await client.async_import_eq_fir(9, 1, path)
+        url = session.request.call_args.kwargs["url"]
+        assert "flash%3A%2F%2F%2F" in url.raw_query_string
+        assert parse_qs(url.raw_query_string)["path"] == [path]
     asyncio.run(scenario())
