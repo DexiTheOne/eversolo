@@ -48,9 +48,7 @@ def merge_settings(profile, settings):
                     if field_value != current[key][index][field]:
                         if field == "freq":
                             raise HomeAssistantError("Graphic EQ frequencies are fixed")
-                        if field == "type" and key.startswith("peqFir") and field_value != 6:
-                            raise HomeAssistantError("Correction filter type is unverified")
-                        validate_value(field, field_value)
+                        validate_value(field, field_value, geq=key in ("eqGeqGainBeans", "eqGeqGainBeansRight"))
                         merged[key][index][field] = field_value
         elif value != current[key]:
             validate_value(key, value)
@@ -58,14 +56,14 @@ def merge_settings(profile, settings):
     return merged
 
 
-def validate_value(key, value):
+def validate_value(key, value, *, geq=False):
     """Reject nonfinite, out of range, or unverified new filter codes."""
     if key == "bypass" or key.startswith("enable"):
         valid = isinstance(value, bool)
     elif key in ("type", "settingType", "loudness"):
         valid = type(value) is int and value in (tuple(range(2, 10)) if key == "type" else (0, 1))
     else:
-        low, high = RANGES[key]
+        low, high = (-20, 20) if geq and key == "gain" else RANGES[key]
         valid = type(value) in (int, float) and math.isfinite(value) and low <= value <= high
         if key == "volume" and valid:
             valid = value == round(value)

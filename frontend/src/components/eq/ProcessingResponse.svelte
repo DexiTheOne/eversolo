@@ -1,5 +1,6 @@
 <script lang="ts">
   import { untrack, type Snippet } from 'svelte';
+  import { BODE_BINS } from '../bode/bodeFreqs';
   import { bandColor } from '@/styles/palette';
   import { filterCurve } from '../bode/filterCurve';
   import { channelBands, toUiBand, responseSettings } from '@/adapter';
@@ -60,7 +61,9 @@
     ...responseStages.filter(stage => stage.id !== 'preamp' && stage.id !== 'balance'),
   ] as ResponseStage[]);
   function channelCurves(bank: ChannelId): BodeCurve[] {
-    const stages = bank === 0 ? leftStages : rightStages;
+    const stages = selected.length
+      ? processingStages(settings, bank, profile.processing, currentFir?.[bank === 0 ? 'left' : 'right'], true)
+      : bank === 0 ? leftStages : rightStages;
     const visibleStages = selected.length ? stages.filter(stage => selected.includes(stage.id)) : stages;
     const total = sumStages(visibleStages);
     if (!selected.length) {
@@ -71,8 +74,6 @@
     if (selected.length === 1 && (selected[0] === 'peq' || selected[0] === 'correction')) {
       const routed = responseSettings(settings, bank);
       const correction = selected[0] === 'correction';
-      const enabled = correction ? routed[bank === 0 ? 'enablePeqLeftFir' : 'enablePeqRightFir'] : routed[bank === 0 ? 'enableEQ' : 'enableEQRight'];
-      if (enabled === false) return [];
       const bands = correction ? routed[bank === 0 ? 'peqFirList' : 'peqFirListRight'] ?? [] : channelBands(routed, bank);
       return bands.flatMap((band, index) => !band.bypass && band.type >= 2 && band.type <= 9 ? [{
         id: `band-${index}`, label: `Band ${index + 1}`, color: bandColor(index),
@@ -80,7 +81,7 @@
       }] : []);
     }
     const result: BodeCurve[] = [];
-    let running = Array<number>(201).fill(0);
+    let running = Array<number>(BODE_BINS).fill(0);
     for (const stage of visibleStages) {
       if (!stage.points || stage.illustrative) continue;
       running = running.map((point, index) => point + stage.points![index]);
@@ -108,16 +109,16 @@
     return [Math.floor((low - padding) / 2) * 2, Math.ceil((high + padding) / 2) * 2];
   });
   function sparkline(stage: ResponseStage) {
-    return stage.points?.map((value, index) => `${index === 0 ? 'M' : 'L'}${4 + index / 2 * .92},${24 - Math.max(-24, Math.min(24, value)) * (stage.id === 'fir' ? 2.2 : .75)}`).join(' ') ?? '';
+    return stage.points?.map((value, index) => `${index === 0 ? 'M' : 'L'}${4 + index / (stage.points!.length - 1) * 92},${24 - Math.max(-24, Math.min(24, value)) * (stage.id === 'fir' ? 2.2 : .75)}`).join(' ') ?? '';
   }
 </script>
 
 <svelte:window onclick={clearOutside} />
 
-<Panel stackActions code="DSP.01" title="Processing Response">
+<Panel stackActions title="">
   {#snippet titleControl()}<span class="response-controls"><button type="button" class="chip hi preview-channel" aria-label={`Preview Channel: ${stereoPreview ? 'Both Channels' : channel === 0 ? 'Left Channel' : 'Right Channel'}`} onclick={() => { if (stereoPreview) { stereoPreview = false; onChannelChange(0); } else if (channel === 0) onChannelChange(1); else stereoPreview = true; }}>{stereoPreview ? 'Both Channels' : channel === 0 ? 'Left Channel' : 'Right Channel'}</button><button type="button" class="chip hi mode-cycle" aria-label={`Profile mode: ${settings.settingType === 1 ? 'Stereo' : 'Mono'}`} disabled={busy} onclick={() => onModeChange(settings.settingType === 1 ? 0 : 1)}>{settings.settingType === 1 ? 'Stereo' : 'Mono'}</button></span>{/snippet}
   {#snippet right()}{@render actions()}{/snippet}
-  <div class="stages" style:--stage-count={Math.max(1, stages.length)} aria-label="Enabled processing stages">
+  <div class="stages" aria-label="Enabled processing stages">
     {#each stages as stage (stage.id)}
       {#if stage.id === 'preamp' || stage.id === 'balance'}
         <div class="stage slider-stage" role="button" tabindex="0" class:selected={selected.includes(stage.id)} data-response-stage={stage.id} data-stage={stage.id} aria-label={`${stage.label} curve`} aria-pressed={selected.includes(stage.id)} onclick={() => toggleStage(stage.id)} onkeydown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); toggleStage(stage.id); } }} style:--stage-color={stage.color}>
@@ -180,19 +181,14 @@
   .response-controls { display: inline-flex; align-items: center; gap: 8px; }
   .preview-channel { width: 140px; min-width: 140px; flex: 0 0 140px; white-space: nowrap; }
   .mode-cycle { width: 80px; min-width: 80px; flex: 0 0 80px; }
-  .stages { container-type: inline-size; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding: 6px 14px 0; }.stage { position: relative; display: grid; grid-template-rows: 20px 20px 18px; align-content: start; height: 72px; text-align: left; cursor: pointer; color: var(--text); font: inherit; min-width: 0; --stage-columns: min(var(--stage-count), 2); flex: 0 0 calc((100% - (var(--stage-columns) - 1) * 8px) / var(--stage-columns)); padding: 6px 10px; border: 1px solid var(--stage-color); background: color-mix(in srgb, var(--stage-color) 12%, var(--panel-solid)); border-radius: 10px; }
-  @container (min-width: 346px) { .stage { --stage-columns: min(var(--stage-count), 3); } }
-  @container (min-width: 464px) { .stage { --stage-columns: min(var(--stage-count), 4); } }
-  @container (min-width: 582px) { .stage { --stage-columns: min(var(--stage-count), 5); } }
-  @container (min-width: 700px) { .stage { --stage-columns: min(var(--stage-count), 6); } }
-  @container (min-width: 818px) { .stage { --stage-columns: min(var(--stage-count), 7); } }
+  .stages { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding: 6px 14px 0; }.stage { position: relative; display: grid; grid-template-rows: 20px 20px 18px; align-content: start; height: 72px; text-align: left; cursor: pointer; color: var(--text); font: inherit; min-width: 150px; max-width: 150px; flex: 0 0 150px; padding: 6px 10px; border: 1px solid var(--stage-color); background: color-mix(in srgb, var(--stage-color) 12%, var(--panel-solid)); border-radius: 10px; }
   .stage[data-stage="fir"] svg { height: 30px; }
   .stage[data-stage="fir"] { grid-template-rows: 20px 30px 8px; }
   .reference-stage { cursor: default; grid-template-rows: 20px 40px; }
   .stage:not(.reference-stage):hover { background: color-mix(in srgb, var(--stage-color) 22%, var(--panel-solid)); }
   .stage.selected { background: color-mix(in srgb, var(--stage-color) 42%, var(--panel-solid)); box-shadow: inset 0 0 0 2px var(--stage-color), 0 0 0 1px var(--stage-color); }
   .stage:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .stage-name { align-self: start; display: flex; gap: 7px; align-items: center; flex-wrap: wrap; color: var(--text); font: 14px var(--font-sans); }.dot { height: 5px; width: 5px; background: var(--stage-color); border-radius: 50%; }.stage svg { align-self: center; display: block; width: 100%; height: 20px; margin-top: 0; }.stage path { fill: none; stroke: var(--stage-color); stroke-width: 1.3; vector-effect: non-scaling-stroke; }.stage line { stroke: #92928d; stroke-width: 1; vector-effect: non-scaling-stroke; }.stage p { font: 14px/1.5 var(--font-sans); color: var(--text-dim); margin: 2px 0 0; }.unavailable { height: 28px; display: grid; place-items: center; color: var(--text-faint); font: 14px var(--font-sans); }.flat { color: var(--text-dim); font: 14px var(--font-sans); }
+  .stage-name { align-self: start; display: flex; gap: 7px; align-items: center; flex-wrap: nowrap; white-space: nowrap; color: var(--text); font: 14px var(--font-sans); }.dot { flex-shrink: 0; height: 5px; width: 5px; background: var(--stage-color); border-radius: 50%; }.stage svg { align-self: center; display: block; width: 100%; height: 20px; margin-top: 0; }.stage path { fill: none; stroke: var(--stage-color); stroke-width: 1.3; vector-effect: non-scaling-stroke; }.stage line { stroke: #92928d; stroke-width: 1; vector-effect: non-scaling-stroke; }.stage p { font: 14px/1.5 var(--font-sans); color: var(--text-dim); margin: 2px 0 0; }.unavailable { height: 28px; display: grid; place-items: center; color: var(--text-faint); font: 14px var(--font-sans); }.flat { color: var(--text-dim); font: 14px var(--font-sans); }
  .plot-controls { display: flex; justify-content: flex-end; align-items: center; gap: 8px; padding: 6px 14px 0; }
  @media (max-width: 900px) { .plot-controls { justify-content: center; } }
  .plot-controls .chip { min-height: 30px; padding: 4px 10px; font-size: 13px; }

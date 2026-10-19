@@ -1,10 +1,10 @@
-// Canonical frequency grid for the Bode plot: 201 log-spaced bins inclusive
+// Canonical frequency grid for the Bode plot: 4097 log-spaced bins inclusive
 // of 20 Hz and 20 kHz. Plot and filter-response converter sample at these
 // exact frequencies, so a curve produced anywhere renders without resampling.
 
 import { Eq } from '@/domain';
 
-export const BODE_BINS = 201;
+export const BODE_BINS = 4097;
 export const BODE_FMIN = Eq.FREQ_MIN_HZ;
 export const BODE_FMAX = Eq.FREQ_MAX_HZ;
 

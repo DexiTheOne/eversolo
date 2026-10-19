@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { build } from 'vite';
@@ -31,7 +32,7 @@ test('preamp scaling, bypass, and left/right previews are independent', () => {
 });
 test('peak response approaches its gain at center and is finite over the plot', () => {
   const points = adapter.preview({ audioTunningEQList: [{ ...band, volume: 0 }] }, 0);
-  assert.equal(points.length, 201);
+  assert.equal(points.length, 4097);
   assert.ok(points.every(Number.isFinite));
   assert.ok(Math.max(...points) > 5.9 && Math.max(...points) <= 6.01);
 });
@@ -48,10 +49,10 @@ test('neutral preamp and balance retain flat curves while disabled EQ is omitted
 test('FIR log-frequency points interpolate in dB and reject unavailable data', () => {
   const curve = { loaded: true, coordinate: 'log10_hz', points: [{ x: Math.log10(20), y: -2 }, { x: Math.log10(20000), y: 2 }] };
   const response = adapter.firResponse(curve);
-  assert.equal(response.length, 201);
-  assert.ok(Math.abs(response[100]) < 1e-9);
+  assert.equal(response.length, 4097);
+  assert.ok(Math.abs(response[(response.length - 1) / 2]) < 1e-9);
   assert.ok(Math.abs(response[0] + 2) < 1e-9);
-  assert.ok(Math.abs(response[200] - 2) < 1e-9);
+  assert.ok(Math.abs(response.at(-1) - 2) < 1e-9);
   assert.equal(adapter.firResponse({ ...curve, loaded: false }), null);
   assert.equal(adapter.firResponse({ ...curve, coordinate: 'unknown' }), null);
 });
@@ -133,7 +134,7 @@ test('equal GEQ gains are flat across the entire range, including edges', () => 
   const frequencies = [25,40,63,100,160,250,400,630,1000,1600,2500,4000,6300,10000,16000];
   for (const gain of [-15, 0, 15]) {
     const points = adapter.geqResponse(frequencies.map(freq => ({freq, gain})));
-    assert.equal(points.length, 201);
+    assert.equal(points.length, 4097);
     assert.ok(points.every(point => point === gain));
   }
   assert.equal(adapter.geqResponse([]), null);
@@ -196,7 +197,7 @@ test('every offered device filter has a finite curve with the expected shape', (
   assert.ok(curve(2)[0] > -0.1 && curve(2).at(-1) < -30);
   assert.ok(curve(3)[0] < -30 && curve(3).at(-1) > -0.1);
   assert.ok(Math.max(...curve(4)) > -0.1 && curve(4)[0] < -20);
-  assert.ok(Math.min(...curve(5)) < -20);
+  assert.ok(Math.min(...curve(5)) < -40);
   assert.ok(Math.abs(curve(7)[0]-6) < 0.1 && Math.abs(curve(7).at(-1)) < 0.1);
   assert.ok(Math.abs(curve(8)[0]) < 0.1 && Math.abs(curve(8).at(-1)-6) < 0.1);
   assert.ok(curve(9).every(value=>value===0));
@@ -213,4 +214,74 @@ test('band disabling changes only gain and re-enabling restores it', () => {
 });
 test('reset clears the band response without resetting preamp or bypass', () => {
   assert.deepEqual(adapter.resetBand({...band,type:7,q:3,bypass:true}),{...band,gain:0,type:6,q:1,bypass:true});
+});
+
+test('selected filter previews include disabled stages without enabling processing contributions', () => {
+  const settings = { settingType: 1, enableEQ: false, enableGeq: false, enablePeqLeftFir: false, enableLeftFir: false,
+    audioTunningEQList: [band], eqGeqGainBeans: [{ freq: 1000, gain: 4 }], peqFirList: [band] };
+  const fir = { loaded: true, coordinate: 'log10_hz', points: [{ x: 1, y: -2 }, { x: 5, y: -2 }] };
+  const processing = adapter.processingStages(settings, 0, undefined, fir);
+  const preview = adapter.processingStages(settings, 0, undefined, fir, true);
+  for (const id of ['peq', 'geq', 'correction', 'fir']) {
+    assert.ok(!processing.some(stage => stage.id === id));
+    assert.ok(preview.find(stage => stage.id === id)?.points?.some(value => value !== 0));
+  }
+  assert.equal(settings.enableEQ, false);
+  assert.equal(settings.enableLeftFir, false);
+});
+
+
+test('notch has fixed rejection independent of stored gain', () => {
+  const curve = gain => adapter.preview({audioTunningEQList: [{...band, type: 5, gain, volume: 0}]}, 0);
+  assert.deepEqual(curve(0), curve(12));
+  assert.ok(Math.min(...curve(0)) < -40);
+});
+
+test('narrow peaks retain their height and smooth flanks on the logarithmic grid', () => {
+  const count = 4097;
+  const center = 272;
+  const fc = 20 * 1000 ** (center / (count - 1));
+  const points = adapter.preview({audioTunningEQList: [{...band, fc, gain: 11.7, q: 28.32, volume: 0}]}, 0);
+  assert.ok(Math.abs(points[center] - 11.7) < 0.001);
+  for (let offset = 1; offset <= 100; offset++) {
+    assert.ok(Math.abs(points[center - offset] - points[center + offset]) < 0.001);
+    assert.ok(points[center - offset] <= points[center - offset + 1]);
+    assert.ok(points[center + offset] <= points[center + offset - 1]);
+  }
+  const actual = adapter.preview({audioTunningEQList: [{...band, fc: 31.5, gain: 11.7, q: 28.32, volume: 0}]}, 0);
+  assert.ok(Math.max(...actual) > 11.65);
+});
+
+
+test('fixed-gain filters preserve editor gain and serialize zero in every bank', () => {
+  for (const type of [2, 3, 4, 5]) {
+    const fixed = adapter.patchBand(band, {type: 1000 + type});
+    assert.equal(fixed.gain, 6);
+    assert.equal(adapter.toUiBand(fixed).gain, 6);
+    const settings = Object.fromEntries(['audioTunningEQList', 'audioTunningEQListRight', 'peqFirList', 'peqFirListRight'].map(key => [key, [fixed]]));
+    const payload = adapter.apiSettings(settings);
+    for (const key of Object.keys(settings)) {
+      assert.equal(payload[key][0].gain, 0);
+      assert.equal(settings[key][0].gain, 6);
+    }
+    const restored = adapter.retainFilterGains(payload, settings);
+    assert.deepEqual(restored, settings);
+    assert.deepEqual(adapter.apiSettings(restored), payload);
+    assert.equal(adapter.patchBand(restored.audioTunningEQList[0], {type: 1}).gain, 6);
+  }
+  assert.equal(adapter.apiSettings({audioTunningEQList: [band]}).audioTunningEQList[0].gain, 6);
+});
+
+
+test('stored loudness contours span the complete response grid', () => {
+  const contours = JSON.parse(readFileSync(new URL('../src/components/eq/loudnessReferencePoints.json', import.meta.url)));
+  assert.equal(contours.length, 3);
+  const ends = [[22, 23], [9, 7], [1, -12]];
+  for (const [index, points] of contours.entries()) {
+    assert.equal(points.length, 4097);
+    assert.ok(points.every(Number.isFinite));
+    assert.equal(points[0], ends[index][0]);
+    assert.equal(points.at(-1), ends[index][1]);
+    assert.notEqual(points[2048], 0);
+  }
 });

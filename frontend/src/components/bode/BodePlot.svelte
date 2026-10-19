@@ -2,11 +2,11 @@
   import type { ChannelId } from '@/domain';
 
   // Curve-only API. Callers provide pre-sampled magnitude points on the
-  // canonical 201-bin grid (see bodeFreqs.ts). The plot is dumb about EQ
+  // canonical frequency grid (see bodeFreqs.ts). The plot is dumb about EQ
   // semantics -- it only draws.
   export type BodeCurve = {
     id: string;
-    /** 201 dB samples at BODE_FREQS. Values outside yRange are clipped. */
+    /** Magnitude samples at BODE_FREQS. Values outside yRange are clipped. */
     points: number[];
     /** Channel id whose palette colors the stroke + (single-curve) fill. */
     channelId?: ChannelId;
@@ -70,7 +70,7 @@
   const plotW = $derived(W - PAD_L);
   const plotH = $derived(height - PAD_B);
 
-  // Pre-mapped x-coords for the 201 bins (constant once W/PAD_L are fixed).
+  // Pre-mapped x-coords for the frequency bins (constant once W/PAD_L are fixed).
   const binsX = $derived.by(() => {
     const out = new Array<number>(BODE_BINS);
     for (let i = 0; i < BODE_BINS; i++) {
@@ -89,25 +89,8 @@
     return PAD_L + xNormForFLocal(f) * plotW;
   }
 
-  // Catmull-Rom -> cubic Bezier path. Input is 201 sampled points already
-  // aligned to binsX. Tension fixed (alpha = 0.5 equivalent).
-  function catmullRomPath(pts: ReadonlyArray<[number, number]>): string {
-    const n = pts.length;
-    if (n === 0) return '';
-    if (n === 1) return `M ${pts[0][0]} ${pts[0][1]}`;
-    let d = `M ${pts[0][0]} ${pts[0][1]}`;
-    for (let i = 0; i < n - 1; i++) {
-      const p0 = pts[i === 0 ? 0 : i - 1];
-      const p1 = pts[i];
-      const p2 = pts[i + 1];
-      const p3 = pts[i + 2 < n ? i + 2 : n - 1];
-      const c1x = p1[0] + (p2[0] - p0[0]) / 6;
-      const c1y = p1[1] + (p2[1] - p0[1]) / 6;
-      const c2x = p2[0] - (p3[0] - p1[0]) / 6;
-      const c2y = p2[1] - (p3[1] - p1[1]) / 6;
-      d += ` C ${c1x} ${c1y} ${c2x} ${c2y} ${p2[0]} ${p2[1]}`;
-    }
-    return d;
+  function responsePath(pts: ReadonlyArray<[number, number]>): string {
+    return pts.map(([x, y], index) => `${index === 0 ? 'M' : 'L'} ${x} ${y}`).join(' ');
   }
 
   function strokeFor(c: BodeCurve): string {
@@ -129,7 +112,7 @@
       for (let i = 0; i < BODE_BINS; i++) {
         pts[i] = [binsX[i], yForDb(c.points[i] ?? 0)];
       }
-      return { c, d: catmullRomPath(pts), pts };
+      return { c, d: responsePath(pts), pts };
     });
   });
 
@@ -223,7 +206,7 @@
       cy = null;
       return;
     }
-    // Snap x to nearest of the 201 bins.
+    // Snap x to nearest of the frequency bins.
     const xn = (ix - PAD_L) / plotW;
     const bin = Math.max(0, Math.min(BODE_BINS - 1, Math.round(xn * (BODE_BINS - 1))));
     ix = binsX[bin];

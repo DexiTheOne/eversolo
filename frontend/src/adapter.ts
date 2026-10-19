@@ -116,7 +116,7 @@ export function geqResponse(bands?: {freq: number; gain: number}[]): number[] | 
   });
 }
 
-export function processingStages(settings: Settings, channel: ChannelId, processing?: Processing, fir?: FirCurve): ResponseStage[] {
+export function processingStages(settings: Settings, channel: ChannelId, processing?: Processing, fir?: FirCurve, previewDisabled = false): ResponseStage[] {
   settings = responseSettings(settings, channel);
   const stages: ResponseStage[] = [];
   const bands = channelBands(settings, channel);
@@ -133,19 +133,19 @@ export function processingStages(settings: Settings, channel: ChannelId, process
       detail: balance < 0 ? `${Math.abs(balance).toFixed(1)} dB left` : `${balance.toFixed(1)} dB right`,
       points: Array(BODE_BINS).fill(attenuation) });
   }
-  if (enabled) {
+  if (enabled || (previewDisabled && bands.length > 0)) {
     const known = bands.every(band => band.bypass || (band.type >= 2 && band.type <= 9));
     stages.push({ id: 'peq', label: 'PEQ', color: STAGE_COLORS.peq,
       detail: known ? `${bands.filter(band => !band.bypass).length} active bands · Provisional 48 kHz preview` : 'Unmapped filter · curve unavailable',
       points: known ? filterCurve(bands.filter(band => band.type !== 9).map(toUiBand), 0) : null });
   }
-  if (settings[channel === 0 ? 'enableGeq' : 'enableGeqRight']) {
+  if (previewDisabled || settings[channel === 0 ? 'enableGeq' : 'enableGeqRight']) {
     const gains = settings[channel === 0 ? 'eqGeqGainBeans' : 'eqGeqGainBeansRight'];
     stages.push({ id: 'geq', label: 'Graphic EQ', color: STAGE_COLORS.peq,
       detail: `${gains?.length ?? 0} bands`,
       points: geqResponse(gains) });
   }
-  if (settings[channel === 0 ? 'enablePeqLeftFir' : 'enablePeqRightFir'])
+  if (previewDisabled || settings[channel === 0 ? 'enablePeqLeftFir' : 'enablePeqRightFir'])
   {
     const correction = settings[channel === 0 ? 'peqFirList' : 'peqFirListRight'] ?? [];
     const points = filterCurve(correction.map(toUiBand), 0);
@@ -153,7 +153,7 @@ export function processingStages(settings: Settings, channel: ChannelId, process
     stages.push({ id: 'correction', label: 'Correction PEQ', color: STAGE_COLORS.peq,
       detail: `${correction.length} Bands`, points: points?.map(point => point + gain) ?? null });
   }
-  if (settings[channel === 0 ? 'enableLeftFir' : 'enableRightFir'] ?? processing?.firEnabled[channelName(channel)]) stages.push({ id: 'fir', label: 'FIR', color: STAGE_COLORS.fir,
+  if (previewDisabled || (settings[channel === 0 ? 'enableLeftFir' : 'enableRightFir'] ?? processing?.firEnabled[channelName(channel)])) stages.push({ id: 'fir', label: 'FIR', color: STAGE_COLORS.fir,
     detail: fir?.loaded ? 'Device response · read only' : 'Device curve unavailable', points: firResponse(fir) });
   if (settings[loudnessKey(channel)] === 1) stages.push({ id: 'loudness', label: 'Loudness', color: STAGE_COLORS.loudness,
     detail: 'Eversolo reference illustration', points: null, illustrative: true });
@@ -169,4 +169,23 @@ export function sumStages(stages: ResponseStage[]): { points: number[]; omitted:
     for (let i = 0; i < BODE_BINS; i++) points[i] += stage.points[i];
   }
   return { points, omitted };
+}
+
+export function apiSettings(settings: Settings): Settings {
+  const result = clone(settings);
+  for (const key of ['audioTunningEQList', 'audioTunningEQListRight', 'peqFirList', 'peqFirListRight'] as const) {
+    if (result[key]) result[key] = result[key].map(band => [2, 3, 4, 5].includes(band.type) ? {...band, gain: 0} : band);
+  }
+  return result;
+}
+
+export function retainFilterGains(settings: Settings, previous: Settings): Settings {
+  const result = clone(settings);
+  for (const key of ['audioTunningEQList', 'audioTunningEQListRight', 'peqFirList', 'peqFirListRight'] as const) {
+    if (result[key]) result[key] = result[key].map((band, index) => {
+      const old = previous[key]?.[index];
+      return old && old.type === band.type && [2, 3, 4, 5].includes(band.type) ? {...band, gain: old.gain} : band;
+    });
+  }
+  return result;
 }

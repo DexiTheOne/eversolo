@@ -59,10 +59,10 @@ def test_observed_bounds_and_experimental_bypass_round_trip(field, value):
     assert result['audioTunningEQListRight'] == before['audioTunningEQListRight']
 
 
-def test_geq_frequency_and_unverified_correction_type_are_rejected():
-    """Geq frequency and unverified correction type are rejected."""
+def test_geq_frequency_and_invalid_correction_type_are_rejected():
+    """Geq frequency and invalid correction type are rejected."""
     before = captured_profile()
-    for key, field, value in [('eqGeqGainBeans','freq',30),('peqFirList','type',2)]:
+    for key, field, value in [('eqGeqGainBeans','freq',30),('peqFirList','type',10)]:
         settings = editable(before)
         settings[key][0][field] = value
         with pytest.raises(HomeAssistantError):
@@ -131,3 +131,35 @@ def test_http_transport_preserves_encoded_file_and_import_paths():
         assert "flash%3A%2F%2F%2F" in url.raw_query_string
         assert parse_qs(url.raw_query_string)["path"] == [path]
     asyncio.run(scenario())
+
+
+@pytest.mark.parametrize('key', ['peqFirList', 'peqFirListRight'])
+@pytest.mark.parametrize('code', range(2, 10))
+def test_correction_supports_same_filter_codes_as_peq(key, code):
+    """Accept the shared PEQ filter codes in both correction banks."""
+    before = captured_profile()
+    settings = editable(before)
+    settings[key][0]['type'] = code
+    result = merge_settings(before, settings)
+    assert result[key][0]['type'] == code
+    assert result['audioTunningEQList'] == before['audioTunningEQList']
+
+
+@pytest.mark.parametrize('key', ['eqGeqGainBeans', 'eqGeqGainBeansRight'])
+@pytest.mark.parametrize('gain', [-20, 20])
+def test_geq_gain_limits(key, gain):
+    """Accept both GEQ gain endpoints in each channel."""
+    before = captured_profile()
+    settings = editable(before)
+    settings[key][0]['gain'] = gain
+    assert merge_settings(before, settings)[key][0]['gain'] == gain
+
+
+@pytest.mark.parametrize('gain', [-20.1, 20.1])
+def test_geq_rejects_gain_outside_limits(gain):
+    """Reject GEQ gain beyond its supported interval."""
+    before = captured_profile()
+    settings = editable(before)
+    settings['eqGeqGainBeans'][0]['gain'] = gain
+    with pytest.raises(HomeAssistantError):
+        merge_settings(before, settings)

@@ -82,7 +82,7 @@
       step={Eq.BAND_GAIN_STEP_DB}
       tone="signed"
       align="right"
-      disabled={off || bypassed}
+      disabled={off || bypassed || [1002, 1003, 1004, 1005].includes(band.type)}
       onChange={(v) => onPatch({ gain: v })}
     />
 </div>

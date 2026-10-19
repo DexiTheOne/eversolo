@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, untrack } from 'svelte';
   import Panel from './components/chrome/Panel.svelte';
   import BankCycle from './components/chrome/BankCycle.svelte';
   import BandsPanel from './components/eq/BandsPanel.svelte';
@@ -7,7 +7,7 @@
   import PreampPanel from './components/eq/PreampPanel.svelte';
   import ProcessingResponse from './components/eq/ProcessingResponse.svelte';
   import { FilterType, type ChannelId, type FilterParams } from './domain';
-  import { bandKey, enableKey, loudnessKey, channelName, clone, channelBands, preamp, toUiBand, patchBand, setBandEnabled, resetBand,
+  import { bandKey, enableKey, loudnessKey, channelName, apiSettings, retainFilterGains, clone, channelBands, preamp, toUiBand, patchBand, setBandEnabled, resetBand,
     type Hass, type PanelInfo, type Profile, type Settings, type Snapshot, type FirCurves } from './adapter';
 
   const { hass, panel }: { hass: Hass; panel: PanelInfo } = $props();
@@ -120,6 +120,23 @@
     action?.();
   }
   let busy = $state(false);
+  let autoSave = $state(false);
+  let draggingRange = $state(false);
+  $effect(() => {
+    const serialized = JSON.stringify(apiSettings(draft));
+    const id = profile?.id;
+    if (!autoSave || !dirty || busy || stale || draggingRange) return;
+    const timer = setTimeout(() => {
+      untrack(() => {
+        if (!autoSave || !dirty || busy || stale || draggingRange || profile?.id !== id || JSON.stringify(apiSettings(draft)) !== serialized) return;
+        void run(async () => {
+          try { await save(); }
+          catch (err) { autoSave = false; throw err; }
+        });
+      });
+    }, 200);
+    return () => clearTimeout(timer);
+  });
   let polling = false;
   let commandVersion = 0;
   let disabledGains = $state<Record<string, number>>({});
@@ -132,6 +149,15 @@
   });
   let error = $state('');
   let status = $state('Loading Profile…');
+  $effect(() => {
+    if (status !== 'Saved And Verified On Device') return;
+    const timer = setTimeout(() => status = 'No Unsaved Changes', 3000);
+    return () => clearTimeout(timer);
+  });
+  function toggleAutoSave() {
+    autoSave = !autoSave;
+    status = autoSave ? 'Auto Save On' : 'Auto Save Off';
+  }
   let selectedBand = $state(0);
   let selectedRows = $state<Record<string, number>>({});
   let dialog = $state<HTMLDialogElement>();
@@ -156,7 +182,7 @@
   }
   let alive = true;
   const currentFir = $derived(fir?.profile_id === profile?.id && fir?.revision === profile?.revision ? fir : null);
-  const dirty = $derived(profile !== null && JSON.stringify(draft) !== JSON.stringify(profile.settings));
+  const dirty = $derived(profile !== null && JSON.stringify(apiSettings(draft)) !== JSON.stringify(apiSettings(profile.settings)));
   const bands = $derived(draft[editKey] ?? []);
   const uiBands = $derived(bands.map((band, index) => toUiBand({...band, bypass: bandId(editKey, index) in disabledGains})));
   const currentBand = $derived(bands[selectedBand]);
@@ -186,14 +212,15 @@
   function requestReload() {
     confirmDraftAction(() => void run(reload));
   }
-  function accept(value: Profile, preserveFirChoices = false) {
+  function accept(value: Profile, preserveFirChoices = false, preserveGains = false) {
     const retainChoices = preserveFirChoices && profile?.id === value.id && !firMaster;
     if (!retainChoices) {
       firChoices = {left: value.settings.enableLeftFir ?? false, right: value.settings.enableRightFir ?? false};
       firMaster = firChoices.left || firChoices.right;
     }
     if (!preserveFirChoices) disabledGains = {};
-    profile = value; draft = clone(value.settings); stale = false;
+    const nextDraft = preserveGains ? retainFilterGains(value.settings, draft) : clone(value.settings);
+    profile = value; draft = nextDraft; stale = false;
     fir = null; firError = '';
     selectedBand = 0;
     if (!channelBands(draft, channel).length) channel = 0;
@@ -271,7 +298,7 @@
   }
   function setGeqGain(index: number, value: number) {
     if (busy || !Number.isFinite(value)) return;
-    const gain = Math.round(Math.max(-15, Math.min(15, value)) * 10) / 10;
+    const gain = Math.round(Math.max(-20, Math.min(20, value)) * 10) / 10;
     draft[gainKey] = draft[gainKey]?.map((band, i) => i === index ? {...band, gain} : band);
   }
   function setPreamp(value: number, bank: ChannelId = 0) {
@@ -316,7 +343,7 @@
     await run(async () => {
       if (modal === 'create') { accept(await request<Profile>('create', { name })); await refreshFir(); await snapshot(); status = 'Profile Created'; }
       else if (old && modal === 'save_as') {
-        accept(await request<Profile>('save_as', { profile_id: old.id, revision: old.revision, name, settings: clone(draft) }));
+        accept(await request<Profile>('save_as', { profile_id: old.id, revision: old.revision, name, settings: apiSettings(draft) }), false, true);
         await refreshFir(); await snapshot(); status = 'Profile Copied And Verified On Device';
       }
       else if (old && modal === 'rename') {
@@ -331,8 +358,9 @@
   }
   async function save() {
     if (!profile) return;
-    const result = await request<Profile>('save', { profile_id: profile.id, revision: profile.revision, settings: clone(draft) });
-    accept(result, true); await refreshFir(); await snapshot(); status = 'Saved And Verified On Device';
+    const result = await request<Profile>('save', { profile_id: profile.id, revision: profile.revision, settings: apiSettings(draft) });
+    const selection = selectedBand;
+    accept(result, true, true); selectedBand = selection; await refreshFir(); await snapshot(); status = 'Saved And Verified On Device';
   }
   function setSlider(event: Event, key: 'frequency' | 'q' | 'gain', targetKey: typeof editKey, targetIndex: number) {
     let value = Number((event.currentTarget as HTMLInputElement).value);
@@ -341,6 +369,8 @@
     if (!busy) draft[targetKey] = draft[targetKey]?.map((band, index) => index === targetIndex ? patchBand(band, { [key]: value }) : band);
   }
 </script>
+
+<svelte:window onpointerdown={(event) => { if (event.composedPath().some(target => target instanceof HTMLInputElement && target.type === 'range')) draggingRange = true; }} onpointerup={() => draggingRange = false} onpointercancel={() => draggingRange = false} onblur={() => draggingRange = false} />
 
 <div class="shell">
   <header class="topbar">
@@ -371,6 +401,7 @@
       <button class="chip md" disabled={busy} onclick={requestReload}>↻ Reload</button>
       <button class="chip md" disabled={busy || !dirty} onclick={requestReload}>Discard</button>
       <button class="chip md accent" disabled={busy || !dirty || stale} onclick={() => void run(save)}>Save Profile</button>
+      <button class="chip md auto-save" class:on={autoSave} aria-pressed={autoSave} disabled={busy || stale} onclick={toggleAutoSave}><span class="auto-save-size" aria-hidden="true">Auto Save Off</span><span class="auto-save-label">{autoSave ? 'Auto Save On' : 'Auto Save Off'}</span></button>
     </div></div>
     {/snippet}
     <ProcessingResponse {busy} onModeChange={(value) => draft.settingType = value} onChannelChange={(value) => channel = value} settings={previewSettings} {profile} {fir} {channel} actions={saveActions} {previewRequest} />
@@ -385,7 +416,7 @@
       <div class="tab-pane bands-wrap" class:inactive={section !== 'peq' && section !== 'correction'} inert={section !== 'peq' && section !== 'correction'}>
 
         <BandsPanel stageLabel={correction ? 'Correction PEQ' : 'PEQ'} mono={!stereo} bankChannel={editorChannel} onBankChannel={chooseEditorChannel} selectedBand={selectedBand} onSelect={(index) => selectedBand = index} enabled={draft[editEnableKey]} onEnable={(value) => draft[editEnableKey] = value} bands={uiBands} onPatch={patch} onReset={reset} onSetBoth={setBothChannels}
-          types={correction ? [FilterType.Peaking] : [1002,1003,1004,1005,FilterType.Peaking,1007,1008,1009] as FilterType[]} link={{ grouped: false, locked: false, peerLabel: '', selectedShort: '' }} onToggleLink={() => {}} />
+          types={[1002,1003,1004,1005,FilterType.Peaking,1007,1008,1009] as FilterType[]} link={{ grouped: false, locked: false, peerLabel: '', selectedShort: '' }} onToggleLink={() => {}} />
         {#key `${editKey}:${selectedBand}`}
         {@const sliderBank = editKey}
         {@const sliderIndex = selectedBand}
@@ -396,7 +427,7 @@
             {/snippet}
             <div class="sliders">
               <label>Frequency <span>{currentBand.fc} Hz</span><input aria-label="Band frequency slider" type="range" min="0" max="1000" step="1" value={Math.log(currentBand.fc / 20) / Math.log(1000) * 1000} oninput={(e) => setSlider(e, 'frequency', sliderBank, sliderIndex)} /></label>
-              <label>Gain <span>{currentBand.gain} dB</span><input aria-label="Band gain slider" type="range" min="-15" max="15" step="0.1" value={currentBand.gain} oninput={(e) => setSlider(e, 'gain', sliderBank, sliderIndex)} /></label>
+              <label class:gain-disabled={[2, 3, 4, 5].includes(currentBand.type)}>Gain <span>{currentBand.gain} dB</span><input aria-label="Band gain slider" disabled={[2, 3, 4, 5].includes(currentBand.type)} type="range" min="-15" max="15" step="0.1" value={currentBand.gain} oninput={(e) => setSlider(e, 'gain', sliderBank, sliderIndex)} /></label>
               <label>Q <span>{currentBand.q}</span><input aria-label="Band Q slider" type="range" min="0.1" max="100" step="0.01" value={currentBand.q} oninput={(e) => setSlider(e, 'q', sliderBank, sliderIndex)} /></label>
             </div>
           </Panel>
@@ -414,8 +445,8 @@
           {/snippet}
           <div class="geq-bands">{#each draft[gainKey] ?? [] as band, index}
             <div class="geq-band">
-              <input class="geq-gain" aria-label={`Graphic EQ ${band.freq} Hz gain value`} type="number" min="-15" max="15" step="0.1" value={band.gain.toFixed(1)} onchange={(event) => { setGeqGain(index, event.currentTarget.valueAsNumber); event.currentTarget.value = draft[gainKey]![index].gain.toFixed(1); }} />
-              <input class="geq-slider" aria-label={`Graphic EQ ${band.freq} Hz gain`} aria-orientation="vertical" type="range" min="-15" max="15" step="0.1" value={band.gain} oninput={(event) => setGeqGain(index, event.currentTarget.valueAsNumber)} />
+              <input class="geq-gain" aria-label={`Graphic EQ ${band.freq} Hz gain value`} type="number" min="-20" max="20" step="0.1" value={band.gain.toFixed(1)} onchange={(event) => { setGeqGain(index, event.currentTarget.valueAsNumber); event.currentTarget.value = draft[gainKey]![index].gain.toFixed(1); }} />
+              <input class="geq-slider" aria-label={`Graphic EQ ${band.freq} Hz gain`} aria-orientation="vertical" type="range" min="-20" max="20" step="0.1" value={band.gain} oninput={(event) => setGeqGain(index, event.currentTarget.valueAsNumber)} />
               <span>{band.freq >= 1000 ? `${band.freq / 1000}k` : band.freq}</span>
             </div>
           {/each}</div>
@@ -526,6 +557,11 @@
 </dialog>
 
 <style>
+  .auto-save { display: inline-grid; place-items: center; align-content: center; flex-shrink: 0; white-space: nowrap; }
+  .auto-save-size, .auto-save-label { grid-area: 1 / 1; }
+  .auto-save-size { visibility: hidden; }
+
+  .gain-disabled { opacity: var(--dim-disabled); }
   dialog.file-picker { width: 720px; max-height: 88vh; padding: 20px; }
   .file-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 18px; }
   .file-heading h2 { margin: 0; font-size: 21px; }
