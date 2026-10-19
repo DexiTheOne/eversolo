@@ -3,3 +3,4 @@ colorlog==6.10.1
 homeassistant==2026.4.0
 pip>=21.0,<26.1
 ruff==0.15.9
+wakeonlan==4.0.0

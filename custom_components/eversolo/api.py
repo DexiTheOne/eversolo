@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import aiohttp
-import async_timeout
+import asyncio
 import socket
 import json
 import math
@@ -595,7 +595,7 @@ class EversoloApiClient:
     ) -> any:
         """Get information from the API."""
         try:
-            async with async_timeout.timeout(5):
+            async with asyncio.timeout(5):
                 response = await self._session.request(
                     method=method,
                     url=url,

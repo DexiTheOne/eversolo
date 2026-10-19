@@ -63,7 +63,7 @@ def test_duplicate_names_and_generated_label_collision():
 def test_captured_api_and_configured_address():
     """Read the actual captures and use the configured device address for writes."""
     async def scenario():
-        client = EversoloApiClient("device.example", 1234, None)
+        client = EversoloApiClient("192.0.2.10", 1234, None)
         client._api_wrapper = AsyncMock(return_value=fixture_payload("dspConfig"))
         assert await client.async_get_eq_profiles() == {1: "V5 Couch Calibration ", 5: "V1 Desk Calibration "}
         client._api_wrapper.return_value = fixture_payload("eqSourceList")
@@ -73,7 +73,7 @@ def test_captured_api_and_configured_address():
         client._api_wrapper.return_value = {"status": "200"}
         await client.async_set_eq_output(1, "XLRRCAOUT", 5, False)
         url = client._api_wrapper.call_args.kwargs["url"]
-        assert url == "http://device.example:1234/ZidooMusicControl/v2/setDSPSource?id=1&sourceType=XLRRCAOUT&enable=0&eqId=5&isDSP=0"
+        assert url == "http://192.0.2.10:1234/ZidooMusicControl/v2/setDSPSource?id=1&sourceType=XLRRCAOUT&enable=0&eqId=5&isDSP=0"
         client._api_wrapper.return_value = {"status": 805}
         with pytest.raises(EversoloApiClientError):
             await client.async_get_eq_outputs()
